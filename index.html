@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<title>BLUE PLAY</title>
+
+	<link rel="shortcut icon" href="https://blueplay.vip/wp-content/uploads/2021/02/favicon.png">
+
+	<link rel="API_BASE" href="http://player.blueplay.vip" />
+	<link rel="DNS" href="http://lmtv.me" />
+
+	<link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+	<script src="https://content.jwplatform.com/libraries/fgbTqCCh.js"></script>
+	<link rel="stylesheet" href="src/css/player.css">
+
+	<link rel="stylesheet" type="text/css"
+		href="https://autergame.github.io/PlayerUrl/dist/css/videojs-seek-buttons.css">
+	<link rel="stylesheet" type="text/css" href="https://autergame.github.io/PlayerUrl/dist/css/video-js.css">
+	<style>
+		.video-js {
+			width: 100%;
+			height: 100%;
+			border: 0;
+			outline: none;
+			box-shadow: none;
+			outline-style: none;
+			border-color: transparent
+		}
+
+		.vjs-time-divider,
+		.video-js .vjs-duration,
+		.vjs-no-flex .vjs-duration,
+		.video-js .vjs-current-time,
+		.vjs-no-flex .vjs-current-time {
+			display: block
+		}
+
+		.vjs-progress-control:hover .vjs-play-progress .vjs-time-tooltip {
+			display: none
+		}
+
+		.video-js .vjs-load-progress {
+			background: rgba(130, 190, 210, .35)
+		}
+
+		.video-js .vjs-load-progress div {
+			background: rgb(130, 190, 210)
+		}
+
+		.vjs-error .vjs-error-display:before {
+			display: none !important
+		}
+
+		.vjs-button>.vjs-icon-placeholder {
+			font-family: 'VideoJS';
+		}
+	</style>
+</head>
+
+<body>
+	<div class="trigger_container">
+		<div class="trigger_content">
+			<p class="trigger_message"></p>
+		</div>
+	</div>
+
+	<div class="loading">
+		<img src="assets/icons/load.gif" alt="Load">
+	</div>
+
+	<div class="loading-video">
+		<img src="assets/icons/load-video.gif" alt="Load">
+	</div>
+
+	<!-- LOGIN -->
+	<div id="Login">
+		<div class="login_container">
+			<div class="login_content">
+				<img class="login_logo" src="https://blueplay.vip/wp-content/uploads/2021/02/icon.png" alt="BLUE PLAY">
+
+				<p class="login_index_message">Assista a todas os canais, filmes e séries sem travas</p>
+
+				<form class="login_login_form" action="" method="post">
+					<div class="login_input_container">
+						<input class="focusable user" type="text" name="username" value="" placeholder="Usuário"
+							required>
+					</div>
+
+					<div class="login_input_container">
+						<input class="focusable user_pass" type="password" name="password" value="" placeholder="Senha"
+							required>
+					</div>
+
+					<button class="btn_login" type="submit">Entrar</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- AVATAR -->
+	<div id="Avatar" class="users_container" style="display: none;">
+		<div class="users_title">
+			<p>Quem está assistindo?</p>
+		</div>
+
+		<div class="users_content">
+			<ul id="avatar_list" class="avatar_list">
+
+			</ul>
+		</div>
+
+		<div id="manage_users" class="manage_users">
+
+		</div>
+	</div>
+
+	<div class="manage_users_modal_container" style="display: none;">
+		<div class="manage_users_modal_box">
+			<div id="manage_users_modal" class="manage_users_modal_content">
+				<h1>Gerenciar perfis:</h1>
+
+				<div class="users_content">
+					<ul class="avatar_list_manager">
+
+					</ul>
+				</div>
+
+				<a id="btn_manage_users_concluded" class="btn_manage_users_concluded focusable"
+					href="javascript:void(0)"
+					onclick="document.querySelector('.manage_users_modal_container').style.display = 'none';">
+					<span>Concluído</span>
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="users_modal_container" style="display: none;">
+		<div class="users_modal_box">
+			<div id="users_modal_content" class="users_modal_content">
+				<form class="form_avatar" action="" method="post">
+					<input type="hidden" name="action" value="store_avatar">
+
+					<input class="focusable avatar_name" type="text" name="avatar_name" value="" placeholder="Nome"
+						required>
+
+					<button type="submit" class="focusable btn_create">Criar</button>
+					<button type="button" class="focusable"
+						onclick="document.querySelector('.users_modal_container').style.display = 'none';"
+						style="background-color: #dd5b5b;">Voltar</button>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- PLAYER -->
+	<div id="Player" style="display: none;">
+		<div class="profile_container">
+			<div class="profile_content">
+				<div class="avatar_container j_btn" _action="changeAvatar" style="background-color: #7669fe;">
+					<img src="assets/images/face-user.png" alt="">
+				</div>
+
+				<p class="name avatar_name"></p>
+
+				<!-- <a href="?page=configs" class="config">Configurações</a> -->
+				<a href="javascript:void(0)" class="exit j_btn focusable" _action="exit">Sair</a>
+			</div>
+		</div>
+
+		<div class="menu_container">
+			<ul id="menu_content" class="menu_content">
+				<li>
+					<a class="focusable icon_bars" href="javascript:void(0)"
+						onclick="var element = document.querySelector('.profile_container'); element.style.display = (element.style.display == 'block' ? 'none' : 'block');"><img
+							src="assets/icons/icon-bars.svg" style="width: 30px;" alt="Profile"></a>
+				</li>
+				<li>
+					<a href="javascript:void(0)" onclick="handlePage('home')" class="home focusable">
+						<img src="assets/icons/icon-home.svg" alt="Home">
+						<span>Home</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)" onclick="handlePage('lives')" class="lives focusable">
+						<img src="assets/icons/icon-tv.svg" alt="Canais">
+						<span>Canais</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)" onclick="handlePage('movies')" class="movies focusable">
+						<img src="assets/icons/icon-movies.svg" alt="Filmes">
+						<span>Filmes</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)" onclick="handlePage('series')" class="series focusable">
+						<img src="assets/icons/icon-series.svg" alt="Séries">
+						<span>Series</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:void(0)" onclick="handlePage('favorites')" class="favorites focusable">
+						<img src="assets/icons/icon-heart.svg" alt="Favoritos">
+						<span>Favoritos</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div class="page_container">
+			<div class="page_topnav">
+				<img src="https://blueplay.vip/wp-content/uploads/2021/02/icon.png" alt="BLUE PLAY">
+
+				<form class="search_container" action="" method="post">
+					<input class="search_input_action" type="hidden" name="action" value="">
+					<input class="search_input_search focusable" type="text" name="search" value=""
+						placeholder="Pesquisar">
+
+					<button class="btn_search" type="submit">
+						<img src="assets/icons/icon-search.svg" alt="Pesquisar">
+					</button>
+
+					<div id="keyboard_search" class="keyboard_container" style="display: none;">
+						<div class="keyboard_content">
+							<div class="row">
+								<a href="#" class="key focusable" key="1">1</a>
+								<a href="#" class="key focusable" key="2">2</a>
+								<a href="#" class="key focusable" key="3">3</a>
+								<a href="#" class="key focusable" key="4">4</a>
+								<a href="#" class="key focusable" key="5">5</a>
+								<a href="#" class="key focusable" key="6">6</a>
+								<a href="#" class="key focusable" key="7">7</a>
+								<a href="#" class="key focusable" key="8">8</a>
+								<a href="#" class="key focusable" key="9">9</a>
+								<a href="#" class="key focusable" key="0">0</a>
+								<a href="#" style="width: 84px;" class="key focusable" key="backspace"><-< /a>
+							</div>
+
+							<div class="row row-center">
+								<a href="#" class="key focusable" key="q">q</a>
+								<a href="#" class="key focusable" key="w">w</a>
+								<a href="#" class="key focusable" key="e">e</a>
+								<a href="#" class="key focusable" key="r">r</a>
+								<a href="#" class="key focusable" key="t">t</a>
+								<a href="#" class="key focusable" key="y">y</a>
+								<a href="#" class="key focusable" key="q">q</a>
+								<a href="#" class="key focusable" key="i">i</a>
+								<a href="#" class="key focusable" key="o">o</a>
+								<a href="#" class="key focusable" key="p">p</a>
+							</div>
+
+							<div class="row">
+								<a href="#" class="key focusable" key="a">a</a>
+								<a href="#" class="key focusable" key="s">s</a>
+								<a href="#" class="key focusable" key="d">d</a>
+								<a href="#" class="key focusable" key="f">f</a>
+								<a href="#" class="key focusable" key="g">g</a>
+								<a href="#" class="key focusable" key="h">h</a>
+								<a href="#" class="key focusable" key="j">j</a>
+								<a href="#" class="key focusable" key="k">k</a>
+								<a href="#" class="key focusable" key="l">l</a>
+								<a href="#" class="key focusable" key="ç">ç</a>
+								<a href="#" style="width: 84px;" class="key focusable" key="ok"><span>Ok</span></a>
+							</div>
+
+							<div class="row row-center">
+								<a href="#" class="key focusable" key="z">z</a>
+								<a href="#" class="key focusable" key="x">x</a>
+								<a href="#" class="key focusable" key="c">c</a>
+								<a href="#" class="key focusable" key="v">v</a>
+								<a href="#" class="key focusable" key="b">b</a>
+								<a href="#" class="key focusable" key="n">n</a>
+								<a href="#" class="key focusable" key="m">m</a>
+								<a href="#" class="key focusable" key=",">,</a>
+								<a href="#" class="key focusable" key=".">.</a>
+								<a href="#" class="key focusable" key="/">/</a>
+							</div>
+
+							<div class="row-special-characters">
+								<a href="#" class="key focusable" key="-">-</a>
+								<a href="#" class="key focusable" key="=">=</a>
+								<a href="#" class="key focusable" key="c">!</a>
+								<a href="#" class="key focusable" key="d">@</a>
+								<a href="#" class="key focusable" key="e">#</a>
+								<a href="#" class="key focusable" key="f">$</a>
+								<a href="#" class="key focusable" key="%">%</a>
+								<a href="#" class="key focusable" key="^">^</a>
+								<a href="#" class="key focusable" key="&">&</a>
+								<a href="#" class="key focusable" key="_">_</a>
+								<a href="#" class="key focusable" key="(">(</a>
+								<a href="#" class="key focusable" key=")">)</a>
+							</div>
+
+							<div class="row-special-characters">
+								<a href="#" class="key focusable" key="+">+</a>
+								<a href="#" class="key focusable" key=";">;</a>
+								<a href="#" class="key focusable" key=":">:</a>
+								<a href="#" class="key focusable" key="*">*</a>
+								<a href="#" class="key focusable" key="'">'</a>
+								<a href="#" class="key focusable" key="<">
+									<< /a>
+										<a href="#" class="key focusable" key=">">></a>
+										<a href="#" class="key focusable" key=",">,</a>
+										<a href="#" class="key focusable" key=".">.</a>
+										<a href="#" class="key focusable" key="*">*</a>
+										<a href="#" class="key focusable" key="?">?</a>
+										<a href="#" class="key focusable" key="aspas">"</a>
+							</div>
+
+							<div class="row row-bottom">
+								<a href="#" style="width: 30%;" class="key focusable" key="caps">caps lock</a>
+								<a href="#" style="width: 40%;" class="key focusable" key=" "> </a>
+								<a href="#" style="width: 30%;" class="key focusable" key="special">?/@</a>
+							</div>
+						</div>
+					</div>
+				</form>
+
+				<p>Bem vindo, <b class="avatar_name"></b></p>
+			</div>
+
+			<div class="page_content">
+			</div>
+		</div>
+	</div>
+
+	<div class="player_video_container">
+		<button type="button" class="player_video_close focusable">
+			<img src="assets/icons/icon-back.svg" alt="Voltar">
+		</button>
+
+		<div class="title_vod">
+
+		</div>
+
+		<button type="button" class="player_video_prev focusable">
+			<img src="assets/icons/icon-left.svg" alt="Voltar Episodio">
+		</button>
+
+		<button type="button" class="player_video_next focusable" onclick="nextEpisode();">
+			<img src="assets/icons/icon-right.svg" alt="Proximo Episodio">
+		</button>
+
+		<button type="button" class="player_btn_next focusable" onclick="nextEpisode();">
+			<img src="assets/icons/icon-play.svg" alt="Proximo Episodio">
+			PRÓXIMO EPISODIO
+		</button>
+
+		<div class="player_video_content">
+
+		</div>
+	</div>
+
+	<script type="text/javascript" src="src/js/scripts.js"></script>
+	<script type="text/javascript" src="src/js/scroll.js"></script>
+
+
+	<script type="text/javascript" src="https://autergame.github.io/PlayerUrl/dist/js/videojs.min.js"></script>
+	<script type="text/javascript"
+		src="https://autergame.github.io/PlayerUrl/dist/js/videojs-seek-buttons.min.js"></script>
+	<script type="text/javascript" src="https://autergame.github.io/PlayerUrl/dist/js/videojs.hotkeys.min.js"></script>
+	<script type="text/javascript" src="https://autergame.github.io/PlayerUrl/dist/js/pt-BR.js"></script>
+
+
+</body>
+
+</html>

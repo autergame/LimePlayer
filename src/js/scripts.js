@@ -155,12 +155,13 @@ function btn() {
 		let jbtn_copy = jBtn[i];
 		let jbtn_clone = jbtn_copy.cloneNode(true);
 		jbtn_clone.addEventListener("click", function () {
-			let action = this.getAttribute("_action");
-			let id = this.getAttribute("id");
+			let action = jbtn_clone.getAttribute("_action");
+			let id = jbtn_clone.getAttribute("id");
 			switch (action) {
 				case "handleAvatar": {
 					let avatars = JSON.parse(localStorage.getItem("user_info")).avatars;
 					let finded_avatar = avatars.filter((item) => item.id == id)[0];
+					finded_avatar.color = jbtn_clone.getAttribute("_color");
 					localStorage.setItem("avatar", JSON.stringify(finded_avatar));
 					localStorage.removeItem("favorites");
 					login();
@@ -218,6 +219,7 @@ function login() {
 				for (let i = 0; i < avatarName.length; i++) {
 					avatarName[i].innerHTML = avatar.avatar_name;
 				}
+				document.querySelector(".avatar_container").style.backgroundColor = avatar.color;
 			} else {
 				document.querySelector("#Login").style.display = "none";
 				document.querySelector("#Avatar").style.display = "flex";
@@ -229,7 +231,7 @@ function login() {
 					let color = `hsl(${(i % 18) * 20}, 100%, 50%)`;
 					avatar_element += `
 						<li>
-							<a class="j_btn focusable" _action="handleAvatar" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
+							<a class="j_btn focusable" _action="handleAvatar" _color="${color}" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
 								<img src="assets/images/face-user.png" alt="${userInfo.avatars[i].avatar_name}">
 							</a>
 							<span>${userInfo.avatars[i].avatar_name}</span>
@@ -1472,6 +1474,6 @@ if (user_info && user_info.username && user_info.password) {
 		loading(false);
 	};
 	let query = `username=${user_info.username}&password=${user_info.password}`;
-	xhr.open("GET", corsProxy(API_BASE + query), false);
+	xhr.open("GET", corsProxy(API_BASE + query), true);
 	xhr.send();
 }

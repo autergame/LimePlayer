@@ -1,24 +1,25 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:400, 500, 700&amp; display=swap');
-
+@import url("https://fonts.googleapis.com/css?family=Roboto:400, 500, 700&amp; display=swap");
 
 ::-webkit-scrollbar {
 	width: 15px;
 }
 
-
 ::-webkit-scrollbar-track {
 	background: #000000;
 }
 
-
 ::-webkit-scrollbar-thumb {
+	min-height: 50px;
+	border-radius: 10px;
 	background: #7669fe;
-
+	background-clip: content-box;
+	border: 3px solid transparent;
 }
 
-
 ::-webkit-scrollbar-thumb:hover {
-	background: #555;
+	background: #4d3dff;
+	background-clip: content-box;
+	border: 2px solid transparent;
 }
 
 *,
@@ -32,7 +33,7 @@
 }
 
 * {
-	font-family: 'Roboto', sans-serif;
+	font-family: "Roboto", sans-serif;
 }
 
 a {
@@ -55,7 +56,6 @@ body {
 .clear {
 	clear: both;
 }
-
 
 .modal {
 	background: rgba(0, 0, 0, 0.73);
@@ -231,7 +231,7 @@ body {
 }
 
 .check input[type="checkbox"]:before {
-	content: '';
+	content: "";
 	position: absolute;
 	width: 40px;
 	height: 40px;
@@ -247,7 +247,6 @@ body {
 .check input:checked[type="checkbox"]:before {
 	left: 40px;
 }
-
 
 .form_password {
 	margin-top: 10px;
@@ -323,8 +322,8 @@ body {
 	cursor: pointer;
 }
 
-
 .loading {
+	user-select: none;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -342,25 +341,8 @@ body {
 	width: 150px;
 }
 
-.loading-video {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100vh;
-	z-index: 99999;
-	justify-content: center;
-	align-items: center;
-	display: none;
-	opacity: .8;
-}
-
-.loading-video img {
-	width: 150px;
-}
-
-
 .trigger_container {
+	user-select: none;
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -380,8 +362,8 @@ body {
 	background-color: #7669fe;
 }
 
-
 #Login {
+	user-select: none;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -401,96 +383,6 @@ body {
 	background: linear-gradient(90deg, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0.7021183473389356) 100%);
 	display: flex;
 	align-items: center;
-}
-
-.keyboard_container_login {
-
-	display: none;
-	flex-direction: column;
-	justify-content: center;
-	padding: 20px 60px;
-	background-color: rgba(0, 0, 0, 0.975);
-	min-width: 560px;
-	transition: .5s;
-}
-
-.keyboard_container_login h1 {
-	color: #fff;
-	font-size: 0.9em;
-	font-weight: 300;
-	margin-bottom: 25px;
-}
-
-.keyboard_main .row_login {
-	display: flex;
-	justify-content: space-between;
-}
-
-.keyboard_main .row_login .key {
-	flex-basis: 14%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 19px;
-	background-color: rgba(255, 255, 255, .1);
-	cursor: pointer;
-	text-decoration: none;
-	color: #fff;
-	margin-bottom: 13px;
-}
-
-.keyboard_main .row_login_characters {
-	display: none;
-	justify-content: space-between;
-}
-
-.keyboard_main .row_login_characters .key {
-	flex-basis: 14%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 19px;
-	background-color: rgba(255, 255, 255, .1);
-	cursor: pointer;
-	text-decoration: none;
-	color: #fff;
-	margin-bottom: 13px;
-}
-
-.keyboard_main .row_login_two {
-	display: flex;
-	justify-content: space-between;
-}
-
-.keyboard_main .row_login_two .key {
-	flex-basis: 48.5%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 19px;
-	margin-bottom: 13px;
-	background-color: rgba(255, 255, 255, .1);
-	cursor: pointer;
-	text-decoration: none;
-	color: #fff;
-}
-
-.keyboard_main .row_login_three {
-	display: flex;
-	justify-content: space-between;
-}
-
-.keyboard_main .row_login_three .key {
-	flex-basis: 31.2%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 19px;
-	margin-bottom: 13px;
-	background-color: rgba(255, 255, 255, .1);
-	cursor: pointer;
-	text-decoration: none;
-	color: #fff;
 }
 
 .active_caps {
@@ -536,14 +428,6 @@ body {
 	position: relative;
 }
 
-#keyboard_login_user {
-	top: 150px;
-}
-
-#keyboard_login_pass {
-	top: 150px;
-}
-
 .login_input_container {
 	width: 100%;
 	margin-bottom: 15px;
@@ -579,8 +463,8 @@ body {
 	opacity: 0.8;
 }
 
-
 .users_container {
+	user-select: none;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -637,6 +521,7 @@ body {
 }
 
 .users_modal_container {
+	user-select: none;
 	z-index: 8889;
 	position: absolute;
 	top: 0;
@@ -650,6 +535,7 @@ body {
 }
 
 .manage_users_modal_container {
+	user-select: none;
 	z-index: 8889;
 	position: absolute;
 	top: 0;
@@ -670,7 +556,7 @@ body {
 	text-decoration: none;
 	border: 1px solid grey;
 	color: grey;
-	letter-spacing: 4px;
+	letter-spacing: 1px;
 	padding: 0.5em 1.5em;
 	cursor: pointer;
 	transition: 0.3s;
@@ -685,7 +571,7 @@ body {
 	text-decoration: none;
 	background: white;
 	color: black;
-	letter-spacing: 4px;
+	letter-spacing: 1px;
 	padding: 0.5em 1.5em;
 	cursor: pointer;
 	transition: 0.3s;
@@ -697,6 +583,7 @@ body {
 }
 
 .bg-edit {
+	border-radius: 10px;
 	position: absolute;
 	width: 150px;
 	height: 150px;
@@ -755,12 +642,8 @@ body {
 	position: relative;
 }
 
-#keyboard_avatar {
-	top: -270px;
-}
-
-
 #Player {
+	user-select: none;
 	width: 100%;
 	height: 100%;
 	background-color: #141414;
@@ -787,6 +670,7 @@ body {
 	z-index: 7777;
 	text-align: center;
 	display: none;
+	border-left: 1px solid #404040;
 }
 
 .avatar_container {
@@ -860,6 +744,8 @@ body {
 }
 
 .page_topnav {
+	align-items: center;
+	display: flex;
 	width: 100%;
 	border-bottom: 1px solid #404040;
 	color: #fff;
@@ -875,14 +761,14 @@ body {
 
 .page_topnav p {
 	float: right;
-	margin-top: 10px;
+	margin-left: auto;
 }
 
 .search_container {
 	float: left;
-	margin-left: 30px;
+	margin-left: auto;
 	position: relative;
-	width: 250px;
+	width: 350px;
 	visibility: hidden;
 }
 
@@ -909,70 +795,6 @@ body {
 	top: 10px;
 	filter: invert(30%);
 	cursor: pointer;
-}
-
-.keyboard_container {
-	position: absolute;
-
-	top: 42px;
-	z-index: 999;
-	background: #000;
-	padding: 17px;
-	border-radius: 9px;
-}
-
-.keyboard_content {
-	display: flex;
-	width: 100%;
-	flex-direction: column;
-}
-
-.keyboard_content .row {
-	display: flex;
-}
-
-.keyboard_content .row .key {
-	width: 50px;
-	margin: 0 3px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 10px;
-	margin-bottom: 6px;
-	background-color: rgba(255, 255, 255, .1);
-	cursor: pointer;
-	text-decoration: none;
-	color: #fff;
-}
-
-.keyboard_content .row-special-characters {
-	display: none;
-}
-
-.keyboard_content .row-special-characters .key {
-	width: 50px;
-	margin: 0 3px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 10px;
-	margin-bottom: 6px;
-	background-color: rgba(255, 255, 255, .1);
-	cursor: pointer;
-	text-decoration: none;
-	color: #fff;
-}
-
-.keyboard_content .row .key:first-of-type {
-	margin-left: 0;
-}
-
-.keyboard_content .row-special-characters .key:first-of-type {
-	margin-left: 0;
-}
-
-.keyboard_content .row-center {
-	justify-content: center;
 }
 
 .page_content {
@@ -1077,6 +899,15 @@ body {
 	position: relative;
 }
 
+.carousel_section_generic_content a>img {
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	border-radius: 10px;
+	height: 100%;
+	width: 100%;
+}
+
 .carousel_section_generic_content a.live {
 	background-size: contain;
 	background-size: 90px;
@@ -1123,8 +954,6 @@ body {
 	transform: scale(.99);
 }
 
-
-
 .channels_categories {
 	background-color: #202020;
 	float: left;
@@ -1151,7 +980,10 @@ body {
 	display: block;
 }
 
-.channels_categories a:hover,
+.channels_categories a:hover {
+	background-color: #8b81ff;
+}
+
 .channels_categories a.active {
 	background-color: #7669fe;
 }
@@ -1186,19 +1018,26 @@ body {
 .channels_list a {
 	text-decoration: none;
 	color: #fff;
-	padding: 15px;
-	display: block;
+	padding: 13px;
+	display: flex;
+	align-items: center;
 }
 
-.channels_list a:hover,
+.channels_list a:hover {
+	background-color: #8b81ff;
+}
+
 .channels_list a.active {
 	background-color: #7669fe;
 }
 
 .channels_list img {
-	max-width: 40px;
-	max-height: 12px;
-	margin-right: 5px;
+	max-width: 53px;
+	max-height: 19px;
+	min-width: 53px;
+	min-height: 19px;
+	margin-right: 10px;
+	object-fit: scale-down;
 }
 
 .channels_view_container {
@@ -1252,7 +1091,6 @@ body {
 
 .epg_ul .time {
 	color: #7669fe;
-	font-size: .7em;
 }
 
 .epg_ul .description {
@@ -1260,7 +1098,6 @@ body {
 	font-size: .87em;
 	margin-top: 5px;
 }
-
 
 .movies_content {
 	width: calc(100% - 250px);
@@ -1272,14 +1109,14 @@ body {
 	overflow-y: auto;
 	overflow-x: hidden;
 	max-height: 400px;
-	padding: 30px;
+	padding: 10px;
 	width: 100%;
 	max-height: calc(100vh - 101px);
 }
 
 .movies_content li {
 	float: left;
-	margin-right: 20px;
+	margin-right: 12px;
 	margin-bottom: 20px;
 	position: relative;
 }
@@ -1302,6 +1139,15 @@ body {
 	text-decoration: none;
 	position: relative;
 	border-radius: 10px;
+}
+
+.movies_content a>img {
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	border-radius: 10px;
+	height: 100%;
+	width: 100%;
 }
 
 .movies_content .name {
@@ -1367,7 +1213,6 @@ body {
 }
 
 .modal_vod_close i {
-
 	font-size: 3.2em;
 }
 
@@ -1375,12 +1220,13 @@ body {
 	float: left;
 	width: 200px;
 	position: relative;
-	border-radius: 5px;
+	border-radius: 10px;
 	overflow: hidden;
 }
 
 .vod_cover img {
 	user-select: none;
+	border-radius: 10px;
 }
 
 .vod_cover .rate {
@@ -1508,9 +1354,13 @@ body {
 	display: inline-block;
 }
 
-.seasons_li a:hover,
+.seasons_li a:hover {
+	background-color: rgb(0, 0, 0, 0.4);
+}
+
 .seasons_li a.active {
 	border-bottom: 2px solid #7669fe;
+	background-color: rgb(0, 0, 0, 0.5);
 }
 
 .carousel_section_generic_content .episodes_ul {
@@ -1526,11 +1376,8 @@ body {
 .episodes_ul a {
 	color: #fff;
 	text-decoration: none;
-	padding: 7px 10px;
-
 	display: block;
 }
-
 
 .player_video_container {
 	position: absolute;
@@ -1540,13 +1387,13 @@ body {
 	height: 100vh;
 	z-index: 9999;
 	background-color: #000;
-
+	user-select: none;
 	display: none;
 }
 
 .title_vod {
 	position: absolute;
-	padding: 20px 80px;
+	padding: 10px 80px;
 	top: 0;
 	right: 0;
 	width: 100%;
@@ -1556,7 +1403,7 @@ body {
 	background-color: rgba(20, 20, 20, .85);
 }
 
-.title_vod h1 {
+.title_vod h2 {
 	color: #fff;
 }
 
@@ -1569,14 +1416,14 @@ body {
 .player_video_close {
 	position: absolute;
 	background-color: transparent;
-	padding: 25px;
+	padding: 8px 10px;
 	top: 0;
 	left: 0;
 	cursor: pointer;
 	border: none;
 
-	width: 77px;
-	height: 77px;
+	width: 50px;
+	height: 48px;
 	z-index: 9999;
 	visibility: hidden;
 
@@ -1710,7 +1557,6 @@ body {
 
 .time {
 	color: #fff;
-	padding: 0 10px;
 }
 
 .player_btn_next img {

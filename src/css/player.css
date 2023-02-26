@@ -323,6 +323,19 @@ body {
 	background-color: #7669fe;
 }
 
+.bg-edit {
+	width: 150px;
+	height: 150px;
+	position: absolute;
+	border-radius: 10px;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.bg-edit img {
+	width: 25px;
+	filter: invert(1);
+}
+
 .manage_users_modal_content {
 	display: flex;
 	align-items: center;

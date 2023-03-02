@@ -73,14 +73,14 @@ function loading(display = true) {
 }
 
 function trigger(message, type = "success") {
-	let triggerContainer = document.querySelector(".trigger_container");
-	triggerContainer.style.display = "block";
-	triggerContainer.classList.add(type);
+	let trigger_container = document.querySelector(".trigger_container");
+	trigger_container.style.display = "block";
+	trigger_container.classList.add(type);
 
 	document.querySelector(".trigger_message").innerHTML = message;
 
 	setTimeout(function () {
-		triggerContainer.style.display = "none";
+		trigger_container.style.display = "none";
 	}, 5000);
 }
 
@@ -136,6 +136,7 @@ function ajax(query, show_loading = true) {
 					scroll();
 				} catch (error) {
 					console.log(error);
+					loading(false);
 				}
 			}
 			resolve();
@@ -150,18 +151,18 @@ function ajax(query, show_loading = true) {
 }
 
 function btn() {
-	let jBtn = document.querySelectorAll(".j_btn");
-	for (let i = 0; i < jBtn.length; i++) {
-		let jbtn_copy = jBtn[i];
-		let jbtn_clone = jbtn_copy.cloneNode(true);
-		jbtn_clone.onclick = async function () {
-			let action = jbtn_clone.getAttribute("_action");
-			let id = jbtn_clone.getAttribute("id");
+	let j_btn = document.querySelectorAll(".j_btn");
+	for (let i = 0; i < j_btn.length; i++) {
+		let j_btn_copy = j_btn[i];
+		let j_btn_clone = j_btn_copy.cloneNode(true);
+		j_btn_clone.onclick = async function () {
+			let action = j_btn_clone.getAttribute("_action");
+			let id = j_btn_clone.getAttribute("id");
 			switch (action) {
 				case "handleAvatar": {
 					let avatars = JSON.parse(localStorage.getItem("user_info")).avatars;
 					let finded_avatar = avatars.filter((item) => item.id == id)[0];
-					finded_avatar.color = jbtn_clone.getAttribute("_color");
+					finded_avatar.color = j_btn_clone.getAttribute("_color");
 					localStorage.setItem("avatar", JSON.stringify(finded_avatar));
 					localStorage.removeItem("favorites");
 					login();
@@ -196,7 +197,7 @@ function btn() {
 					break;
 			}
 		};
-		jbtn_copy.parentNode.replaceChild(jbtn_clone, jbtn_copy);
+		j_btn_copy.parentNode.replaceChild(j_btn_clone, j_btn_copy);
 	}
 }
 
@@ -218,9 +219,9 @@ function login() {
 				document.querySelector("#Login").style.display = "none";
 				document.querySelector("#Avatar").style.display = "none";
 				document.querySelector("#Player").style.display = "flex";
-				let avatarName = document.querySelectorAll(".avatar_name");
-				for (let i = 0; i < avatarName.length; i++) {
-					avatarName[i].innerHTML = avatar.avatar_name;
+				let avatar_name = document.querySelectorAll(".avatar_name");
+				for (let i = 0; i < avatar_name.length; i++) {
+					avatar_name[i].innerHTML = avatar.avatar_name;
 				}
 				document.querySelector(".avatar_container").style.backgroundColor = avatar.color;
 			} else {
@@ -315,9 +316,9 @@ function handlePage(type) {
 	document.querySelector(".search_input_action").value = "";
 	document.querySelector(".search_input_search").value = "";
 
-	let menuContentA = document.querySelectorAll(".menu_content a");
-	for (let i = 0; i < menuContentA.length; i++) {
-		menuContentA[i].classList.remove("active");
+	let menu_content_a = document.querySelectorAll(".menu_content a");
+	for (let i = 0; i < menu_content_a.length; i++) {
+		menu_content_a[i].classList.remove("active");
 	}
 	document.querySelector(".menu_content ." + type).classList.add("active");
 
@@ -413,9 +414,17 @@ function pageHome() {
 	`;
 }
 
+function changeHttp(link) {
+	if (link.includes("https")) {
+		return link;
+	} else {
+		return link.replace("http", "https");
+	}
+}
+
 function poster(src) {
 	if (src) {
-		return `<img src="${src}" loading="lazy" onerror="this.src='assets/images/not-available.png'"></img>`;
+		return `<img src="${changeHttp(src)}" loading="lazy" onerror="this.src='assets/images/not-available.png'"></img>`;
 	} else {
 		return `<img src="assets/images/not-available.png"></img>`;
 	}
@@ -675,8 +684,8 @@ function watchLive(link) {
 			children: [
 				"playToggle",
 				"volumePanel",
-				"seekToLive",
 				"progressControl",
+				"seekToLive",
 				"PictureInPictureToggle",
 				"fullscreenToggle"
 			],
@@ -848,8 +857,8 @@ async function handleVodInfo(movie = null, vod_id = null) {
 		document.querySelector(".modal_media_container").style.opacity = "1";
 		document.querySelector(".modal_media_container").style.display = "flex";
 		document.querySelector(".modal_media_container").style.pointerEvents = null;
-		document.querySelector(".modal_media_box").style.backgroundImage = (movie.info.movie_image ? `url(${movie.info.movie_image}), ` : "") + "url(assets/images/not-available.png)";
-		document.querySelector(".media_cover img").setAttribute("src", movie.info.movie_image);
+		document.querySelector(".modal_media_box").style.backgroundImage = (movie.info.movie_image ? `url(${changeHttp(movie.info.movie_image)}), ` : "") + "url(assets/images/not-available.png)";
+		document.querySelector(".media_cover img").src = (movie.info.movie_image ? changeHttp(movie.info.movie_image) : "assets/images/not-available.png");
 		document.querySelector(".media_cover .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
 		document.querySelector(".media_description .title").innerHTML = movie.movie_data.name ? movie.movie_data.name : movie.info.name;
 		document.querySelector(".media_description .genre").innerHTML = (movie.info.genre ? movie.info.genre : "") + " | " + (movie.info.duration ? movie.info.duration : "");
@@ -861,7 +870,9 @@ async function handleVodInfo(movie = null, vod_id = null) {
 		} else {
 			document.querySelector(".media_resume").style.display = "none";
 		}
-		document.querySelector(".btn_watch").setAttribute("onclick", `handleVideo('${DNS}/movie/${username}/${password}/${movie.movie_data.stream_id}.${movie.movie_data.container_extension}', 'video/mp4')`);
+		document.querySelector(".btn_watch").onclick = function () {
+			handleVideo(`${DNS}/movie/${username}/${password}/${movie.movie_data.stream_id}.${movie.movie_data.container_extension}`, "video/mp4");
+		};
 	} else {
 		await ajax("action=get_vod_info&vod_id=" + vod_id);
 	}
@@ -1002,8 +1013,8 @@ async function handleSerieInfo(serie = null, series_id = null) {
 		document.querySelector(".modal_media_container").style.opacity = "1";
 		document.querySelector(".modal_media_container").style.display = "flex";
 		document.querySelector(".modal_media_container").style.pointerEvents = null;
-		document.querySelector(".modal_media_box").style.backgroundImage = (serie.info.cover ? `url(${serie.info.cover}), ` : "") + "url(assets/images/not-available.png)";
-		document.querySelector(".media_cover img").setAttribute("src", serie.info.cover);
+		document.querySelector(".modal_media_box").style.backgroundImage = (serie.info.cover ? `url(${changeHttp(serie.info.cover)}), ` : "") + "url(assets/images/not-available.png)";
+		document.querySelector(".media_cover img").src = (serie.info.cover ? changeHttp(serie.info.cover) : "assets/images/not-available.png");
 		document.querySelector(".media_cover .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
 		document.querySelector(".media_description .title").innerHTML = serie.info.name ? serie.info.name : "";
 		document.querySelector(".media_description .genre").innerHTML = (serie.info.genre ? serie.info.genre : "") + " | " + (serie.info.duration ? serie.info.duration : "");
@@ -1053,11 +1064,11 @@ async function handleSerieInfo(serie = null, series_id = null) {
 	document.querySelector(".right-scroll").onclick = function () {
 		let seasons_li = document.querySelector(`.seasons_li a[class="focusable li_season active"]`).getAttribute("id");
 		let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
-		let scrollAmount = 0;
+		let scroll_amount = 0;
 		let interval = setInterval(function () {
 			episodes_ul.scrollLeft += 50;
-			scrollAmount += 50;
-			if (scrollAmount >= 500) {
+			scroll_amount += 50;
+			if (scroll_amount >= 500) {
 				window.clearInterval(interval);
 			}
 		}, 35);
@@ -1065,11 +1076,11 @@ async function handleSerieInfo(serie = null, series_id = null) {
 	document.querySelector(".left-scroll").onclick = function () {
 		let seasons_li = document.querySelector(`.seasons_li a[class="focusable li_season active"]`).getAttribute("id");
 		let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
-		let scrollAmount = 0;
+		let scroll_amount = 0;
 		let interval = setInterval(function () {
 			episodes_ul.scrollLeft -= 50;
-			scrollAmount += 50;
-			if (scrollAmount >= 500) {
+			scroll_amount += 50;
+			if (scroll_amount >= 500) {
 				window.clearInterval(interval);
 			}
 		}, 35);
@@ -1279,7 +1290,7 @@ function handleVideo(link, type) {
 		errorInterval: 5,
 	});
 
-	let videoCode = btoa(link.substring(Math.max(link.length - 16, 0), link.length));
+	let video_code = btoa(link.substring(Math.max(link.length - 16, 0), link.length));
 
 	let timestamps = JSON.parse(localStorage.getItem("Timestamps"));
 	if (timestamps == null) {
@@ -1287,7 +1298,7 @@ function handleVideo(link, type) {
 	}
 
 	player.ready(function () {
-		let initValue = timestamps[videoCode];
+		let initValue = timestamps[video_code];
 		if (initValue) {
 			player.currentTime(initValue);
 		}
@@ -1300,7 +1311,7 @@ function handleVideo(link, type) {
 		player.autoplay(true);
 		player.play();
 
-		keep_watching(link, timestamps[videoCode]);
+		keep_watching(link, timestamps[video_code]);
 
 		let lastSeconds = null;
 		let lastSecondsTwo = null;
@@ -1308,7 +1319,7 @@ function handleVideo(link, type) {
 			let seconds = Math.floor(player.currentTime());
 			if ((seconds % 5) == 0 && seconds != lastSeconds) {
 				lastSeconds = seconds;
-				timestamps[videoCode] = seconds;
+				timestamps[video_code] = seconds;
 				localStorage.setItem("Timestamps", JSON.stringify(timestamps));
 			}
 			if ((seconds % 30) == 0 && seconds != lastSecondsTwo) {
@@ -1360,7 +1371,7 @@ function handleVideo(link, type) {
 									player.dispose();
 									player = null;
 								}
-								timestamps[videoCode] = 0;
+								timestamps[video_code] = 0;
 								next_episode.click();
 							};
 						}
@@ -1496,6 +1507,7 @@ if (user_info && user_info.username && user_info.password) {
 				scroll();
 			} catch (error) {
 				console.error(error);
+				loading(false);
 			}
 		}
 	};

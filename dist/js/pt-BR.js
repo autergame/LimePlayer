@@ -86,4 +86,6 @@ videojs.addLanguage('pt-BR', {
 	"Picture-in-Picture": "Picture in Picture",
 	"Seek forward {{seconds}} seconds": "Pular {{seconds}} segundos para frente",
 	"Seek back {{seconds}} seconds": "Pular {{seconds}} segundos para trás",
+	"Seek to live, currently playing live": "Atualmente em ao vivo",
+	"Seek to live, currently behind live": "Pular para ao vivo",
 });

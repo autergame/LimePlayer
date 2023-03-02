@@ -10,24 +10,24 @@ function scroll_work(elements) {
 			let offset = 0;
 			let should_move = false;
 
-			element_clone.addEventListener("mousedown", (e) => {
+			element_clone.onmousedown = (e) => {
 				should_move = true;
 				top = element_clone.scrollLeft;
 				offset = e.pageX - element_clone.scrollTop;
 				element_clone.classList.add("active");
-			});
+			};
 
-			element_clone.addEventListener("mouseleave", () => {
+			element_clone.onmouseleave = () => {
 				should_move = false;
 				element_clone.classList.remove("active");
-			});
+			};
 
-			element_clone.addEventListener("mouseup", () => {
+			element_clone.onmouseup = () => {
 				should_move = false;
 				element_clone.classList.remove("active");
-			});
+			};
 
-			element_clone.addEventListener("mousemove", (e) => {
+			element_clone.onmousemove = (e) => {
 				if (!should_move) {
 					return;
 				}
@@ -36,7 +36,7 @@ function scroll_work(elements) {
 				let diffTop = e.pageX - element_clone.offsetLeft;
 				let diffOffset = (diffTop - offset) * 3;
 				element_clone.scrollLeft = top - diffOffset;
-			});
+			};
 
 			element.parentNode.replaceChild(element_clone, element);
 		}

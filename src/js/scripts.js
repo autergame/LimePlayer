@@ -154,7 +154,7 @@ function btn() {
 	for (let i = 0; i < jBtn.length; i++) {
 		let jbtn_copy = jBtn[i];
 		let jbtn_clone = jbtn_copy.cloneNode(true);
-		jbtn_clone.addEventListener("click", async function () {
+		jbtn_clone.onclick = async function () {
 			let action = jbtn_clone.getAttribute("_action");
 			let id = jbtn_clone.getAttribute("id");
 			switch (action) {
@@ -195,7 +195,7 @@ function btn() {
 				default:
 					break;
 			}
-		});
+		};
 		jbtn_copy.parentNode.replaceChild(jbtn_clone, jbtn_copy);
 	}
 }
@@ -281,7 +281,7 @@ function login() {
 
 function btnScroll() {
 	document.querySelectorAll(".btn-right-scroll").forEach(function (item) {
-		item.addEventListener("click", function () {
+		item.onclick = function () {
 			let scrollAmount = 0;
 			let ref = item.getAttribute("ref");
 			let scroll_horizon = document.querySelector(`.scroll-horizon[id="${ref}"]`);
@@ -292,10 +292,10 @@ function btnScroll() {
 					window.clearInterval(interval);
 				}
 			}, 35);
-		});
+		};
 	});
 	document.querySelectorAll(".btn-left-scroll").forEach(function (item) {
-		item.addEventListener("click", function () {
+		item.onclick = function () {
 			let scrollAmount = 0;
 			let ref = item.getAttribute("ref");
 			let scroll_horizon = document.querySelector(`.scroll-horizon[id="${ref}"]`);
@@ -306,7 +306,7 @@ function btnScroll() {
 					window.clearInterval(interval);
 				}
 			}, 35);
-		});
+		};
 	});
 }
 
@@ -538,7 +538,7 @@ function pageLives() {
 	document.querySelector(".search_input_action").value = "get_live_streams";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll-vertical hide_scrollbar vod_categories_ul">
+			<ul class="scroll-vertical hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
 		<div class="channels_list">
@@ -566,12 +566,12 @@ function handleLivesCategories() {
 			if (live_categories[i].category_id != localStorage.getItem("CHANNEL_CATEGORY_CENSORED")) {
 				element += `
 					<li>
-						<a class="vod_category_a focusable" onclick="handleLives(null, ${live_categories[i].category_id})" id="${live_categories[i].category_id}" href="javascript:void(0)">${live_categories[i].category_name}</a>
+						<a class="media_category_a focusable" onclick="handleLives(null, ${live_categories[i].category_id})" id="${live_categories[i].category_id}" href="javascript:void(0)">${live_categories[i].category_name}</a>
 					</li>
 				`;
 			}
 		}
-		document.querySelector(".vod_categories_ul").innerHTML = element;
+		document.querySelector(".media_categories_ul").innerHTML = element;
 		live_first_category_id = live_categories[0].category_id;
 		handleLives(null, live_first_category_id);
 	} else {
@@ -596,12 +596,12 @@ function handleLives(lives = null, category_id = null) {
 					</li>
 				`;
 			}
-			let vodCategoryA = document.querySelectorAll(".vod_category_a");
-			for (let i = 0; i < vodCategoryA.length; i++) {
-				if (vodCategoryA[i].getAttribute("id") == lives[0].category_id) {
-					vodCategoryA[i].classList.add("active");
+			let media_category_a = document.querySelectorAll(".media_category_a");
+			for (let i = 0; i < media_category_a.length; i++) {
+				if (media_category_a[i].getAttribute("id") == lives[0].category_id) {
+					media_category_a[i].classList.add("active");
 				} else {
-					vodCategoryA[i].classList.remove("active");
+					media_category_a[i].classList.remove("active");
 				}
 			}
 		} else {
@@ -729,11 +729,11 @@ function pageVod() {
 	document.querySelector(".search_input_action").value = "get_vod_streams";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll-vertical hide_scrollbar vod_categories_ul">
+			<ul class="scroll-vertical hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
 		<div class="movies_content">
-			<ul class="scroll-vertical vod_ul">
+			<ul class="scroll-vertical media_ul">
 			</ul>
 		</div>
 	`;
@@ -742,25 +742,25 @@ function pageVod() {
 function handleModalVod() {
 	let element = document.createElement("div");
 	element.innerHTML = `
-		<div class="modal_vod_container">
-			<div class="modal_vod_box hide_scrollbar">
-				<div class="modal_vod_content">
+		<div class="modal_media_container">
+			<div class="modal_media_box hide_scrollbar">
+				<div class="modal_media_content">
 					<div style="position: absolute; right: 50px; top: 10px;">
-						<button type="button" name="button" class="modal_vod_close focusable" onclick="hideModal('.modal_vod_container');">
+						<button type="button" name="button" class="modal_media_close focusable" onclick="hideModalContainer();">
 							<i class="bx bx-x"></i>
 						</button>
 					</div>
-					<div class="vod_info">
-						<div class="vod_cover">
+					<div class="media_info">
+						<div class="media_cover">
 							<img src="" loading="eager" onerror="this.src='assets/images/not-available.png'">
 							<span class="rate"></span>
 						</div>
-						<div class="vod_description">
+						<div class="media_description">
 							<p class="title"></p>
 							<p class="genre"></p>
 							<p class="director"></p>
 							<p class="cast"></p>
-							<div class="vod_resume">
+							<div class="media_resume">
 								<p></p>
 							</div>
 							<button type="button" name="button" class="btn_watch focusable">
@@ -788,12 +788,12 @@ function handleVodCategories() {
 			if (vod_categories[i].category_id != localStorage.getItem("MOVIE_CATEGORY_CENSORED")) {
 				element += `
 					<li>
-						<a class="vod_category_a focusable" onclick="handleVods(null, ${vod_categories[i].category_id})" id="${vod_categories[i].category_id}" href="javascript:void(0)">${vod_categories[i].category_name}</a>
+						<a class="media_category_a focusable" onclick="handleVods(null, ${vod_categories[i].category_id})" id="${vod_categories[i].category_id}" href="javascript:void(0)">${vod_categories[i].category_name}</a>
 					</li>
 				`;
 			}
 		}
-		document.querySelector(".vod_categories_ul").innerHTML = element;
+		document.querySelector(".media_categories_ul").innerHTML = element;
 		vod_first_category_id = vod_categories[0].category_id;
 		handleVods(null, vod_first_category_id);
 	} else {
@@ -818,18 +818,18 @@ function handleVods(vods = null, category_id = null) {
 					</li>
 				`;
 			}
-			let vodCategoryA = document.querySelectorAll(".vod_category_a");
-			for (let i = 0; i < vodCategoryA.length; i++) {
-				if (vodCategoryA[i].getAttribute("id") == vods[0].category_id) {
-					vodCategoryA[i].classList.add("active");
+			let media_category_a = document.querySelectorAll(".media_category_a");
+			for (let i = 0; i < media_category_a.length; i++) {
+				if (media_category_a[i].getAttribute("id") == vods[0].category_id) {
+					media_category_a[i].classList.add("active");
 				} else {
-					vodCategoryA[i].classList.remove("active");
+					media_category_a[i].classList.remove("active");
 				}
 			}
 		} else {
 			element = `<li style="color: #fff;">Nenhum filme disponível nessa categoria</li>`;
 		}
-		document.querySelector(".vod_ul").innerHTML = element;
+		document.querySelector(".media_ul").innerHTML = element;
 	} else {
 		if (category_id == vod_first_category_id) {
 			let vods_first_category = localStorage.getItem("vods_first_category");
@@ -845,21 +845,21 @@ function handleVods(vods = null, category_id = null) {
 
 async function handleVodInfo(movie = null, vod_id = null) {
 	if (movie) {
-		document.querySelector(".modal_vod_container").style.opacity = "1";
-		document.querySelector(".modal_vod_container").style.display = "flex";
-		document.querySelector(".modal_vod_container").style.pointerEvents = null;
-		document.querySelector(".modal_vod_box").style.backgroundImage = (movie.info.movie_image ? `url(${movie.info.movie_image}), ` : "") + "url(assets/images/not-available.png)";
-		document.querySelector(".vod_cover img").setAttribute("src", movie.info.movie_image);
-		document.querySelector(".vod_cover .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
-		document.querySelector(".vod_description .title").innerHTML = movie.movie_data.name ? movie.movie_data.name : movie.info.name;
-		document.querySelector(".vod_description .genre").innerHTML = (movie.info.genre ? movie.info.genre : "") + " | " + (movie.info.duration ? movie.info.duration : "");
-		document.querySelector(".vod_description .director").innerHTML = "Diretor: " + (movie.info.director ? movie.info.director : "");
-		document.querySelector(".vod_description .cast").innerHTML = "Elenco: " + (movie.info.cast ? movie.info.cast : "");
+		document.querySelector(".modal_media_container").style.opacity = "1";
+		document.querySelector(".modal_media_container").style.display = "flex";
+		document.querySelector(".modal_media_container").style.pointerEvents = null;
+		document.querySelector(".modal_media_box").style.backgroundImage = (movie.info.movie_image ? `url(${movie.info.movie_image}), ` : "") + "url(assets/images/not-available.png)";
+		document.querySelector(".media_cover img").setAttribute("src", movie.info.movie_image);
+		document.querySelector(".media_cover .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
+		document.querySelector(".media_description .title").innerHTML = movie.movie_data.name ? movie.movie_data.name : movie.info.name;
+		document.querySelector(".media_description .genre").innerHTML = (movie.info.genre ? movie.info.genre : "") + " | " + (movie.info.duration ? movie.info.duration : "");
+		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (movie.info.director ? movie.info.director : "");
+		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (movie.info.cast ? movie.info.cast : "");
 		if (movie.info.plot) {
-			document.querySelector(".vod_resume").style.display = "block";
-			document.querySelector(".vod_resume p").innerHTML = movie.info.plot;
+			document.querySelector(".media_resume").style.display = "block";
+			document.querySelector(".media_resume p").innerHTML = movie.info.plot;
 		} else {
-			document.querySelector(".vod_resume").style.display = "none";
+			document.querySelector(".media_resume").style.display = "none";
 		}
 		document.querySelector(".btn_watch").setAttribute("onclick", `handleVideo('${DNS}/movie/${username}/${password}/${movie.movie_data.stream_id}.${movie.movie_data.container_extension}', 'video/mp4')`);
 	} else {
@@ -872,11 +872,11 @@ function pageSeries() {
 	document.querySelector(".search_input_action").value = "get_series";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll-vertical hide_scrollbar vod_categories_ul">
+			<ul class="scroll-vertical hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
 		<div class="movies_content">
-			<ul class="scroll-vertical vod_ul">
+			<ul class="scroll-vertical media_ul">
 			</ul>
 		</div>
 	`;
@@ -885,25 +885,25 @@ function pageSeries() {
 function handleModalSerie() {
 	let element = document.createElement("div");
 	element.innerHTML = `
-		<div class="modal_vod_container">
-			<div class="modal_vod_box hide_scrollbar">
-				<div class="modal_vod_content">
+		<div class="modal_media_container">
+			<div class="modal_media_box hide_scrollbar">
+				<div class="modal_media_content">
 					<div style="position: absolute; right: 50px; top: 10px;">
-						<button type="button" name="button" class="modal_vod_close focusable close_modal_serie" onclick="hideModal('.modal_vod_container');">
+						<button type="button" name="button" class="modal_media_close focusable close_modal_serie" onclick="hideModalContainer();">
 							<i class="bx bx-x"></i>
 						</button>
 					</div>
-					<div class="vod_info">
-						<div class="vod_cover">
+					<div class="media_info">
+						<div class="media_cover">
 							<img src="" loading="eager" onerror="this.src='assets/images/not-available.png'">
 							<span class="rate"></span>
 						</div>
-						<div class="vod_description">
+						<div class="media_description">
 							<p class="title"></p>
 							<p class="genre"></p>
 							<p class="director"></p>
 							<p class="cast"></p>
-							<div class="vod_resume">
+							<div class="media_resume">
 								<p></p>
 							</div>
 							<button type="button" name="button" class="btn_favorite focusable">
@@ -942,12 +942,12 @@ function handleSeriesCategories() {
 			if (series_categories[i].category_id != localStorage.getItem("SERIE_CATEGORY_CENSORED")) {
 				element += `
 					<li>
-						<a class="vod_category_a focusable" onclick="handleSeries(null, ${series_categories[i].category_id})" id="${series_categories[i].category_id}" href="javascript:void(0)">${series_categories[i].category_name}</a>
+						<a class="media_category_a focusable" onclick="handleSeries(null, ${series_categories[i].category_id})" id="${series_categories[i].category_id}" href="javascript:void(0)">${series_categories[i].category_name}</a>
 					</li>
 				`;
 			}
 		}
-		document.querySelector(".vod_categories_ul").innerHTML = element;
+		document.querySelector(".media_categories_ul").innerHTML = element;
 		serie_first_category_id = series_categories[0].category_id;
 		handleSeries(null, serie_first_category_id);
 	} else {
@@ -972,18 +972,18 @@ function handleSeries(series = null, category_id = null) {
 					</li>
 				`;
 			}
-			let vodCategoryA = document.querySelectorAll(".vod_category_a");
-			for (let i = 0; i < vodCategoryA.length; i++) {
-				if (vodCategoryA[i].getAttribute("id") == series[0].category_id) {
-					vodCategoryA[i].classList.add("active");
+			let media_category_a = document.querySelectorAll(".media_category_a");
+			for (let i = 0; i < media_category_a.length; i++) {
+				if (media_category_a[i].getAttribute("id") == series[0].category_id) {
+					media_category_a[i].classList.add("active");
 				} else {
-					vodCategoryA[i].classList.remove("active");
+					media_category_a[i].classList.remove("active");
 				}
 			}
 		} else {
 			element = `<li style="color: #fff;">Nenhuma série disponível nessa categoria</li>`;
 		}
-		document.querySelector(".vod_ul").innerHTML = element;
+		document.querySelector(".media_ul").innerHTML = element;
 	} else {
 		if (category_id == serie_first_category_id) {
 			let series_first_category = localStorage.getItem("series_first_category");
@@ -999,21 +999,21 @@ function handleSeries(series = null, category_id = null) {
 
 async function handleSerieInfo(serie = null, series_id = null) {
 	if (serie) {
-		document.querySelector(".modal_vod_container").style.opacity = "1";
-		document.querySelector(".modal_vod_container").style.display = "flex";
-		document.querySelector(".modal_vod_container").style.pointerEvents = null;
-		document.querySelector(".modal_vod_box").style.backgroundImage = (serie.info.cover ? `url(${serie.info.cover}), ` : "") + "url(assets/images/not-available.png)";
-		document.querySelector(".vod_cover img").setAttribute("src", serie.info.cover);
-		document.querySelector(".vod_cover .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
-		document.querySelector(".vod_description .title").innerHTML = serie.info.name ? serie.info.name : "";
-		document.querySelector(".vod_description .genre").innerHTML = (serie.info.genre ? serie.info.genre : "") + " | " + (serie.info.duration ? serie.info.duration : "");
-		document.querySelector(".vod_description .director").innerHTML = "Diretor: " + (serie.info.director ? serie.info.director : "");
-		document.querySelector(".vod_description .cast").innerHTML = "Elenco: " + (serie.info.cast ? serie.info.cast : "");
+		document.querySelector(".modal_media_container").style.opacity = "1";
+		document.querySelector(".modal_media_container").style.display = "flex";
+		document.querySelector(".modal_media_container").style.pointerEvents = null;
+		document.querySelector(".modal_media_box").style.backgroundImage = (serie.info.cover ? `url(${serie.info.cover}), ` : "") + "url(assets/images/not-available.png)";
+		document.querySelector(".media_cover img").setAttribute("src", serie.info.cover);
+		document.querySelector(".media_cover .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
+		document.querySelector(".media_description .title").innerHTML = serie.info.name ? serie.info.name : "";
+		document.querySelector(".media_description .genre").innerHTML = (serie.info.genre ? serie.info.genre : "") + " | " + (serie.info.duration ? serie.info.duration : "");
+		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (serie.info.director ? serie.info.director : "");
+		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (serie.info.cast ? serie.info.cast : "");
 		if (serie.info.plot) {
-			document.querySelector(".vod_resume").style.display = "block";
-			document.querySelector(".vod_resume p").innerHTML = serie.info.plot;
+			document.querySelector(".media_resume").style.display = "block";
+			document.querySelector(".media_resume p").innerHTML = serie.info.plot;
 		} else {
-			document.querySelector(".vod_resume").style.display = "none";
+			document.querySelector(".media_resume").style.display = "none";
 		}
 		if (serie.episodes) {
 			let first = true;
@@ -1050,7 +1050,7 @@ async function handleSerieInfo(serie = null, series_id = null) {
 		await ajax("action=get_series_info&series_id=" + series_id);
 		return;
 	}
-	document.querySelector(".right-scroll").addEventListener("click", function () {
+	document.querySelector(".right-scroll").onclick = function () {
 		let seasons_li = document.querySelector(`.seasons_li a[class="focusable li_season active"]`).getAttribute("id");
 		let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
 		let scrollAmount = 0;
@@ -1061,8 +1061,8 @@ async function handleSerieInfo(serie = null, series_id = null) {
 				window.clearInterval(interval);
 			}
 		}, 35);
-	});
-	document.querySelector(".left-scroll").addEventListener("click", function () {
+	};
+	document.querySelector(".left-scroll").onclick = function () {
 		let seasons_li = document.querySelector(`.seasons_li a[class="focusable li_season active"]`).getAttribute("id");
 		let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
 		let scrollAmount = 0;
@@ -1073,7 +1073,7 @@ async function handleSerieInfo(serie = null, series_id = null) {
 				window.clearInterval(interval);
 			}
 		}, 35);
-	});
+	};
 }
 
 function handleChangeSeason(id) {
@@ -1321,19 +1321,12 @@ function handleVideo(link, type) {
 			localStorage.setItem("Volume", Math.floor(player.volume() * 100));
 		});
 
+		timeHidePlayerButtons = 3;
+
 		try {
-			let player_video_prev = document.querySelector(".player_video_prev");
-			let player_video_next = document.querySelector(".player_video_next");
-
-			player_video_prev.style.display = "none";
-			player_video_next.style.display = "none";
-			player_video_next.onclick = null;
-
-			let title_vod = document.querySelector(".title_vod");
-
 			if (link.includes("/movie/")) {
-				let vod_description_title = document.querySelector(".vod_description .title");
-				title_vod.innerHTML = "<h2>" + vod_description_title.textContent + "</h2>";
+				let title = document.querySelector(".media_description .title").textContent;
+				document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
 			} else if (link.includes("/series/")) {
 				let episodes = document.querySelectorAll(".episodes_ul li a");
 
@@ -1342,7 +1335,8 @@ function handleVideo(link, type) {
 						episodes[i].classList.add("active-border");
 						episodes[i].scrollIntoView();
 
-						title_vod.innerHTML = "<h2>" + episodes[i].querySelector("span").textContent + "</h2>";
+						let title = episodes[i].querySelector("span").textContent;
+						document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
 
 						handleChangeSeason(episodes[i].parentNode.parentNode.getAttribute("id"));
 
@@ -1350,25 +1344,25 @@ function handleVideo(link, type) {
 						let next_episode = episodes[i + 1];
 
 						if (prev_episode) {
-							player_video_prev.style.display = "block";
-							player_video_prev.addEventListener("click", function () {
+							let player_video_prev = document.querySelector(".player_video_prev");
+							player_video_prev.onclick = function () {
 								if (player) {
 									player.dispose();
 									player = null;
 								}
 								prev_episode.click();
-							});
+							};
 						}
 						if (next_episode) {
-							player_video_next.style.display = "block";
-							player_video_next.addEventListener("click", function () {
+							let player_video_next = document.querySelector(".player_video_next");
+							player_video_next.onclick = function () {
 								if (player) {
 									player.dispose();
 									player = null;
 								}
 								timestamps[videoCode] = 0;
 								next_episode.click();
-							});
+							};
 						}
 					} else {
 						episodes[i].classList.remove("active-border");
@@ -1392,72 +1386,64 @@ function keep_watching(src, time) {
 	}
 }
 
-let timeHideBackButton = 0;
+function playerButtons(visibility) {
+	document.querySelector(".player_video_close").style.visibility = visibility;
+	document.querySelector(".player_video_prev").style.visibility = visibility;
+	document.querySelector(".player_video_next").style.visibility = visibility;
+	document.querySelector(".title_media").style.visibility = visibility;
+}
+
+let timeHidePlayerButtons = 3;
 setInterval(function () {
-	timeHideBackButton--;
-	if (timeHideBackButton <= 0) {
-		document.querySelector(".player_video_close").style.visibility = "hidden";
-		document.querySelector(".player_video_prev").style.visibility = "hidden";
-		document.querySelector(".player_video_next").style.visibility = "hidden";
-		document.querySelector(".title_vod").style.visibility = "hidden";
+	if (player && !player.paused()) {
+		timeHidePlayerButtons--;
+	}
+	if (timeHidePlayerButtons <= 0) {
+		playerButtons("hidden");
 	}
 }, 1000);
 
-document.querySelector(".player_video_container").addEventListener("mousemove", function () {
-	document.querySelector(".player_video_close").style.visibility = "visible";
-	document.querySelector(".player_video_prev").style.visibility = "visible";
-	document.querySelector(".player_video_next").style.visibility = "visible";
-	document.querySelector(".title_vod").style.visibility = "visible";
-	timeHideBackButton = 3;
-});
+document.querySelector(".player_video_container").onkeydown = function () {
+	playerButtons("visible");
+	timeHidePlayerButtons = 3;
+};
 
-document.querySelector(".player_video_container").addEventListener("click", function () {
-	document.querySelector(".player_video_close").style.visibility = "visible";
-	document.querySelector(".player_video_prev").style.visibility = "visible";
-	document.querySelector(".player_video_next").style.visibility = "visible";
-	document.querySelector(".title_vod").style.visibility = "visible";
-	timeHideBackButton = 3;
-});
+document.querySelector(".player_video_container").onmousemove = function () {
+	playerButtons("visible");
+	timeHidePlayerButtons = 3;
+};
 
-document.querySelector(".player_video_close").addEventListener("click", function () {
+document.querySelector(".player_video_container").onclick = function () {
+	playerButtons("visible");
+	timeHidePlayerButtons = 3;
+};
+
+document.querySelector(".player_video_close").onclick = function () {
 	document.querySelector(".player_video_container").style.display = "none";
-	document.querySelector(".player_video_close").style.visibility = "hidden";
-	document.querySelector(".player_video_prev").style.visibility = "hidden";
-	document.querySelector(".player_video_next").style.visibility = "hidden";
-	document.querySelector(".title_vod").style.visibility = "hidden";
 	document.querySelector(".player_video_content").innerHTML = "";
 	if (player) {
 		player.dispose();
 		player = null;
 	}
-});
+};
 
-document.addEventListener("keydown", function () {
-	if (document.querySelector(".player_video_container").style.display == "flex") {
-		document.querySelector(".player_video_close").style.visibility = "visible";
-		document.querySelector(".player_video_prev").style.visibility = "visible";
-		document.querySelector(".player_video_next").style.visibility = "visible";
-		document.querySelector(".title_vod").style.visibility = "visible";
-		timeHideBackButton = 3;
+document.onclick = function (e) {
+	if (e.target.classList.value == "modal_media_container") {
+		hideModalContainer();
 	}
-});
+};
 
-document.addEventListener("click", function (e) {
-	if (e.target.classList.value == "modal_vod_container") {
-		hideModal(".modal_vod_container");
-	}
-});
-
-function hideModal(selector) {
-	let element = document.querySelector(selector);
+function hideModalContainer() {
+	let element = document.querySelector(".modal_media_container");
 	element.style.opacity = "0";
 	element.style.pointerEvents = "none";
 	setTimeout(function () {
 		element.style.display = "none";
+		element.parentElement.remove();
 	}, 500);
 }
 
-const DNS = "http://lmtv.me";
+const DNS = "https://lmtv.me";
 const API_BASE = "http://player.limetv.me/player_api.php?";
 
 function corsProxy(url) {
@@ -1481,10 +1467,10 @@ var password = "";
 let forms = document.querySelectorAll("form");
 if (forms.length) {
 	for (let i = 0; i < forms.length; i++) {
-		forms[i].addEventListener("submit", function (e) {
+		forms[i].onsubmit = function (e) {
 			e.preventDefault();
 			ajax(serialize(e.target));
-		});
+		};
 	}
 }
 

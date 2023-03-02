@@ -67,20 +67,6 @@ body {
 	background-color: #141414;
 }
 
-.modal {
-	top: 0;
-	left: 0;
-	width: 100%;
-	z-index: 999;
-	height: 100vh;
-	display: none;
-	transition: 0.4s;
-	position: absolute;
-	align-items: center;
-	justify-content: center;
-	background: rgba(0, 0, 0, 0.73);
-}
-
 .loading {
 	top: 0;
 	left: 0;
@@ -595,7 +581,7 @@ body {
 	cursor: pointer;
 }
 
-.modal_vod_content .arrows {
+.modal_media_content .arrows {
 	margin-top: 10px;
 	user-select: none;
 	align-self: center;
@@ -885,7 +871,7 @@ body {
 	height: calc(100% - 101px);
 }
 
-.modal_vod_container {
+.modal_media_container {
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -899,7 +885,7 @@ body {
 	background-color: rgba(0, 0, 0, 0.9);
 }
 
-.modal_vod_box {
+.modal_media_box {
 	width: 100%;
 	overflow: auto;
 	max-width: 80%;
@@ -910,7 +896,7 @@ body {
 	max-height: calc(100vh - 100px);
 }
 
-.modal_vod_content {
+.modal_media_content {
 	z-index: 999;
 	padding: 30px;
 	display: flex;
@@ -920,7 +906,7 @@ body {
 	background-color: rgba(0, 0, 0, .9);
 }
 
-.modal_vod_close {
+.modal_media_close {
 	border: none;
 	cursor: pointer;
 	position: fixed;
@@ -928,15 +914,15 @@ body {
 	background: transparent;
 }
 
-.modal_vod_close i {
+.modal_media_close i {
 	font-size: 3.2em;
 }
 
-.vod_info {
+.media_info {
 	display: flex;
 }
 
-.vod_cover {
+.media_cover {
 	width: 25%;
 	float: left;
 	min-width: 100px;
@@ -947,12 +933,12 @@ body {
 	border-radius: 10px;
 }
 
-.vod_cover img {
+.media_cover img {
 	user-select: none;
 	border-radius: 10px;
 }
 
-.vod_cover .rate {
+.media_cover .rate {
 	top: 0;
 	right: 0;
 	padding: 5px;
@@ -962,30 +948,30 @@ body {
 	border-bottom-left-radius: 10px;
 }
 
-.vod_description {
+.media_description {
 	width: 70%;
 	float: left;
 	color: #fff;
 }
 
-.vod_description .title {
+.media_description .title {
 	font-size: 2em;
 	font-weight: 700;
 	padding-right: 40px;
 	display: inline-block;
 }
 
-.vod_description .genre {
+.media_description .genre {
 	font-size: .8;
 	margin: 10px 0 20px 0;
 }
 
-.vod_description .director {
+.media_description .director {
 	font-size: .87em;
 	margin-bottom: 5px;
 }
 
-.vod_description .cast {
+.media_description .cast {
 	font-size: .87em;
 	margin-bottom: 10px;
 }
@@ -1034,7 +1020,7 @@ body {
 	font-size: 2.3em;
 }
 
-.vod_resume {
+.media_resume {
 	width: 100%;
 	float: left;
 	color: #fff;
@@ -1111,7 +1097,7 @@ body {
 	background-color: #000;
 }
 
-.title_vod {
+.title_media {
 	top: 0;
 	right: 0;
 	width: 100%;
@@ -1123,7 +1109,7 @@ body {
 	background-color: rgba(20, 20, 20, .85);
 }
 
-.title_vod h2 {
+.title_media h2 {
 	color: #fff;
 }
 

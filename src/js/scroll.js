@@ -44,8 +44,8 @@ function scroll_work(elements) {
 }
 
 function scroll() {
-	scroll_work(document.querySelectorAll(".scroll-horizon"));
-	scroll_work(document.querySelectorAll(".scroll-vertical"));
+	scroll_work(document.querySelectorAll(".scroll_horizon"));
+	scroll_work(document.querySelectorAll(".scroll_vertical"));
 }
 
 scroll();

@@ -235,7 +235,7 @@ function login() {
 					let color = `hsl(${(i % 18) * 20}, 100%, 50%)`;
 					avatar_element += `
 						<li>
-							<a class="j_btn focusable" _action="handleAvatar" _color="${color}" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
+							<a class="j_btn" _action="handleAvatar" _color="${color}" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
 								<img src="assets/images/face-user.png">
 							</a>
 							<span>${userInfo.avatars[i].avatar_name}</span>
@@ -243,8 +243,8 @@ function login() {
 					`;
 					avatar_manager_element += `
 						<li>
-							<a class="j_btn focusable" _action="deleteAvatar" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
-								<div class="bg-edit">
+							<a class="j_btn" _action="deleteAvatar" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
+								<div class="bg_edit">
 									<img src="assets/icons/icon-trash.svg">
 								</div>
 								<img src="assets/images/face-user.png">
@@ -255,14 +255,14 @@ function login() {
 				}
 				avatar_element += `
 					<li>
-						<a class="focusable add_profile" href="javascript:void(0)" onclick="document.querySelector('.users_modal_container').style.display = 'flex';">
+						<a href="javascript:void(0)" onclick="document.querySelector('.users_modal_container').style.display = 'flex';">
 							<img style="filter: invert(.8); width: 80px;" src="assets/icons/icon-plus-circle.svg">
 						</a>
 						<span>Adicionar perfil</span>
 					</li>
 				`;
 				manage_users_element = `
-					<a class="btn_manage_users focusable" href="javascript:void(0)" onclick="document.querySelector('.manage_users_modal_container').style.display = 'flex';">
+					<a class="btn_manage_users" href="javascript:void(0)" onclick="document.querySelector('.manage_users_modal_container').style.display = 'flex';">
 						<span>Gerenciar perfis</span>
 					</a>
 				`;
@@ -281,11 +281,11 @@ function login() {
 }
 
 function btnScroll() {
-	document.querySelectorAll(".btn-right-scroll").forEach(function (item) {
+	document.querySelectorAll(".btn_right_scroll").forEach(function (item) {
 		item.onclick = function () {
 			let scrollAmount = 0;
 			let ref = item.getAttribute("ref");
-			let scroll_horizon = document.querySelector(`.scroll-horizon[id="${ref}"]`);
+			let scroll_horizon = document.querySelector(`.scroll_horizon[id="${ref}"]`);
 			let interval = setInterval(function () {
 				scrollAmount += 50;
 				scroll_horizon.scrollLeft += 50;
@@ -295,11 +295,11 @@ function btnScroll() {
 			}, 35);
 		};
 	});
-	document.querySelectorAll(".btn-left-scroll").forEach(function (item) {
+	document.querySelectorAll(".btn_left_scroll").forEach(function (item) {
 		item.onclick = function () {
 			let scrollAmount = 0;
 			let ref = item.getAttribute("ref");
-			let scroll_horizon = document.querySelector(`.scroll-horizon[id="${ref}"]`);
+			let scroll_horizon = document.querySelector(`.scroll_horizon[id="${ref}"]`);
 			let interval = setInterval(function () {
 				scrollAmount += 50;
 				scroll_horizon.scrollLeft -= 50;
@@ -358,55 +358,55 @@ function handlePage(type) {
 function pageHome() {
 	document.querySelector(".page_content").innerHTML = `
 		<div class="home_container">
-			<div class="section_new_container carousel_section_generic_container keep_watching_container">
-				<div class="section_new_content carousel_section_generic_content small">
+			<div class="carousel_section_generic_container keep_watching_container">
+				<div class="carousel_section_generic_content small">
 					<div class="section_new_title carousel_section_generic_title">
 						<p>Continue assistindo</p>
-						<div class="container-arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn-left-scroll" ref="1"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn-right-scroll" ref="1"></img>
+						<div class="container_arrows">
+							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="1"></img>
+							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="1"></img>
 						</div>
 					</div>
-					<ul class="hide_scrollbar scroll-horizon keep_watching_ul" id="1">
+					<ul class="hide_scrollbar scroll_horizon keep_watching_ul" id="1">
 					</ul>
 				</div>
 			</div>
-			<div class="section_top_container carousel_section_generic_container top_conainer">
-				<div class="section_top_content carousel_section_generic_content">
+			<div class="carousel_section_generic_container top_conainer">
+				<div class="carousel_section_generic_content">
 					<div class="section_top_title carousel_section_generic_title">
 						<p>Top 10</p>
-						<div class="container-arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn-left-scroll focusable" ref="2"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn-right-scroll focusable" ref="2"></img>
+						<div class="container_arrows">
+							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="2"></img>
+							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="2"></img>
 						</div>
 					</div>
-					<ul class="hide_scrollbar scroll-horizon top_ul" id="2">
+					<ul class="hide_scrollbar scroll_horizon top_ul" id="2">
 					</ul>
 				</div>
 			</div>
-			<div class="section_new_container carousel_section_generic_container movies_added_container">
-				<div class="section_new_content carousel_section_generic_content small">
+			<div class="carousel_section_generic_container movies_added_container">
+				<div class="carousel_section_generic_content small">
 					<div class="section_new_title carousel_section_generic_title">
 						<p>Filmes recém adicionados</p>
-						<div class="container-arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn-left-scroll" ref="3"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn-right-scroll" ref="3"></img>
+						<div class="container_arrows">
+							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="3"></img>
+							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="3"></img>
 						</div>
 					</div>
-					<ul class="hide_scrollbar scroll-horizon movies_added_ul" id="3">
+					<ul class="hide_scrollbar scroll_horizon movies_added_ul" id="3">
 					</ul>
 				</div>
 			</div>
-			<div class="section_new_container carousel_section_generic_container series_added_container">
-				<div class="section_new_content carousel_section_generic_content small">
+			<div class="carousel_section_generic_container series_added_container" style="margin-bottom: 10px;">
+				<div class="carousel_section_generic_content small">
 					<div class="section_new_title carousel_section_generic_title">
 						<p>Séries recém adicionadas</p>
-						<div class="container-arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn-left-scroll" ref="4"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn-right-scroll" ref="4"></img>
+						<div class="container_arrows">
+							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="4"></img>
+							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="4"></img>
 						</div>
 					</div>
-					<ul class="hide_scrollbar scroll-horizon series_added_ul" id="4">
+					<ul class="hide_scrollbar scroll_horizon series_added_ul" id="4">
 					</ul>
 				</div>
 			</div>
@@ -478,7 +478,7 @@ function handleHome() {
 			}
 			element += `
 				<li>
-					<a class="focusable" onclick="${action}" href="javascript:void(0)">
+					<a onclick="${action}" href="javascript:void(0)">
 						${poster(image)}
 						<span class="name">${title}</span>
 					</a>
@@ -491,7 +491,7 @@ function handleHome() {
 			if (home.top[i].stream_id) {
 				element += `
 					<li>
-						<a class="focusable top_li" onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${home.top[i].stream_id}); })();" href="javascript:void(0)">
+						<a class="top_li" onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${home.top[i].stream_id}); })();" href="javascript:void(0)">
 							${poster(home.top[i].movie_image)}
 							<span class="position_number">${(i + 1)}</span>
 							<span class="name">${home.top[i].stream_display_name}</span>
@@ -501,7 +501,7 @@ function handleHome() {
 			} else {
 				element += `
 					<li>
-						<a class="focusable top_li" onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${home.top[i].serie_id}); })();" href="javascript:void(0)">
+						<a class="top_li" onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${home.top[i].serie_id}); })();" href="javascript:void(0)">
 							${poster(home.top[i].cover)}
 							<span class="position_number">${(i + 1)}</span>
 							<span class="name">${home.top[i].title}</span>
@@ -515,7 +515,7 @@ function handleHome() {
 		for (let i = 0; i < home.moviesAdded.length; i++) {
 			element += `
 				<li>
-					<a class="focusable" onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${home.moviesAdded[i].id}); })();" href="javascript:void(0)">
+					<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${home.moviesAdded[i].id}); })();" href="javascript:void(0)">
 						${poster(home.moviesAdded[i].movie_image)}
 						<span class="name">${home.moviesAdded[i].stream_display_name}</span>
 					</a>
@@ -535,11 +535,10 @@ function handleHome() {
 			`;
 		}
 		document.querySelector(".series_added_ul").innerHTML = element;
+		btnScroll();
 	} else {
 		ajax("action=home");
-		return;
 	}
-	btnScroll();
 }
 
 function pageLives() {
@@ -547,17 +546,17 @@ function pageLives() {
 	document.querySelector(".search_input_action").value = "get_live_streams";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll-vertical hide_scrollbar media_categories_ul">
+			<ul class="scroll_vertical hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
 		<div class="channels_list">
-			<ul class="scroll-vertical hide_scrollbar channels_ul">
+			<ul class="scroll_vertical hide_scrollbar channels_ul">
 			</ul>
 		</div>
-		<div class="scroll-horizon channels_view_container">
+		<div class="scroll_horizon channels_view_container">
 			<div class="channels_view_content">
 			</div>
-			<button style="display: block; margin: 10px 0; text-align: right; width: 100%;" type="button" name="button" class="btn_favorite focusable">
+			<button style="display: block; margin: 10px 0; text-align: right; width: 100%;" type="button" name="button" class="btn_favorite">
 			</button>
 			<ul class="epg_ul">
 			</ul>
@@ -575,7 +574,7 @@ function handleLivesCategories() {
 			if (live_categories[i].category_id != localStorage.getItem("CHANNEL_CATEGORY_CENSORED")) {
 				element += `
 					<li>
-						<a class="media_category_a focusable" onclick="handleLives(null, ${live_categories[i].category_id})" id="${live_categories[i].category_id}" href="javascript:void(0)">${live_categories[i].category_name}</a>
+						<a class="media_category_a" onclick="handleLives(null, ${live_categories[i].category_id})" id="${live_categories[i].category_id}" href="javascript:void(0)">${live_categories[i].category_name}</a>
 					</li>
 				`;
 			}
@@ -598,7 +597,7 @@ function handleLives(lives = null, category_id = null) {
 			for (let i = 0; i < lives.length; i++) {
 				element += `
 					<li>
-						<a class="live_a focusable" onclick="(async function () { await handleLiveInfo(null, ${lives[i].stream_id}); watchLive('${DNS}/live/${username}/${password}/${lives[i].stream_id}.m3u8'); })();" id="${lives[i].stream_id}" href="javascript:void(0)">
+						<a onclick="(async function () { await handleLiveInfo(null, ${lives[i].stream_id}); watchLive('${DNS}/live/${username}/${password}/${lives[i].stream_id}.m3u8'); })();" id="${lives[i].stream_id}" href="javascript:void(0)">
 							${poster(lives[i].stream_icon)}
 							<span>${lives[i].name}</span>
 						</a>
@@ -638,7 +637,7 @@ function handleLiveInfo(live_info = null, stream_id = null) {
 				let start = new Date(parseInt(live_info.epg_listings[i].start_timestamp) * 1000);
 				let end = new Date(parseInt(live_info.epg_listings[i].stop_timestamp) * 1000);
 				element += `
-					<li class="li_epg focusable">
+					<li>
 						<p class="title">
 							<span class="time">
 								${start.getHours()}:${start.getMinutes()} - ${end.getHours()}:${end.getMinutes()}
@@ -738,11 +737,11 @@ function pageVod() {
 	document.querySelector(".search_input_action").value = "get_vod_streams";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll-vertical hide_scrollbar media_categories_ul">
+			<ul class="scroll_vertical hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
-		<div class="movies_content">
-			<ul class="scroll-vertical media_ul">
+		<div class="media_content">
+			<ul class="scroll_vertical media_ul">
 			</ul>
 		</div>
 	`;
@@ -755,7 +754,7 @@ function handleModalVod() {
 			<div class="modal_media_box hide_scrollbar">
 				<div class="modal_media_content">
 					<div style="position: absolute; right: 50px; top: 10px;">
-						<button type="button" name="button" class="modal_media_close focusable" onclick="hideModalContainer();">
+						<button type="button" name="button" class="modal_media_close" onclick="hideModalContainer();">
 							<i class="bx bx-x"></i>
 						</button>
 					</div>
@@ -772,10 +771,10 @@ function handleModalVod() {
 							<div class="media_resume">
 								<p></p>
 							</div>
-							<button type="button" name="button" class="btn_watch focusable">
+							<button type="button" name="button" class="btn_watch">
 								<span><img src="assets/icons/icon-google-play.svg">Assistir</span>
 							</button>
-							<button type="button" name="button" class="btn_favorite focusable" style="float: none; margin-left: 15px;">
+							<button type="button" name="button" class="btn_favorite" style="float: none; margin-left: 15px;">
 								<i class="bx bx-heart"></i>
 							</button>
 						</div>
@@ -797,7 +796,7 @@ function handleVodCategories() {
 			if (vod_categories[i].category_id != localStorage.getItem("MOVIE_CATEGORY_CENSORED")) {
 				element += `
 					<li>
-						<a class="media_category_a focusable" onclick="handleVods(null, ${vod_categories[i].category_id})" id="${vod_categories[i].category_id}" href="javascript:void(0)">${vod_categories[i].category_name}</a>
+						<a class="media_category_a" onclick="handleVods(null, ${vod_categories[i].category_id})" id="${vod_categories[i].category_id}" href="javascript:void(0)">${vod_categories[i].category_name}</a>
 					</li>
 				`;
 			}
@@ -820,7 +819,7 @@ function handleVods(vods = null, category_id = null) {
 			for (let i = 0; i < vods.length; i++) {
 				element += `
 					<li>
-						<a class="focusable vods" onclick="handleVodInfo(null, ${vods[i].stream_id})" href="javascript:void(0)">
+						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${vods[i].stream_id}); })();" href="javascript:void(0)">
 							${poster(vods[i].stream_icon)}	
 							<span class="name">${vods[i].name}</span>
 						</a>
@@ -883,11 +882,11 @@ function pageSeries() {
 	document.querySelector(".search_input_action").value = "get_series";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll-vertical hide_scrollbar media_categories_ul">
+			<ul class="scroll_vertical hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
-		<div class="movies_content">
-			<ul class="scroll-vertical media_ul">
+		<div class="media_content">
+			<ul class="scroll_vertical media_ul">
 			</ul>
 		</div>
 	`;
@@ -900,7 +899,7 @@ function handleModalSerie() {
 			<div class="modal_media_box hide_scrollbar">
 				<div class="modal_media_content">
 					<div style="position: absolute; right: 50px; top: 10px;">
-						<button type="button" name="button" class="modal_media_close focusable close_modal_serie" onclick="hideModalContainer();">
+						<button type="button" name="button" class="modal_media_close close_modal_serie" onclick="hideModalContainer();">
 							<i class="bx bx-x"></i>
 						</button>
 					</div>
@@ -917,24 +916,24 @@ function handleModalSerie() {
 							<div class="media_resume">
 								<p></p>
 							</div>
-							<button type="button" name="button" class="btn_favorite focusable">
+							<button type="button" name="button" class="btn_favorite">
 								<i class="bx bx-heart" ></i>
 							</button>
 						</div>
 					</div>
 					<div class="seasons_container">
 						<div class="seasons_content">
-							<ul class="seasons_ul hide_scrollbar scroll-horizon">
+							<ul class="seasons_ul hide_scrollbar scroll_horizon">
 							</ul>
-							<div class="section_new_container carousel_section_generic_container">
-								<div class="section_new_content carousel_section_generic_content small box_episodes">
+							<div class="carousel_section_generic_container">
+								<div class="carousel_section_generic_content small box_episodes">
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="arrows">
-						<i class="bx bx-chevron-left left-scroll focusable" ref=""></i>
-						<i class="bx bx-chevron-right right-scroll focusable" ref=""></i>
+						<i class="bx bx-chevron-left left_scroll" ref=""></i>
+						<i class="bx bx-chevron-right right_scroll" ref=""></i>
 					</div>
 				</div>
 			</div>
@@ -953,7 +952,7 @@ function handleSeriesCategories() {
 			if (series_categories[i].category_id != localStorage.getItem("SERIE_CATEGORY_CENSORED")) {
 				element += `
 					<li>
-						<a class="media_category_a focusable" onclick="handleSeries(null, ${series_categories[i].category_id})" id="${series_categories[i].category_id}" href="javascript:void(0)">${series_categories[i].category_name}</a>
+						<a class="media_category_a" onclick="handleSeries(null, ${series_categories[i].category_id})" id="${series_categories[i].category_id}" href="javascript:void(0)">${series_categories[i].category_name}</a>
 					</li>
 				`;
 			}
@@ -976,7 +975,7 @@ function handleSeries(series = null, category_id = null) {
 			for (let i = 0; i < series.length; i++) {
 				element += `
 					<li>
-						<a class="focusable" onclick="handleSerieInfo(null, ${series[i].series_id})" href="javascript:void(0)">
+						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${series[i].series_id}); })();" href="javascript:void(0)">
 							${poster(series[i].cover)}	
 							<span class="name">${series[i].name}</span>
 						</a>
@@ -1034,17 +1033,17 @@ async function handleSerieInfo(serie = null, series_id = null) {
 				seasons_ul += `
 					<li class="seasons_li">
 						<p class="title">
-							<a href="javascript:void(0)" onclick="handleChangeSeason(${id})" id="${id}" class="focusable li_season ${first ? "active" : ""}">Temporada ${id}</a>
+							<a href="javascript:void(0)" onclick="handleChangeSeason(${id})" id="${id}" class="li_season ${first ? "active" : ""}">Temporada ${id}</a>
 						</p>
 					</li>
 				`;
 				box_episodes += `
-					<ul class="hide_scrollbar scroll-horizon episodes_ul" id="${id}" style="padding-left: 5px; display: ${first ? "flex" : "none"};">
+					<ul class="hide_scrollbar scroll_horizon episodes_ul" id="${id}" style="padding-left: 5px; display: ${first ? "flex" : "none"};">
 				`;
 				for (episode of Object.values(seasons)) {
 					box_episodes += `
 						<li>
-							<a class="focusable" onclick="handleVideo('${DNS}/series/${username}/${password}/${episode.id}.${episode.container_extension}', 'video/mp4')" href="javascript:void(0)">
+							<a onclick="handleVideo('${DNS}/series/${username}/${password}/${episode.id}.${episode.container_extension}', 'video/mp4')" href="javascript:void(0)">
 								${poster(episode.info.movie_image)}	
 								<span class="name">${episode.title}</span>
 							</a>
@@ -1056,35 +1055,35 @@ async function handleSerieInfo(serie = null, series_id = null) {
 			}
 			document.querySelector(".seasons_ul").innerHTML = seasons_ul;
 			document.querySelector(".box_episodes").innerHTML = box_episodes;
+
+			document.querySelector(".right_scroll").onclick = function () {
+				let seasons_li = document.querySelector(`.seasons_li a[class="li_season active"]`).getAttribute("id");
+				let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
+				let scroll_amount = 0;
+				let interval = setInterval(function () {
+					episodes_ul.scrollLeft += 50;
+					scroll_amount += 50;
+					if (scroll_amount >= 500) {
+						window.clearInterval(interval);
+					}
+				}, 35);
+			};
+			document.querySelector(".left_scroll").onclick = function () {
+				let seasons_li = document.querySelector(`.seasons_li a[class="li_season active"]`).getAttribute("id");
+				let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
+				let scroll_amount = 0;
+				let interval = setInterval(function () {
+					episodes_ul.scrollLeft -= 50;
+					scroll_amount += 50;
+					if (scroll_amount >= 500) {
+						window.clearInterval(interval);
+					}
+				}, 35);
+			};
 		}
 	} else {
 		await ajax("action=get_series_info&series_id=" + series_id);
-		return;
 	}
-	document.querySelector(".right-scroll").onclick = function () {
-		let seasons_li = document.querySelector(`.seasons_li a[class="focusable li_season active"]`).getAttribute("id");
-		let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
-		let scroll_amount = 0;
-		let interval = setInterval(function () {
-			episodes_ul.scrollLeft += 50;
-			scroll_amount += 50;
-			if (scroll_amount >= 500) {
-				window.clearInterval(interval);
-			}
-		}, 35);
-	};
-	document.querySelector(".left-scroll").onclick = function () {
-		let seasons_li = document.querySelector(`.seasons_li a[class="focusable li_season active"]`).getAttribute("id");
-		let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
-		let scroll_amount = 0;
-		let interval = setInterval(function () {
-			episodes_ul.scrollLeft -= 50;
-			scroll_amount += 50;
-			if (scroll_amount >= 500) {
-				window.clearInterval(interval);
-			}
-		}, 35);
-	};
 }
 
 function handleChangeSeason(id) {
@@ -1106,42 +1105,42 @@ function handleChangeSeason(id) {
 function pageFavorites() {
 	document.querySelector(".page_content").innerHTML = `
 		<div class="favorites_container">
-			<div class="section_new_container carousel_section_generic_container lives" style="display: none;">
-				<div class="section_new_content carousel_section_generic_content small">
+			<div class="carousel_section_generic_container lives" style="display: none;">
+				<div class="carousel_section_generic_content small">
 					<div class="section_new_title carousel_section_generic_title">
 						<p>Canais Favoritos</p>
-						<div class="container-arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn-left-scroll" ref="1"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn-right-scroll" ref="1"></img>
+						<div class="container_arrows">
+							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="1"></img>
+							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="1"></img>
 						</div>
 					</div>
-					<ul class="hide_scrollbar scroll-horizon lives_ul" id="1">
+					<ul class="hide_scrollbar scroll_horizon lives_ul" id="1">
 					</ul>
 				</div>
 			</div>
-			<div class="section_new_container carousel_section_generic_container movies" style="display: none;">
-				<div class="section_new_content carousel_section_generic_content small">
+			<div class="carousel_section_generic_container movies" style="display: none;">
+				<div class="carousel_section_generic_content small">
 					<div class="section_new_title carousel_section_generic_title">
 						<p>Filmes Favoritos</p>
-						<div class="container-arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn-left-scroll" ref="2"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn-right-scroll" ref="2"></img>
+						<div class="container_arrows">
+							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="2"></img>
+							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="2"></img>
 						</div>
 					</div>
-					<ul class="hide_scrollbar scroll-horizon movies_ul" id="2">
+					<ul class="hide_scrollbar scroll_horizon movies_ul" id="2">
 					</ul>
 				</div>
 			</div>
-			<div class="section_new_container carousel_section_generic_container series" style="display: none;">
-				<div class="section_new_content carousel_section_generic_content small">
+			<div class="carousel_section_generic_container series" style="display: none; margin-bottom: 10px;">
+				<div class="carousel_section_generic_content small">
 					<div class="section_new_title carousel_section_generic_title">
 						<p>Séries Favoritas</p>
-						<div class="container-arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn-left-scroll" ref="3"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn-right-scroll" ref="3"></img>
+						<div class="container_arrows">
+							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="3"></img>
+							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="3"></img>
 						</div>
 					</div>
-					<ul class="hide_scrollbar scroll-horizon series_ul" id="3">
+					<ul class="hide_scrollbar scroll_horizon series_ul" id="3">
 					</ul>
 				</div>
 			</div>
@@ -1150,9 +1149,9 @@ function pageFavorites() {
 }
 
 function handleFavorites() {
-	document.querySelector(".section_new_container.lives").style.display = "none";
-	document.querySelector(".section_new_container.movies").style.display = "none";
-	document.querySelector(".section_new_container.series").style.display = "none";
+	document.querySelector(".carousel_section_generic_container.lives").style.display = "none";
+	document.querySelector(".carousel_section_generic_container.movies").style.display = "none";
+	document.querySelector(".carousel_section_generic_container.series").style.display = "none";
 	let favorites = localStorage.getItem("favorites");
 	if (favorites) {
 		favorites = JSON.parse(favorites);
@@ -1161,14 +1160,14 @@ function handleFavorites() {
 			for (let i = 0; i < favorites.movies.length; i++) {
 				element += `
 					<li>
-						<a class="focusable" onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${favorites.movies[i].id}); })();" href="javascript:void(0)">
+						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${favorites.movies[i].id}); })();" href="javascript:void(0)">
 							${poster(favorites.movies[i].movie_image)}
 							<span class="name">${favorites.movies[i].stream_display_name}</span>
 						</a>
 					</li>
 				`;
 			}
-			document.querySelector(".section_new_container.movies").style.display = "block";
+			document.querySelector(".carousel_section_generic_container.movies").style.display = "block";
 		}
 		document.querySelector(".movies_ul").innerHTML = element;
 		element = "";
@@ -1176,14 +1175,14 @@ function handleFavorites() {
 			for (let i = 0; i < favorites.series.length; i++) {
 				element += `
 					<li>
-						<a class="focusable" onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${favorites.series[i].id}); })();" href="javascript:void(0)">
+						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${favorites.series[i].id}); })();" href="javascript:void(0)">
 							${poster(favorites.series[i].cover)}
 							<span class="name">${favorites.series[i].title}</span>
 						</a>
 					</li>
 				`;
 			}
-			document.querySelector(".section_new_container.series").style.display = "block";
+			document.querySelector(".carousel_section_generic_container.series").style.display = "block";
 		}
 		document.querySelector(".series_ul").innerHTML = element;
 		element = "";
@@ -1191,21 +1190,20 @@ function handleFavorites() {
 			for (let i = 0; i < favorites.lives.length; i++) {
 				element += `
 					<li>
-						<a class="focusable" onclick="(async function () { await handlePage('lives'); handleLiveInfo(null, ${favorites.lives[i].id}); watchLive('${DNS}/live/${username}/${password}/${favorites.lives[i].id}.m3u8'); })();" href="javascript:void(0)" class="live">
+						<a onclick="(async function () { await handlePage('lives'); handleLiveInfo(null, ${favorites.lives[i].id}); watchLive('${DNS}/live/${username}/${password}/${favorites.lives[i].id}.m3u8'); })();" href="javascript:void(0)" class="live">
 							${poster(favorites.lives[i].stream_icon)}	
 							<span class="name">${favorites.lives[i].stream_display_name}</span>
 						</a>
 					</li>
 				`;
 			}
-			document.querySelector(".section_new_container.lives").style.display = "block";
+			document.querySelector(".carousel_section_generic_container.lives").style.display = "block";
 		}
 		document.querySelector(".lives_ul").innerHTML = element;
+		btnScroll();
 	} else {
 		ajax("action=get_favorites");
-		return;
 	}
-	btnScroll();
 }
 
 function storeFavorite(id, type) {

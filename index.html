@@ -70,12 +70,10 @@
 				<p class="login_index_message">Assista a todas os canais, filmes e séries sem travar</p>
 				<form class="login_login_form" action="" method="post">
 					<div class="login_input_container">
-						<input class="focusable user" type="text" name="username" value="" placeholder="Usuário"
-							required>
+						<input class="user" type="text" name="username" value="" placeholder="Usuário" required>
 					</div>
 					<div class="login_input_container">
-						<input class="focusable user_pass" type="password" name="password" value="" placeholder="Senha"
-							required>
+						<input class="user_pass" type="password" name="password" value="" placeholder="Senha" required>
 					</div>
 					<button class="btn_login" type="submit">Entrar</button>
 				</form>
@@ -99,7 +97,7 @@
 				<div class="users_content">
 					<ul class="avatar_list_manager"></ul>
 				</div>
-				<a class="btn_manage_users_concluded focusable" href="javascript:void(0)"
+				<a class="btn_manage_users_concluded" href="javascript:void(0)"
 					onclick="document.querySelector('.manage_users_modal_container').style.display = 'none';">
 					<span>Concluído</span>
 				</a>
@@ -111,10 +109,9 @@
 			<div class="users_modal_content">
 				<form class="form_avatar" action="" method="post">
 					<input type="hidden" name="action" value="store_avatar">
-					<input class="focusable avatar_name" type="text" name="avatar_name" value="" placeholder="Nome"
-						required>
-					<button type="submit" class="focusable btn_create">Criar</button>
-					<button type="button" class="focusable"
+					<input class="avatar_name" type="text" name="avatar_name" value="" placeholder="Nome" required>
+					<button type="submit" class="btn_create">Criar</button>
+					<button type="button"
 						onclick="document.querySelector('.users_modal_container').style.display = 'none';"
 						style="background-color: #dd5b5b;">Voltar</button>
 				</form>
@@ -129,43 +126,43 @@
 					<img src="assets/images/face-user.png" alt="">
 				</div>
 				<p class="name avatar_name"></p>
-				<a href="javascript:void(0)" class="exit j_btn focusable" _action="exit">Sair</a>
+				<a href="javascript:void(0)" class="exit j_btn" _action="exit">Sair</a>
 			</div>
 		</div>
 		<div class="menu_container">
 			<ul class="menu_content">
 				<li>
-					<a class="focusable icon_bars" href="javascript:void(0)"
+					<a class="icon_bars" href="javascript:void(0)"
 						onclick="var element = document.querySelector('.profile_container'); element.style.display = (element.style.display == 'block' ? 'none' : 'block');">
 						<img src="assets/icons/icon-bars.svg" style="width: 30px;" alt="Profile">
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('home')" class="home focusable">
+					<a href="javascript:void(0)" onclick="handlePage('home')" class="home">
 						<img src="assets/icons/icon-home.svg" alt="Home">
 						<span>Home</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('lives')" class="lives focusable">
+					<a href="javascript:void(0)" onclick="handlePage('lives')" class="lives">
 						<img src="assets/icons/icon-tv.svg" alt="Canais">
 						<span>Canais</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('movies')" class="movies focusable">
+					<a href="javascript:void(0)" onclick="handlePage('movies')" class="movies">
 						<img src="assets/icons/icon-movies.svg" alt="Filmes">
 						<span>Filmes</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('series')" class="series focusable">
+					<a href="javascript:void(0)" onclick="handlePage('series')" class="series">
 						<img src="assets/icons/icon-series.svg" alt="Séries">
 						<span>Series</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('favorites')" class="favorites focusable">
+					<a href="javascript:void(0)" onclick="handlePage('favorites')" class="favorites">
 						<img src="assets/icons/icon-heart.svg" alt="Favoritos">
 						<span>Favoritos</span>
 					</a>
@@ -177,8 +174,7 @@
 				<img src="assets/images/logo-lime.png" alt="LIME TV">
 				<form class="search_container" action="" method="post">
 					<input class="search_input_action" type="hidden" name="action" value="">
-					<input class="search_input_search focusable" type="text" name="search" value=""
-						placeholder="Pesquisar">
+					<input class="search_input_search" type="text" name="search" value="" placeholder="Pesquisar">
 					<button class="btn_search" type="submit">
 						<img src="assets/icons/icon-search.svg" alt="Pesquisar">
 					</button>
@@ -191,13 +187,13 @@
 		</div>
 		<div class="player_video_container">
 			<div class="title_media"></div>
-			<button type="button" class="player_video_close focusable">
+			<button type="button" class="player_video_close">
 				<img src="assets/icons/icon-back.svg" alt="Fechar">
 			</button>
-			<button type="button" class="player_video_prev focusable">
+			<button type="button" class="player_video_prev">
 				<img src="assets/icons/icon-left.svg" alt="Voltar Episodio">
 			</button>
-			<button type="button" class="player_video_next focusable">
+			<button type="button" class="player_video_next">
 				<img src="assets/icons/icon-right.svg" alt="Proximo Episodio">
 			</button>
 			<div class="player_video_content"></div>

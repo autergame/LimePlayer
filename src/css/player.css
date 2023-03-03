@@ -309,7 +309,7 @@ body {
 	background-color: #7669fe;
 }
 
-.bg-edit {
+.bg_edit {
 	width: 150px;
 	height: 150px;
 	position: absolute;
@@ -317,7 +317,7 @@ body {
 	background-color: rgba(0, 0, 0, 0.7);
 }
 
-.bg-edit img {
+.bg_edit img {
 	width: 25px;
 	filter: invert(1);
 }
@@ -468,7 +468,7 @@ body {
 
 .page_container {
 	float: right;
-	width: calc(100% - 150px);
+	width: calc(100% - 146px);
 }
 
 .page_topnav {
@@ -561,7 +561,7 @@ body {
 	justify-content: space-between;
 }
 
-.container-arrows img {
+.container_arrows img {
 	width: 32px;
 	cursor: pointer;
 	padding: 0 10px;
@@ -657,7 +657,7 @@ body {
 	background-color: rgba(0, 0, 0, 0.7);
 }
 
-.scroll-horizon.active {
+.scroll_horizon.active {
 	cursor: grabbing;
 	transform: scale(.99);
 	cursor: -webkit-grabbing;
@@ -808,12 +808,12 @@ body {
 	color: #6c6c6c;
 }
 
-.movies_content {
+.media_content {
 	float: left;
 	width: calc(100% - 250px);
 }
 
-.movies_content ul {
+.media_content ul {
 	width: 100%;
 	padding: 15px;
 	list-style: none;
@@ -822,14 +822,14 @@ body {
 	max-height: calc(100vh - 101px);
 }
 
-.movies_content li {
+.media_content li {
 	float: left;
 	position: relative;
 	margin-right: 10px;
 	margin-bottom: 10px;
 }
 
-.movies_content a {
+.media_content a {
 	width: 143px;
 	height: 213px;
 	display: block;
@@ -838,13 +838,13 @@ body {
 	text-decoration: none;
 }
 
-.movies_content a>img {
+.media_content a>img {
 	width: 100%;
 	height: 100%;
 	border-radius: 10px;
 }
 
-.movies_content .name {
+.media_content .name {
 	left: 0;
 	bottom: 0;
 	width: 100%;
@@ -862,13 +862,13 @@ body {
 .favorites_container {
 	width: 100%;
 	overflow: auto;
-	height: calc(100% - 101px);
+	height: calc(100% - 100px);
 }
 
 .home_container {
 	width: 100%;
 	overflow: auto;
-	height: calc(100% - 101px);
+	height: calc(100% - 100px);
 }
 
 .modal_media_container {

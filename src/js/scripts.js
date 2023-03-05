@@ -571,13 +571,11 @@ function handleLivesCategories() {
 		live_categories = JSON.parse(live_categories);
 		let element = "";
 		for (let i = 0; i < live_categories.length; i++) {
-			if (live_categories[i].category_id != localStorage.getItem("CHANNEL_CATEGORY_CENSORED")) {
-				element += `
-					<li>
-						<a class="media_category_a" onclick="handleLives(null, ${live_categories[i].category_id})" id="${live_categories[i].category_id}" href="javascript:void(0)">${live_categories[i].category_name}</a>
-					</li>
-				`;
-			}
+			element += `
+				<li>
+					<a class="media_category_a" onclick="handleLives(null, ${live_categories[i].category_id})" id="${live_categories[i].category_id}" href="javascript:void(0)">${live_categories[i].category_name}</a>
+				</li>
+			`;
 		}
 		document.querySelector(".media_categories_ul").innerHTML = element;
 		live_first_category_id = live_categories[0].category_id;
@@ -793,13 +791,11 @@ function handleVodCategories() {
 		vod_categories = JSON.parse(vod_categories);
 		let element = "";
 		for (let i = 0; i < vod_categories.length; i++) {
-			if (vod_categories[i].category_id != localStorage.getItem("MOVIE_CATEGORY_CENSORED")) {
-				element += `
-					<li>
-						<a class="media_category_a" onclick="handleVods(null, ${vod_categories[i].category_id})" id="${vod_categories[i].category_id}" href="javascript:void(0)">${vod_categories[i].category_name}</a>
-					</li>
-				`;
-			}
+			element += `
+				<li>
+					<a class="media_category_a" onclick="handleVods(null, ${vod_categories[i].category_id})" id="${vod_categories[i].category_id}" href="javascript:void(0)">${vod_categories[i].category_name}</a>
+				</li>
+			`;
 		}
 		document.querySelector(".media_categories_ul").innerHTML = element;
 		vod_first_category_id = vod_categories[0].category_id;
@@ -949,13 +945,11 @@ function handleSeriesCategories() {
 		series_categories = JSON.parse(series_categories);
 		let element = "";
 		for (let i = 0; i < series_categories.length; i++) {
-			if (series_categories[i].category_id != localStorage.getItem("SERIE_CATEGORY_CENSORED")) {
-				element += `
-					<li>
-						<a class="media_category_a" onclick="handleSeries(null, ${series_categories[i].category_id})" id="${series_categories[i].category_id}" href="javascript:void(0)">${series_categories[i].category_name}</a>
-					</li>
-				`;
-			}
+			element += `
+				<li>
+					<a class="media_category_a" onclick="handleSeries(null, ${series_categories[i].category_id})" id="${series_categories[i].category_id}" href="javascript:void(0)">${series_categories[i].category_name}</a>
+				</li>
+			`;
 		}
 		document.querySelector(".media_categories_ul").innerHTML = element;
 		serie_first_category_id = series_categories[0].category_id;

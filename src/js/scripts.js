@@ -180,16 +180,16 @@ function btn() {
 					break;
 				}
 				case "changeAvatar": {
+					document.querySelector(".profile_container").style.display = "none";
+					localStorage.removeItem("favorites");
 					localStorage.removeItem("avatar");
 					localStorage.removeItem("home");
-					localStorage.removeItem("favorites");
-					document.querySelector(".profile_container").style.display = "none";
 					login();
 					break;
 				}
 				case "exit": {
-					localStorage.clear();
 					document.querySelector(".profile_container").style.display = "none";
+					localStorage.clear();
 					login();
 					break;
 				}
@@ -542,6 +542,7 @@ function handleHome() {
 }
 
 function pageLives() {
+	localStorage.removeItem("live_categories");
 	document.querySelector(".search_container").style.visibility = "visible";
 	document.querySelector(".search_input_action").value = "get_live_streams";
 	document.querySelector(".page_content").innerHTML = `
@@ -564,7 +565,6 @@ function pageLives() {
 	`;
 }
 
-var live_first_category_id = "";
 function handleLivesCategories() {
 	let live_categories = localStorage.getItem("live_categories");
 	if (live_categories) {
@@ -578,8 +578,7 @@ function handleLivesCategories() {
 			`;
 		}
 		document.querySelector(".media_categories_ul").innerHTML = element;
-		live_first_category_id = live_categories[0].category_id;
-		handleLives(null, live_first_category_id);
+		handleLives(null, live_categories[0].category_id);
 	} else {
 		ajax("action=get_live_categories");
 	}
@@ -589,9 +588,6 @@ function handleLives(lives = null, category_id = null) {
 	if (lives) {
 		let element = "";
 		if (lives.length) {
-			if (lives[0].category_id == live_first_category_id) {
-				localStorage.setItem("lives_first_category", JSON.stringify(lives));
-			}
 			for (let i = 0; i < lives.length; i++) {
 				element += `
 					<li>
@@ -615,14 +611,6 @@ function handleLives(lives = null, category_id = null) {
 		}
 		document.querySelector(".channels_ul").innerHTML = element;
 	} else {
-		if (category_id == live_first_category_id) {
-			let lives_first_category = localStorage.getItem("lives_first_category");
-			if (lives_first_category) {
-				lives_first_category = JSON.parse(lives_first_category);
-				handleLives(lives_first_category);
-				return;
-			}
-		}
 		ajax("action=get_live_streams&category_id=" + category_id);
 	}
 }
@@ -731,6 +719,7 @@ function watchLive(link) {
 }
 
 function pageVod() {
+	localStorage.removeItem("vod_categories");
 	document.querySelector(".search_container").style.visibility = "visible";
 	document.querySelector(".search_input_action").value = "get_vod_streams";
 	document.querySelector(".page_content").innerHTML = `
@@ -784,7 +773,6 @@ function handleModalVod() {
 	document.querySelector(".page_content").append(element);
 }
 
-var vod_first_category_id = "";
 function handleVodCategories() {
 	let vod_categories = localStorage.getItem("vod_categories");
 	if (vod_categories) {
@@ -798,8 +786,7 @@ function handleVodCategories() {
 			`;
 		}
 		document.querySelector(".media_categories_ul").innerHTML = element;
-		vod_first_category_id = vod_categories[0].category_id;
-		handleVods(null, vod_first_category_id);
+		handleVods(null, vod_categories[0].category_id);
 	} else {
 		ajax("action=get_vod_categories");
 	}
@@ -809,9 +796,6 @@ function handleVods(vods = null, category_id = null) {
 	if (vods) {
 		let element = "";
 		if (vods.length) {
-			if (vods[0].category_id == vod_first_category_id) {
-				localStorage.setItem("vods_first_category", JSON.stringify(vods));
-			}
 			for (let i = 0; i < vods.length; i++) {
 				element += `
 					<li>
@@ -835,14 +819,6 @@ function handleVods(vods = null, category_id = null) {
 		}
 		document.querySelector(".media_ul").innerHTML = element;
 	} else {
-		if (category_id == vod_first_category_id) {
-			let vods_first_category = localStorage.getItem("vods_first_category");
-			if (vods_first_category) {
-				vods_first_category = JSON.parse(vods_first_category);
-				handleVods(vods_first_category);
-				return;
-			}
-		}
 		ajax("action=get_vod_streams&category_id=" + category_id);
 	}
 }
@@ -874,6 +850,7 @@ async function handleVodInfo(movie = null, vod_id = null) {
 }
 
 function pageSeries() {
+	localStorage.removeItem("series_categories");
 	document.querySelector(".search_container").style.visibility = "visible";
 	document.querySelector(".search_input_action").value = "get_series";
 	document.querySelector(".page_content").innerHTML = `
@@ -938,7 +915,6 @@ function handleModalSerie() {
 	document.querySelector(".page_content").append(element);
 }
 
-var serie_first_category_id = "";
 function handleSeriesCategories() {
 	let series_categories = localStorage.getItem("series_categories");
 	if (series_categories) {
@@ -952,8 +928,7 @@ function handleSeriesCategories() {
 			`;
 		}
 		document.querySelector(".media_categories_ul").innerHTML = element;
-		serie_first_category_id = series_categories[0].category_id;
-		handleSeries(null, serie_first_category_id);
+		handleSeries(null, series_categories[0].category_id);
 	} else {
 		ajax("action=get_series_categories");
 	}
@@ -963,9 +938,6 @@ function handleSeries(series = null, category_id = null) {
 	if (series) {
 		let element = "";
 		if (series.length) {
-			if (series[0].category_id == serie_first_category_id) {
-				localStorage.setItem("series_first_category", JSON.stringify(series));
-			}
 			for (let i = 0; i < series.length; i++) {
 				element += `
 					<li>
@@ -989,14 +961,6 @@ function handleSeries(series = null, category_id = null) {
 		}
 		document.querySelector(".media_ul").innerHTML = element;
 	} else {
-		if (category_id == serie_first_category_id) {
-			let series_first_category = localStorage.getItem("series_first_category");
-			if (series_first_category) {
-				series_first_category = JSON.parse(series_first_category);
-				handleSeries(series_first_category);
-				return;
-			}
-		}
 		ajax("action=get_series&category_id=" + category_id);
 	}
 }
@@ -1456,12 +1420,6 @@ function corsProxy(url) {
 localStorage.removeItem("home");
 localStorage.removeItem("avatar");
 localStorage.removeItem("favorites");
-localStorage.removeItem("vod_categories");
-localStorage.removeItem("live_categories");
-localStorage.removeItem("series_categories");
-localStorage.removeItem("vods_first_category");
-localStorage.removeItem("lives_first_category");
-localStorage.removeItem("series_first_category");
 
 var avatar = "";
 var username = "";

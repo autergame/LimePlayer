@@ -59,15 +59,17 @@
 			<p class="trigger_message"></p>
 		</div>
 	</div>
+
 	<div class="loading">
 		<img src="assets/icons/load.svg" alt="Load">
 	</div>
+
 	<!-- LOGIN -->
 	<div id="Login">
 		<div class="login_container">
 			<div class="login_content">
 				<img class="login_logo" src="assets/images/logo-lime.png" alt="LIME TV">
-				<p class="login_index_message">Assista a todas os canais, filmes e séries sem travar</p>
+				<p class="login_index_message">Assista a todas os canais, filmes e séries</p>
 				<form class="login_login_form" action="" method="post">
 					<div class="login_input_container">
 						<input class="user" type="text" name="username" value="" placeholder="Usuário" required>
@@ -80,6 +82,7 @@
 			</div>
 		</div>
 	</div>
+
 	<!-- AVATAR -->
 	<div id="Avatar" class="users_container" style="display: none;">
 		<div class="users_title">
@@ -88,7 +91,17 @@
 		<div class="users_content">
 			<ul class="avatar_list"></ul>
 		</div>
-		<div class="manage_users"></div>
+		<div class="manage_users">
+			<a class="btn_manage_users"
+				onclick="document.querySelector('.manage_users_modal_container').style.display = 'flex';">
+				<span>Gerenciar perfis</span>
+			</a>
+		</div>
+		<div class="account_exit">
+			<a class="j_btn" _action="exit">
+				<span>Sair</span>
+			</a>
+		</div>
 	</div>
 	<div class="manage_users_modal_container" style="display: none;">
 		<div class="manage_users_modal_box">
@@ -97,7 +110,7 @@
 				<div class="users_content">
 					<ul class="avatar_list_manager"></ul>
 				</div>
-				<a class="btn_manage_users_concluded" href="javascript:void(0)"
+				<a class="btn_manage_users_concluded"
 					onclick="document.querySelector('.manage_users_modal_container').style.display = 'none';">
 					<span>Concluído</span>
 				</a>
@@ -118,51 +131,52 @@
 			</div>
 		</div>
 	</div>
+
 	<!-- PLAYER -->
 	<div id="Player" style="display: none;">
 		<div class="profile_container">
 			<div class="profile_content">
-				<div class="avatar_container j_btn" _action="changeAvatar">
+				<div class="avatar_container">
 					<img src="assets/images/face-user.png" alt="">
 				</div>
 				<p class="name avatar_name"></p>
-				<a href="javascript:void(0)" class="exit j_btn" _action="exit">Sair</a>
+				<a class="j_btn" _action="changeAvatar">Trocar</a>
 			</div>
 		</div>
 		<div class="menu_container">
 			<ul class="menu_content">
 				<li>
-					<a class="icon_bars" href="javascript:void(0)"
+					<a class="icon_bars"
 						onclick="var element = document.querySelector('.profile_container'); element.style.display = (element.style.display == 'block' ? 'none' : 'block');">
 						<img src="assets/icons/icon-bars.svg" style="width: 30px;" alt="Profile">
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('home')" class="home">
+					<a onclick="handlePage('home')" class="home">
 						<img src="assets/icons/icon-home.svg" alt="Home">
 						<span>Home</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('lives')" class="lives">
+					<a onclick="handlePage('lives')" class="lives">
 						<img src="assets/icons/icon-tv.svg" alt="Canais">
 						<span>Canais</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('movies')" class="movies">
+					<a onclick="handlePage('movies')" class="movies">
 						<img src="assets/icons/icon-movies.svg" alt="Filmes">
 						<span>Filmes</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('series')" class="series">
+					<a onclick="handlePage('series')" class="series">
 						<img src="assets/icons/icon-series.svg" alt="Séries">
 						<span>Series</span>
 					</a>
 				</li>
 				<li>
-					<a href="javascript:void(0)" onclick="handlePage('favorites')" class="favorites">
+					<a onclick="handlePage('favorites')" class="favorites">
 						<img src="assets/icons/icon-heart.svg" alt="Favoritos">
 						<span>Favoritos</span>
 					</a>

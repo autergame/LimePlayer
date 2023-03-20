@@ -1,59 +1,27 @@
 function serialize(target) {
-	if (!target || target.nodeName !== "FORM") {
-		return;
-	}
-
 	let serialized = [];
 
-	for (let i = target.elements.length - 1; i >= 0; i--) {
-		if (target.elements[i].name === "") {
+	for (element of target.elements) {
+		if (element.name === "") {
 			continue;
 		}
 
-		switch (target.elements[i].nodeName) {
+		switch (element.nodeName) {
 			case "INPUT":
-				switch (target.elements[i].type) {
+				switch (element.type) {
 					case "text":
 					case "hidden":
 					case "password":
 					case "button":
-					case "reset":
-					case "submit":
-						serialized.push(target.elements[i].name + "=" + encodeURIComponent(target.elements[i].value));
-						break;
-					case "checkbox":
-					case "radio":
-						if (target.elements[i].checked) {
-							serialized.push(target.elements[i].name + "=" + encodeURIComponent(target.elements[i].value));
-						}
-						break;
-					case "file":
-						break;
-				}
-				break;
-			case "TEXTAREA":
-				serialized.push(target.elements[i].name + "=" + encodeURIComponent(target.elements[i].value));
-				break;
-			case "SELECT":
-				switch (target.elements[i].type) {
-					case "select-one":
-						serialized.push(target.elements[i].name + "=" + encodeURIComponent(target.elements[i].value));
-						break;
-					case "select-multiple":
-						for (let j = target.elements[i].options.length - 1; j >= 0; j--) {
-							if (target.elements[i].options[j].selected) {
-								serialized.push(target.elements[i].name + "=" + encodeURIComponent(target.elements[i].options[j].value));
-							}
-						}
+						serialized.push(element.name + "=" + encodeURIComponent(element.value));
 						break;
 				}
 				break;
 			case "BUTTON":
-				switch (target.elements[i].type) {
-					case "reset":
+				switch (element.type) {
 					case "submit":
 					case "button":
-						serialized.push(target.elements[i].name + "=" + encodeURIComponent(target.elements[i].value));
+						serialized.push(element.name + "=" + encodeURIComponent(element.value));
 						break;
 				}
 				break;
@@ -63,34 +31,12 @@ function serialize(target) {
 	return serialized.join("&");
 }
 
-function loading(display = true) {
-	let loading = document.querySelector(".loading");
-	if (display) {
-		loading.style.display = "flex";
-	} else {
-		loading.style.display = "none";
-	}
-}
-
-function trigger(message, type = "success") {
-	let trigger_container = document.querySelector(".trigger_container");
-	trigger_container.style.display = "block";
-	trigger_container.classList.add(type);
-
-	document.querySelector(".trigger_message").innerHTML = message;
-
-	setTimeout(function () {
-		trigger_container.style.display = "none";
-	}, 5000);
-}
-
 function ajax(query, show_loading = true) {
 	if (show_loading) {
 		loading(true);
 	}
 
-	let user = JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
-	if (typeof user.username == "undefined" || typeof user.password == "undefined") {
+	if (!query.includes("username=") || !query.includes("password=")) {
 		query = `username=${username}&password=${password}&${query}`;
 	}
 	if (avatar) {
@@ -108,22 +54,22 @@ function ajax(query, show_loading = true) {
 						trigger(parsed.trigger.msg, parsed.trigger.type);
 					}
 					if (typeof parsed.display !== "undefined") {
-						for (let [key, value] of Object.entries(parsed.display)) {
+						for ([key, value] of Object.entries(parsed.display)) {
 							document.querySelector(key).style.display = value;
 						}
 					}
 					if (typeof parsed.setItem !== "undefined") {
-						for (let [key, value] of Object.entries(parsed.setItem)) {
+						for ([key, value] of Object.entries(parsed.setItem)) {
 							localStorage.setItem(key, value);
 						}
 					}
 					if (typeof parsed.innerHTML !== "undefined") {
-						for (let [key, value] of Object.entries(parsed.innerHTML)) {
+						for ([key, value] of Object.entries(parsed.innerHTML)) {
 							document.querySelector(key).innerHTML = value;
 						}
 					}
 					if (typeof parsed.callFunction !== "undefined") {
-						for (let [key, value] of Object.entries(parsed.callFunction)) {
+						for ([key, value] of Object.entries(parsed.callFunction)) {
 							if (value && value.length) {
 								eval(key + `(${value})`);
 							} else {
@@ -151,13 +97,12 @@ function ajax(query, show_loading = true) {
 }
 
 function btn() {
-	let j_btn = document.querySelectorAll(".j_btn");
-	for (let i = 0; i < j_btn.length; i++) {
-		let j_btn_copy = j_btn[i];
-		let j_btn_clone = j_btn_copy.cloneNode(true);
+	for (j_btn of document.querySelectorAll(".j_btn")) {
+		let j_btn_clone = j_btn.cloneNode(true);
 		j_btn_clone.onclick = async function () {
 			let action = j_btn_clone.getAttribute("_action");
 			let id = j_btn_clone.getAttribute("id");
+
 			switch (action) {
 				case "handleAvatar": {
 					let avatars = JSON.parse(localStorage.getItem("user_info")).avatars;
@@ -197,7 +142,29 @@ function btn() {
 					break;
 			}
 		};
-		j_btn_copy.parentNode.replaceChild(j_btn_clone, j_btn_copy);
+		j_btn.parentNode.replaceChild(j_btn_clone, j_btn);
+	}
+}
+
+function trigger(message, type = "success") {
+	let trigger_container = document.querySelector(".trigger_container");
+	trigger_container.style.display = "block";
+	trigger_container.classList.add(type);
+
+	document.querySelector(".trigger_message").innerHTML = message;
+
+	setTimeout(function () {
+		trigger_container.style.display = "none";
+	}, 5000);
+}
+
+
+function loading(display = true) {
+	let loading = document.querySelector(".loading");
+	if (display) {
+		loading.style.display = "flex";
+	} else {
+		loading.style.display = "none";
 	}
 }
 
@@ -214,61 +181,62 @@ function login() {
 		} else {
 			username = userInfo.username;
 			password = userInfo.password;
+
 			if (localStorage.getItem("avatar")) {
 				avatar = JSON.parse(localStorage.getItem("avatar"));
+
 				document.querySelector("#Login").style.display = "none";
 				document.querySelector("#Avatar").style.display = "none";
 				document.querySelector("#Player").style.display = "flex";
-				let avatar_name = document.querySelectorAll(".avatar_name");
-				for (let i = 0; i < avatar_name.length; i++) {
-					avatar_name[i].innerHTML = avatar.avatar_name;
+
+				for (avatar_name of document.querySelectorAll(".avatar_name")) {
+					avatar_name.innerHTML = avatar.avatar_name;
 				}
+
 				document.querySelector(".avatar_container").style.backgroundColor = avatar.color;
 			} else {
 				document.querySelector("#Login").style.display = "none";
 				document.querySelector("#Avatar").style.display = "flex";
 				document.querySelector("#Player").style.display = "none";
+
 				let avatar_element = "";
-				let manage_users_element = "";
 				let avatar_manager_element = "";
-				for (let i = 0; i < userInfo.avatars.length; i++) {
+
+				for ([i, avatar] of userInfo.avatars.entries()) {
 					let color = `hsl(${(i % 18) * 20}, 100%, 50%)`;
 					avatar_element += `
 						<li>
-							<a class="j_btn" _action="handleAvatar" _color="${color}" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
+							<a class="j_btn" _action="handleAvatar" _color="${color}" id="${avatar.id}" style="background-color: ${color};">
 								<img src="assets/images/face-user.png">
 							</a>
-							<span>${userInfo.avatars[i].avatar_name}</span>
+							<span>${avatar.avatar_name}</span>
 						</li>
 					`;
 					avatar_manager_element += `
 						<li>
-							<a class="j_btn" _action="deleteAvatar" id="${userInfo.avatars[i].id}" href="javascript:void(0)" style="background-color: ${color};">
+							<a class="j_btn" _action="deleteAvatar" id="${avatar.id}" style="background-color: ${color};">
 								<div class="bg_edit">
 									<img src="assets/icons/icon-trash.svg">
 								</div>
 								<img src="assets/images/face-user.png">
 							</a>
-							<span>${userInfo.avatars[i].avatar_name}</span>
+							<span>${avatar.avatar_name}</span>
 						</li>
 					`;
 				}
+
 				avatar_element += `
 					<li>
-						<a href="javascript:void(0)" onclick="document.querySelector('.users_modal_container').style.display = 'flex';">
+						<a onclick="document.querySelector('.users_modal_container').style.display = 'flex';">
 							<img style="filter: invert(.8); width: 80px;" src="assets/icons/icon-plus-circle.svg">
 						</a>
 						<span>Adicionar perfil</span>
 					</li>
 				`;
-				manage_users_element = `
-					<a class="btn_manage_users" href="javascript:void(0)" onclick="document.querySelector('.manage_users_modal_container').style.display = 'flex';">
-						<span>Gerenciar perfis</span>
-					</a>
-				`;
+
 				document.querySelector(".avatar_list").innerHTML = avatar_element;
 				document.querySelector(".avatar_list_manager").innerHTML = avatar_manager_element;
-				document.querySelector(".manage_users").innerHTML = manage_users_element;
+
 				btn();
 			}
 		}
@@ -316,9 +284,8 @@ function handlePage(type) {
 	document.querySelector(".search_input_action").value = "";
 	document.querySelector(".search_input_search").value = "";
 
-	let menu_content_a = document.querySelectorAll(".menu_content a");
-	for (let i = 0; i < menu_content_a.length; i++) {
-		menu_content_a[i].classList.remove("active");
+	for (menu_content_a of document.querySelectorAll(".menu_content a")) {
+		menu_content_a.classList.remove("active");
 	}
 	document.querySelector(".menu_content ." + type).classList.add("active");
 
@@ -435,9 +402,11 @@ function handleHome() {
 	document.querySelector(".keep_watching_container").style.display = "none";
 	document.querySelector(".movies_added_container").style.display = "none";
 	document.querySelector(".series_added_container").style.display = "none";
+
 	let home_json = localStorage.getItem("home");
 	if (home_json) {
 		let home = JSON.parse(home_json);
+
 		if (home.keepWatching.length) {
 			document.querySelector(".keep_watching_container").style.display = "flex";
 		}
@@ -450,90 +419,98 @@ function handleHome() {
 		if (home.seriesAdded.length) {
 			document.querySelector(".series_added_container").style.display = "flex";
 		}
+
 		let element = "";
-		for (let i = 0; i < home.keepWatching.length; i++) {
+		for (keepWatching of home.keepWatching) {
 			let image = "";
 			let title = "";
 			let action = "";
-			if (home.keepWatching[i].serie_id) {
+			if (keepWatching.serie_id) {
 				action = `
 					(async function () { 
 						handleModalSerie(); 
-						await handleSerieInfo(null, ${home.keepWatching[i].serie_id}); 
-						handleVideo('${DNS}/series/${username}/${password}/${home.keepWatching[i].stream_id}.${home.keepWatching[i].target_container}', 'video/mp4');
+						await handleSerieInfo(null, ${keepWatching.serie_id}); 
+						handleVideo('${DNS}/series/${username}/${password}/${keepWatching.stream_id}.${keepWatching.target_container}', 'video/mp4');
 					})();
 				`;
-				image = home.keepWatching[i].cover;
-				title = home.keepWatching[i].title;
+				image = keepWatching.cover;
+				title = keepWatching.title;
 			} else {
 				action = `
 					(async function () {
 						handleModalVod(); 
-						await handleVodInfo(null, ${home.keepWatching[i].stream_id}); 
-						handleVideo('${DNS}/movie/${username}/${password}/${home.keepWatching[i].stream_id}.${home.keepWatching[i].target_container}', 'video/mp4');
+						await handleVodInfo(null, ${keepWatching.stream_id}); 
+						handleVideo('${DNS}/movie/${username}/${password}/${keepWatching.stream_id}.${keepWatching.target_container}', 'video/mp4');
 					})();
 				`;
-				image = home.keepWatching[i].movie_image;
-				title = home.keepWatching[i].stream_display_name;
+				image = keepWatching.movie_image;
+				title = keepWatching.stream_display_name;
 			}
 			element += `
 				<li>
-					<a onclick="${action}" href="javascript:void(0)">
+					<a onclick="${action}">
 						${poster(image)}
 						<span class="name">${title}</span>
 					</a>
 				</li>
 			`;
 		}
+
 		document.querySelector(".keep_watching_ul").innerHTML = element;
 		element = "";
-		for (let i = 0; i < home.top.length; i++) {
-			if (home.top[i].stream_id) {
+
+		for ([i, homeTop] of home.top.entries()) {
+			if (homeTop.stream_id) {
 				element += `
 					<li>
-						<a class="top_li" onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${home.top[i].stream_id}); })();" href="javascript:void(0)">
-							${poster(home.top[i].movie_image)}
+						<a class="top_li" onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${homeTop.stream_id}); })();">
+							${poster(homeTop.movie_image)}
 							<span class="position_number">${(i + 1)}</span>
-							<span class="name">${home.top[i].stream_display_name}</span>
+							<span class="name">${homeTop.stream_display_name}</span>
 						</a>
 					</li>
 				`;
 			} else {
 				element += `
 					<li>
-						<a class="top_li" onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${home.top[i].serie_id}); })();" href="javascript:void(0)">
-							${poster(home.top[i].cover)}
+						<a class="top_li" onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${homeTop.serie_id}); })();">
+							${poster(homeTop.cover)}
 							<span class="position_number">${(i + 1)}</span>
-							<span class="name">${home.top[i].title}</span>
+							<span class="name">${homeTop.title}</span>
 						</a>
 					</li>
 				`;
 			}
 		}
+
 		document.querySelector(".top_ul").innerHTML = element;
 		element = "";
-		for (let i = 0; i < home.moviesAdded.length; i++) {
+
+		for (moviesAdded of home.moviesAdded) {
 			element += `
 				<li>
-					<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${home.moviesAdded[i].id}); })();" href="javascript:void(0)">
-						${poster(home.moviesAdded[i].movie_image)}
-						<span class="name">${home.moviesAdded[i].stream_display_name}</span>
+					<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${moviesAdded.id}); })();">
+						${poster(moviesAdded.movie_image)}
+						<span class="name">${moviesAdded.stream_display_name}</span>
 					</a>
 				</li>
 			`;
 		}
+
 		document.querySelector(".movies_added_ul").innerHTML = element;
 		element = "";
-		for (let i = 0; i < home.seriesAdded.length; i++) {
+
+		for (seriesAdded of home.seriesAdded) {
 			element += `
 				<li>
-					<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${home.seriesAdded[i].id}); })();" href="javascript:void(0)">
-						${poster(home.seriesAdded[i].cover)}
-						<span class="name">${home.seriesAdded[i].title}</span>
+					<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${seriesAdded.id}); })();">
+						${poster(seriesAdded.cover)}
+						<span class="name">${seriesAdded.title}</span>
 					</a>
 				</li>
 			`;
 		}
+
 		document.querySelector(".series_added_ul").innerHTML = element;
 		btnScroll();
 	} else {
@@ -557,7 +534,7 @@ function pageLives() {
 		<div class="scroll_horizon channels_view_container">
 			<div class="channels_view_content">
 			</div>
-			<button style="display: block; margin: 10px 0; text-align: right; width: 100%;" type="button" name="button" class="btn_favorite">
+			<button style="margin: 10px 0px; float: right;" type="button" name="button" class="btn_favorite">
 			</button>
 			<ul class="epg_ul">
 			</ul>
@@ -570,10 +547,10 @@ function handleLivesCategories() {
 	if (live_categories) {
 		live_categories = JSON.parse(live_categories);
 		let element = "";
-		for (let i = 0; i < live_categories.length; i++) {
+		for (live_category of live_categories) {
 			element += `
 				<li>
-					<a class="media_category_a" onclick="handleLives(null, ${live_categories[i].category_id})" id="${live_categories[i].category_id}" href="javascript:void(0)">${live_categories[i].category_name}</a>
+					<a class="media_category_a" onclick="handleLives(null, ${live_category.category_id})" id="${live_category.category_id}">${live_category.category_name}</a>
 				</li>
 			`;
 		}
@@ -588,22 +565,21 @@ function handleLives(lives = null, category_id = null) {
 	if (lives) {
 		let element = "";
 		if (lives.length) {
-			for (let i = 0; i < lives.length; i++) {
+			for (live of lives) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleLiveInfo(null, ${lives[i].stream_id}); watchLive('${DNS}/live/${username}/${password}/${lives[i].stream_id}.m3u8'); })();" id="${lives[i].stream_id}" href="javascript:void(0)">
-							${poster(lives[i].stream_icon)}
-							<span>${lives[i].name}</span>
+						<a onclick="(async function () { await handleLiveInfo(null, ${live.stream_id}); watchLive('${DNS}/live/${username}/${password}/${live.stream_id}.m3u8'); })();" id="${live.stream_id}">
+							${poster(live.stream_icon)}
+							<span>${live.name}</span>
 						</a>
 					</li>
 				`;
 			}
-			let media_category_a = document.querySelectorAll(".media_category_a");
-			for (let i = 0; i < media_category_a.length; i++) {
-				if (media_category_a[i].getAttribute("id") == lives[0].category_id) {
-					media_category_a[i].classList.add("active");
+			for (media_category_a of document.querySelectorAll(".media_category_a")) {
+				if (media_category_a.getAttribute("id") == lives[0].category_id) {
+					media_category_a.classList.add("active");
 				} else {
-					media_category_a[i].classList.remove("active");
+					media_category_a.classList.remove("active");
 				}
 			}
 		} else {
@@ -619,18 +595,18 @@ function handleLiveInfo(live_info = null, stream_id = null) {
 	if (live_info) {
 		let element = "";
 		if (live_info.epg_listings.length) {
-			for (let i = 0; i < live_info.epg_listings.length; i++) {
-				let start = new Date(parseInt(live_info.epg_listings[i].start_timestamp) * 1000);
-				let end = new Date(parseInt(live_info.epg_listings[i].stop_timestamp) * 1000);
+			for (epg_listing of live_info.epg_listings) {
+				let start = new Date(parseInt(epg_listing.start_timestamp) * 1000);
+				let end = new Date(parseInt(epg_listing.stop_timestamp) * 1000);
 				element += `
 					<li>
 						<p class="title">
 							<span class="time">
 								${start.getHours()}:${start.getMinutes()} - ${end.getHours()}:${end.getMinutes()}
-							</span> |  ${decodeURIComponent(escape(window.atob(live_info.epg_listings[i].title)))}
+							</span> |  ${decodeURIComponent(escape(window.atob(epg_listing.title)))}
 						</p>
 						<p class="description">
-							${decodeURIComponent(escape(window.atob(live_info.epg_listings[i].description)))}
+							${decodeURIComponent(escape(window.atob(epg_listing.description)))}
 						</p>
 					</li>
 				`;
@@ -638,12 +614,11 @@ function handleLiveInfo(live_info = null, stream_id = null) {
 		}
 		document.querySelector(".epg_ul").innerHTML = element;
 	} else {
-		let channels_list_a = document.querySelectorAll(".channels_list a");
-		for (let i = 0; i < channels_list_a.length; i++) {
-			if (channels_list_a[i].getAttribute("id") == stream_id) {
-				channels_list_a[i].classList.add("active");
+		for (channels_list_a of document.querySelectorAll(".channels_list a")) {
+			if (channels_list_a.getAttribute("id") == stream_id) {
+				channels_list_a.classList.add("active");
 			} else {
-				channels_list_a[i].classList.remove("active");
+				channels_list_a.classList.remove("active");
 			}
 		}
 		ajax("action=get_short_epg&stream_id=" + stream_id + "&limit=10");
@@ -761,7 +736,7 @@ function handleModalVod() {
 							<button type="button" name="button" class="btn_watch">
 								<span><img src="assets/icons/icon-google-play.svg">Assistir</span>
 							</button>
-							<button type="button" name="button" class="btn_favorite" style="float: none; margin-left: 15px;">
+							<button type="button" name="button" class="btn_favorite" style="margin-left: 15px;">
 								<i class="bx bx-heart"></i>
 							</button>
 						</div>
@@ -778,10 +753,10 @@ function handleVodCategories() {
 	if (vod_categories) {
 		vod_categories = JSON.parse(vod_categories);
 		let element = "";
-		for (let i = 0; i < vod_categories.length; i++) {
+		for (vod_category of vod_categories) {
 			element += `
 				<li>
-					<a class="media_category_a" onclick="handleVods(null, ${vod_categories[i].category_id})" id="${vod_categories[i].category_id}" href="javascript:void(0)">${vod_categories[i].category_name}</a>
+					<a class="media_category_a" onclick="handleVods(null, ${vod_category.category_id})" id="${vod_category.category_id}">${vod_category.category_name}</a>
 				</li>
 			`;
 		}
@@ -796,22 +771,21 @@ function handleVods(vods = null, category_id = null) {
 	if (vods) {
 		let element = "";
 		if (vods.length) {
-			for (let i = 0; i < vods.length; i++) {
+			for (vod of vods) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${vods[i].stream_id}); })();" href="javascript:void(0)">
-							${poster(vods[i].stream_icon)}	
-							<span class="name">${vods[i].name}</span>
+						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${vod.stream_id}); })();">
+							${poster(vod.stream_icon)}	
+							<span class="name">${vod.name}</span>
 						</a>
 					</li>
 				`;
 			}
-			let media_category_a = document.querySelectorAll(".media_category_a");
-			for (let i = 0; i < media_category_a.length; i++) {
-				if (media_category_a[i].getAttribute("id") == vods[0].category_id) {
-					media_category_a[i].classList.add("active");
+			for (media_category_a of document.querySelectorAll(".media_category_a")) {
+				if (media_category_a.getAttribute("id") == vods[0].category_id) {
+					media_category_a.classList.add("active");
 				} else {
-					media_category_a[i].classList.remove("active");
+					media_category_a.classList.remove("active");
 				}
 			}
 		} else {
@@ -835,12 +809,14 @@ async function handleVodInfo(movie = null, vod_id = null) {
 		document.querySelector(".media_description .genre").innerHTML = (movie.info.genre ? movie.info.genre : "") + " | " + (movie.info.duration ? movie.info.duration : "");
 		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (movie.info.director ? movie.info.director : "");
 		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (movie.info.cast ? movie.info.cast : "");
+
 		if (movie.info.plot) {
 			document.querySelector(".media_resume").style.display = "block";
 			document.querySelector(".media_resume p").innerHTML = movie.info.plot;
 		} else {
 			document.querySelector(".media_resume").style.display = "none";
 		}
+
 		document.querySelector(".btn_watch").onclick = function () {
 			handleVideo(`${DNS}/movie/${username}/${password}/${movie.movie_data.stream_id}.${movie.movie_data.container_extension}`, "video/mp4");
 		};
@@ -920,10 +896,10 @@ function handleSeriesCategories() {
 	if (series_categories) {
 		series_categories = JSON.parse(series_categories);
 		let element = "";
-		for (let i = 0; i < series_categories.length; i++) {
+		for (series_category of series_categories) {
 			element += `
 				<li>
-					<a class="media_category_a" onclick="handleSeries(null, ${series_categories[i].category_id})" id="${series_categories[i].category_id}" href="javascript:void(0)">${series_categories[i].category_name}</a>
+					<a class="media_category_a" onclick="handleSeries(null, ${series_category.category_id})" id="${series_category.category_id}">${series_category.category_name}</a>
 				</li>
 			`;
 		}
@@ -938,22 +914,21 @@ function handleSeries(series = null, category_id = null) {
 	if (series) {
 		let element = "";
 		if (series.length) {
-			for (let i = 0; i < series.length; i++) {
+			for (serie of series) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${series[i].series_id}); })();" href="javascript:void(0)">
-							${poster(series[i].cover)}	
-							<span class="name">${series[i].name}</span>
+						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${serie.series_id}); })();">
+							${poster(serie.cover)}	
+							<span class="name">${serie.name}</span>
 						</a>
 					</li>
 				`;
 			}
-			let media_category_a = document.querySelectorAll(".media_category_a");
-			for (let i = 0; i < media_category_a.length; i++) {
-				if (media_category_a[i].getAttribute("id") == series[0].category_id) {
-					media_category_a[i].classList.add("active");
+			for (media_category_a of document.querySelectorAll(".media_category_a")) {
+				if (media_category_a.getAttribute("id") == series[0].category_id) {
+					media_category_a.classList.add("active");
 				} else {
-					media_category_a[i].classList.remove("active");
+					media_category_a.classList.remove("active");
 				}
 			}
 		} else {
@@ -977,40 +952,46 @@ async function handleSerieInfo(serie = null, series_id = null) {
 		document.querySelector(".media_description .genre").innerHTML = (serie.info.genre ? serie.info.genre : "") + " | " + (serie.info.duration ? serie.info.duration : "");
 		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (serie.info.director ? serie.info.director : "");
 		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (serie.info.cast ? serie.info.cast : "");
+
 		if (serie.info.plot) {
 			document.querySelector(".media_resume").style.display = "block";
 			document.querySelector(".media_resume p").innerHTML = serie.info.plot;
 		} else {
 			document.querySelector(".media_resume").style.display = "none";
 		}
+
 		if (serie.episodes) {
 			let first = true;
 			let seasons_ul = "";
 			let box_episodes = "";
-			for (let [id, seasons] of Object.entries(serie.episodes)) {
+
+			for ([id, seasons] of Object.entries(serie.episodes)) {
 				seasons_ul += `
 					<li class="seasons_li">
 						<p class="title">
-							<a href="javascript:void(0)" onclick="handleChangeSeason(${id})" id="${id}" class="li_season ${first ? "active" : ""}">Temporada ${id}</a>
+							<a onclick="handleChangeSeason(${id})" id="${id}" class="li_season ${first ? "active" : ""}">Temporada ${id}</a>
 						</p>
 					</li>
 				`;
 				box_episodes += `
 					<ul class="hide_scrollbar scroll_horizon episodes_ul" id="${id}" style="padding-left: 5px; display: ${first ? "flex" : "none"};">
 				`;
+
 				for (episode of Object.values(seasons)) {
 					box_episodes += `
 						<li>
-							<a onclick="handleVideo('${DNS}/series/${username}/${password}/${episode.id}.${episode.container_extension}', 'video/mp4')" href="javascript:void(0)">
+							<a onclick="handleVideo('${DNS}/series/${username}/${password}/${episode.id}.${episode.container_extension}', 'video/mp4')">
 								${poster(episode.info.movie_image)}	
 								<span class="name">${episode.title}</span>
 							</a>
 						</li>
 					`;
 				}
+
 				box_episodes += "</ul>";
 				first = false;
 			}
+
 			document.querySelector(".seasons_ul").innerHTML = seasons_ul;
 			document.querySelector(".box_episodes").innerHTML = box_episodes;
 
@@ -1045,17 +1026,16 @@ async function handleSerieInfo(serie = null, series_id = null) {
 }
 
 function handleChangeSeason(id) {
-	let seasons_li_a = document.querySelectorAll(".seasons_li a");
-	for (let i = 0; i < seasons_li_a.length; i++) {
-		seasons_li_a[i].classList.remove("active");
+	for (seasons_li_a of document.querySelectorAll(".seasons_li a")) {
+		seasons_li_a.classList.remove("active");
 	}
 	document.querySelector(`.seasons_li a[id="${id}"]`).classList.add("active");
-	let episodes_ul = document.querySelectorAll(".episodes_ul");
-	for (let i = 0; i < episodes_ul.length; i++) {
-		if (episodes_ul[i].getAttribute("id") == id) {
-			episodes_ul[i].style.display = "flex";
+
+	for (episodes_ul of document.querySelectorAll(".episodes_ul")) {
+		if (episodes_ul.getAttribute("id") == id) {
+			episodes_ul.style.display = "flex";
 		} else {
-			episodes_ul[i].style.display = "none";
+			episodes_ul.style.display = "none";
 		}
 	}
 }
@@ -1110,53 +1090,60 @@ function handleFavorites() {
 	document.querySelector(".carousel_section_generic_container.lives").style.display = "none";
 	document.querySelector(".carousel_section_generic_container.movies").style.display = "none";
 	document.querySelector(".carousel_section_generic_container.series").style.display = "none";
+
 	let favorites = localStorage.getItem("favorites");
 	if (favorites) {
 		favorites = JSON.parse(favorites);
+
 		let element = "";
 		if (favorites.movies.length) {
-			for (let i = 0; i < favorites.movies.length; i++) {
+			for (movie of favorites.movies) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${favorites.movies[i].id}); })();" href="javascript:void(0)">
-							${poster(favorites.movies[i].movie_image)}
-							<span class="name">${favorites.movies[i].stream_display_name}</span>
+						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${movie.id}); })();">
+							${poster(movie.movie_image)}
+							<span class="name">${movie.stream_display_name}</span>
 						</a>
 					</li>
 				`;
 			}
 			document.querySelector(".carousel_section_generic_container.movies").style.display = "block";
 		}
+
 		document.querySelector(".movies_ul").innerHTML = element;
 		element = "";
+
 		if (favorites.series.length) {
-			for (let i = 0; i < favorites.series.length; i++) {
+			for (serie of favorites.series) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${favorites.series[i].id}); })();" href="javascript:void(0)">
-							${poster(favorites.series[i].cover)}
-							<span class="name">${favorites.series[i].title}</span>
+						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${serie.id}); })();">
+							${poster(serie.cover)}
+							<span class="name">${serie.title}</span>
 						</a>
 					</li>
 				`;
 			}
 			document.querySelector(".carousel_section_generic_container.series").style.display = "block";
 		}
+
 		document.querySelector(".series_ul").innerHTML = element;
 		element = "";
+
 		if (favorites.lives.length) {
-			for (let i = 0; i < favorites.lives.length; i++) {
+			for (live of favorites.lives) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handlePage('lives'); handleLiveInfo(null, ${favorites.lives[i].id}); watchLive('${DNS}/live/${username}/${password}/${favorites.lives[i].id}.m3u8'); })();" href="javascript:void(0)" class="live">
-							${poster(favorites.lives[i].stream_icon)}	
-							<span class="name">${favorites.lives[i].stream_display_name}</span>
+						<a onclick="(async function () { await handlePage('lives'); handleLiveInfo(null, ${live.id}); watchLive('${DNS}/live/${username}/${password}/${live.id}.m3u8'); })();" class="live">
+							${poster(live.stream_icon)}	
+							<span class="name">${live.stream_display_name}</span>
 						</a>
 					</li>
 				`;
 			}
 			document.querySelector(".carousel_section_generic_container.lives").style.display = "block";
 		}
+
 		document.querySelector(".lives_ul").innerHTML = element;
 		btnScroll();
 	} else {
@@ -1290,54 +1277,55 @@ function handleVideo(link, type) {
 
 		timeHidePlayerButtons = 3;
 
-		try {
-			if (link.includes("/movie/")) {
-				let title = document.querySelector(".media_description .title").textContent;
-				document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
-			} else if (link.includes("/series/")) {
-				let episodes = document.querySelectorAll(".episodes_ul li a");
+		let player_video_prev = document.querySelector(".player_video_prev");
+		let player_video_next = document.querySelector(".player_video_next");
 
-				for (let i = 0; i < episodes.length; i++) {
-					if (episodes[i].getAttribute("onclick").includes(link)) {
-						episodes[i].classList.add("active-border");
-						episodes[i].scrollIntoView();
+		if (link.includes("/movie/")) {
+			player_video_prev.style.display = "none";
+			player_video_next.style.display = "none";
 
-						let title = episodes[i].querySelector("span").textContent;
-						document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
+			let title = document.querySelector(".media_description .title").textContent;
+			document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
+		} else {
+			let episodes = document.querySelectorAll(".episodes_ul li a");
+			for ([i, episode] of episodes.entries()) {
+				if (episode.getAttribute("onclick").includes(link)) {
+					episode.classList.add("active-border");
+					episode.scrollIntoView();
 
-						handleChangeSeason(episodes[i].parentNode.parentNode.getAttribute("id"));
+					let title = episode.querySelector("span").textContent;
+					document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
 
-						let prev_episode = episodes[i - 1];
-						let next_episode = episodes[i + 1];
+					handleChangeSeason(episode.parentNode.parentNode.getAttribute("id"));
 
-						if (prev_episode) {
-							let player_video_prev = document.querySelector(".player_video_prev");
-							player_video_prev.onclick = function () {
-								if (player) {
-									player.dispose();
-									player = null;
-								}
-								prev_episode.click();
-							};
-						}
-						if (next_episode) {
-							let player_video_next = document.querySelector(".player_video_next");
-							player_video_next.onclick = function () {
-								if (player) {
-									player.dispose();
-									player = null;
-								}
-								timestamps[video_code] = 0;
-								next_episode.click();
-							};
-						}
-					} else {
-						episodes[i].classList.remove("active-border");
+					let prev_episode = episodes[i - 1];
+					let next_episode = episodes[i + 1];
+
+					if (prev_episode) {
+						player_video_prev.style.display = "block";
+						player_video_prev.onclick = function () {
+							if (player) {
+								player.dispose();
+								player = null;
+							}
+							prev_episode.click();
+						};
 					}
+					if (next_episode) {
+						player_video_next.style.display = "block";
+						player_video_next.onclick = function () {
+							if (player) {
+								player.dispose();
+								player = null;
+							}
+							timestamps[video_code] = 0;
+							next_episode.click();
+						};
+					}
+				} else {
+					episode.classList.remove("active-border");
 				}
 			}
-		} catch (error) {
-			console.log(error);
 		}
 	});
 }
@@ -1425,15 +1413,14 @@ var avatar = "";
 var username = "";
 var password = "";
 
-let forms = document.querySelectorAll("form");
-if (forms.length) {
-	for (let i = 0; i < forms.length; i++) {
-		forms[i].onsubmit = function (e) {
-			e.preventDefault();
-			ajax(serialize(e.target));
-		};
-	}
+
+for (form of document.querySelectorAll("form")) {
+	form.onsubmit = function (e) {
+		e.preventDefault();
+		ajax(serialize(e.target));
+	};
 }
+
 
 btn();
 login();
@@ -1448,7 +1435,7 @@ if (user_info && user_info.username && user_info.password) {
 			try {
 				let parsed = JSON.parse(xhr.response);
 				if (typeof parsed.setItem !== "undefined") {
-					for (let [key, value] of Object.entries(parsed.setItem)) {
+					for ([key, value] of Object.entries(parsed.setItem)) {
 						localStorage.setItem(key, value);
 					}
 				}

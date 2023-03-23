@@ -1341,11 +1341,11 @@ function keep_watching(src, time) {
 	}
 }
 
-function playerButtons(visibility) {
-	document.querySelector(".player_video_close").style.visibility = visibility;
-	document.querySelector(".player_video_prev").style.visibility = visibility;
-	document.querySelector(".player_video_next").style.visibility = visibility;
-	document.querySelector(".title_media").style.visibility = visibility;
+function playerButtons(opacity) {
+	document.querySelector(".player_video_close").style.opacity = opacity;
+	document.querySelector(".player_video_prev").style.opacity = opacity;
+	document.querySelector(".player_video_next").style.opacity = opacity;
+	document.querySelector(".title_media").style.opacity = opacity;
 }
 
 let timeHidePlayerButtons = 3;
@@ -1354,22 +1354,22 @@ setInterval(function () {
 		timeHidePlayerButtons--;
 	}
 	if (timeHidePlayerButtons <= 0) {
-		playerButtons("hidden");
+		playerButtons("0");
 	}
 }, 1000);
 
 document.querySelector(".player_video_container").onkeydown = function () {
-	playerButtons("visible");
+	playerButtons("1");
 	timeHidePlayerButtons = 3;
 };
 
 document.querySelector(".player_video_container").onmousemove = function () {
-	playerButtons("visible");
+	playerButtons("1");
 	timeHidePlayerButtons = 3;
 };
 
 document.querySelector(".player_video_container").onclick = function () {
-	playerButtons("visible");
+	playerButtons("1");
 	timeHidePlayerButtons = 3;
 };
 

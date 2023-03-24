@@ -233,6 +233,7 @@ body {
 	text-align: center;
 	border-radius: 10px;
 	margin-bottom: 15px;
+	transition: all 0.3s ease-out;
 }
 
 .users_content a:hover {
@@ -284,36 +285,36 @@ body {
 }
 
 .btn_manage_users {
-	color: grey;
+	color: white;
 	cursor: pointer;
 	border-radius: 5px;
 	letter-spacing: 1px;
 	padding: 0.5em 1.5em;
 	text-decoration: none;
-	border: 1px solid grey;
+	border: 1px solid white;
 	transition: all 0.3s ease-out;
 }
 
 .btn_manage_users:hover {
-	color: white;
-	border: 1px solid white;
+	color: grey;
+	border: 1px solid grey;
 }
 
 .btn_manage_users_concluded {
-	color: black;
+	color: white;
 	cursor: pointer;
 	margin-top: 10px;
 	border-radius: 5px;
 	letter-spacing: 1px;
-	background: white;
 	padding: 0.5em 1.5em;
 	text-decoration: none;
+	border: 1px solid white;
 	transition: all 0.3s ease-out;
 }
 
 .btn_manage_users_concluded:hover {
-	color: white;
-	background-color: #7669fe;
+	color: grey;
+	border: 1px solid grey;
 }
 
 .bg_edit {
@@ -366,10 +367,11 @@ body {
 	border-radius: 5px;
 	padding: 15px 20px;
 	background-color: #7669fe;
+	transition: all 0.3s ease-out;
 }
 
 .users_modal_content button:hover {
-	opacity: 0.8;
+	opacity: 0.6;
 }
 
 .account_exit a {
@@ -443,11 +445,13 @@ body {
 	cursor: pointer;
 	border-radius: 5px;
 	text-decoration: none;
-	background-color: #282828;
+	border: 1px solid grey;
+	transition: all 0.3s ease-out;
 }
 
 .profile_container a:hover {
-	opacity: 0.6;
+	color: white;
+	border: 1px solid white;
 }
 
 .menu_content {
@@ -652,10 +656,11 @@ body {
 	text-decoration: none;
 }
 
-.carousel_section_generic_content a>img {
+.carousel_section_generic_content a img {
 	width: 100%;
 	height: 100%;
 	border-radius: 10px;
+	transition: all 0.5s ease-out;
 }
 
 .carousel_section_generic_content a:hover img {
@@ -665,7 +670,7 @@ body {
 .carousel_section_generic_content.small a {
 	width: 157px;
 	height: 235px;
-	cursor: pointer;
+	transition: all 0.5s ease-out;
 }
 
 .carousel_section_generic_content.small a:hover img {
@@ -732,6 +737,7 @@ body {
 	display: block;
 	cursor: pointer;
 	text-decoration: none;
+	transition: all 0.5s ease-out;
 }
 
 .channels_categories a:hover {
@@ -776,6 +782,7 @@ body {
 	cursor: pointer;
 	align-items: center;
 	text-decoration: none;
+	transition: all 0.5s ease-out;
 }
 
 .channels_list a:hover {
@@ -883,16 +890,18 @@ body {
 	position: relative;
 	border-radius: 10px;
 	text-decoration: none;
+	transition: all 0.5s ease-out;
 }
 
 .media_content a:hover {
 	opacity: 0.6;
 }
 
-.media_content a>img {
+.media_content a img {
 	width: 100%;
 	height: 100%;
 	border-radius: 10px;
+	transition: all 0.5s ease-out;
 }
 
 .media_content .name {
@@ -964,7 +973,7 @@ body {
 }
 
 .modal_media_close:hover {
-	opacity: 0.7;
+	filter: invert(40%) sepia(85%) saturate(7450%) hue-rotate(245deg) brightness(100%) contrast(100%);
 }
 
 .modal_media_close i {
@@ -1065,7 +1074,7 @@ body {
 }
 
 .btn_favorite:hover {
-	opacity: 0.7;
+	filter: invert(40%) sepia(85%) saturate(7450%) hue-rotate(245deg) brightness(100%) contrast(100%);
 }
 
 .btn_favorite i {
@@ -1111,15 +1120,16 @@ body {
 	padding: 10px 15px;
 	display: inline-block;
 	text-decoration: none;
+	transition: all 0.3s ease-out;
 }
 
-.seasons_li a:hover {
-	background-color: rgb(0, 0, 0, 0.4);
+.seasons_li a:hover:not(.active) {
+	background-color: rgb(0, 0, 0, 0.5);
 }
 
 .seasons_li a.active {
+	background-color: black;
 	border-bottom: 2px solid #7669fe;
-	background-color: rgb(0, 0, 0, 0.5);
 }
 
 .carousel_section_generic_content .episodes_ul {

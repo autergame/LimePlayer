@@ -1,7 +1,5 @@
 function scroll_work(elements) {
-	for (let i = 0; i < elements.length; i++) {
-		let element = elements[i];
-
+	for (element of elements) {
 		if (element.getAttribute("scroll") != "true") {
 			let element_clone = element.cloneNode(true);
 			element_clone.setAttribute("scroll", "true");
@@ -10,24 +8,24 @@ function scroll_work(elements) {
 			let offset = 0;
 			let should_move = false;
 
-			element_clone.onmousedown = (e) => {
+			element_clone.onmousedown = function (e) {
 				should_move = true;
 				top = element_clone.scrollLeft;
 				offset = e.pageX - element_clone.scrollTop;
 				element_clone.classList.add("active");
 			};
 
-			element_clone.onmouseleave = () => {
+			element_clone.onmouseleave = function () {
 				should_move = false;
 				element_clone.classList.remove("active");
 			};
 
-			element_clone.onmouseup = () => {
+			element_clone.onmouseup = function () {
 				should_move = false;
 				element_clone.classList.remove("active");
 			};
 
-			element_clone.onmousemove = (e) => {
+			element_clone.onmousemove = function (e) {
 				if (!should_move) {
 					return;
 				}

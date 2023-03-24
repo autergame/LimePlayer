@@ -71,7 +71,7 @@ body {
 	top: 0;
 	left: 0;
 	width: 100%;
-	opacity: .8;
+	opacity: 0.8;
 	height: 100vh;
 	display: none;
 	z-index: 99999;
@@ -235,6 +235,10 @@ body {
 	margin-bottom: 15px;
 }
 
+.users_content a:hover {
+	opacity: 0.5;
+}
+
 .users_content span {
 	color: #ccc;
 	display: block;
@@ -282,6 +286,7 @@ body {
 .btn_manage_users {
 	color: grey;
 	cursor: pointer;
+	border-radius: 5px;
 	letter-spacing: 1px;
 	padding: 0.5em 1.5em;
 	text-decoration: none;
@@ -298,6 +303,7 @@ body {
 	color: black;
 	cursor: pointer;
 	margin-top: 10px;
+	border-radius: 5px;
 	letter-spacing: 1px;
 	background: white;
 	padding: 0.5em 1.5em;
@@ -356,9 +362,9 @@ body {
 	color: #fff;
 	cursor: pointer;
 	margin-top: 10px;
-	font-size: 1.2em;
+	font-size: 1.5em;
 	border-radius: 5px;
-	padding: 20px 25px;
+	padding: 15px 20px;
 	background-color: #7669fe;
 }
 
@@ -367,20 +373,21 @@ body {
 }
 
 .account_exit a {
-	color: #fff;
 	display: block;
 	cursor: pointer;
+	color: #dd4d4d;
 	margin-top: 25px;
 	border-radius: 5px;
 	letter-spacing: 1px;
 	padding: 0.5em 1.5em;
 	text-decoration: none;
-	background-color: #dd5b5b;
+	border: 1px solid #dd4d4d;
 	transition: all 0.3s ease-out;
 }
 
 .account_exit a:hover {
-	opacity: .6;
+	color: #dc6d6d;
+	border: 1px solid #dc6d6d;
 }
 
 .form_avatar {
@@ -440,7 +447,7 @@ body {
 }
 
 .profile_container a:hover {
-	opacity: .6;
+	opacity: 0.6;
 }
 
 .menu_content {
@@ -573,11 +580,22 @@ body {
 	justify-content: space-between;
 }
 
+.container_arrows {
+	display: flex;
+	margin-right: 5px;
+}
+
 .container_arrows img {
 	width: 32px;
+	height: 32px;
+	margin: 0 4px;
+	padding: 0 8px;
 	cursor: pointer;
-	padding: 0 10px;
 	filter: invert(1);
+}
+
+.container_arrows img:hover {
+	filter: invert(40%) sepia(85%) saturate(7450%) hue-rotate(245deg) brightness(100%) contrast(100%);
 }
 
 .arrows {
@@ -591,6 +609,10 @@ body {
 	margin: 0 4px;
 	font-size: 3em;
 	cursor: pointer;
+}
+
+.arrows i:hover {
+	filter: invert(40%) sepia(85%) saturate(7450%) hue-rotate(245deg) brightness(100%) contrast(100%);
 }
 
 .modal_media_content .arrows {
@@ -636,10 +658,18 @@ body {
 	border-radius: 10px;
 }
 
+.carousel_section_generic_content a:hover img {
+	opacity: 0.6;
+}
+
 .carousel_section_generic_content.small a {
 	width: 157px;
 	height: 235px;
 	cursor: pointer;
+}
+
+.carousel_section_generic_content.small a:hover img {
+	opacity: 0.6;
 }
 
 .carousel_section_generic_content .position_number {
@@ -663,7 +693,7 @@ body {
 	padding: 8px;
 	color: #fff;
 	display: block;
-	font-size: .8em;
+	font-size: 0.8em;
 	margin-top: 5px;
 	position: absolute;
 	border-bottom-left-radius: 10px;
@@ -693,7 +723,7 @@ body {
 }
 
 .channels_categories li {
-	font-size: .8em;
+	font-size: 0.8em;
 }
 
 .channels_categories a {
@@ -728,7 +758,7 @@ body {
 }
 
 .channels_list li {
-	font-size: .8em;
+	font-size: 0.8em;
 	position: relative;
 }
 
@@ -820,7 +850,7 @@ body {
 
 .epg_ul .description {
 	margin-top: 5px;
-	font-size: .87em;
+	font-size: 0.87em;
 	color: #6c6c6c;
 }
 
@@ -855,6 +885,10 @@ body {
 	text-decoration: none;
 }
 
+.media_content a:hover {
+	opacity: 0.6;
+}
+
 .media_content a>img {
 	width: 100%;
 	height: 100%;
@@ -869,7 +903,7 @@ body {
 	color: #fff;
 	display: block;
 	margin-top: 5px;
-	font-size: .8em;
+	font-size: 0.8em;
 	position: absolute;
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
@@ -918,7 +952,7 @@ body {
 	display: flex;
 	position: relative;
 	flex-direction: column;
-	background-color: rgba(0, 0, 0, .9);
+	background-color: rgba(0, 0, 0, 0.9);
 }
 
 .modal_media_close {
@@ -927,6 +961,10 @@ body {
 	position: fixed;
 	filter: invert(1);
 	background: transparent;
+}
+
+.modal_media_close:hover {
+	opacity: 0.7;
 }
 
 .modal_media_close i {
@@ -977,17 +1015,17 @@ body {
 }
 
 .media_description .genre {
-	font-size: .8;
+	font-size: 0.8;
 	margin: 10px 0 20px 0;
 }
 
 .media_description .director {
-	font-size: .87em;
+	font-size: 0.87em;
 	margin-bottom: 5px;
 }
 
 .media_description .cast {
-	font-size: .87em;
+	font-size: 0.87em;
 	margin-bottom: 10px;
 }
 
@@ -1004,7 +1042,7 @@ body {
 }
 
 .btn_watch:hover {
-	opacity: .8;
+	opacity: 0.7;
 }
 
 .btn_watch img {
@@ -1027,7 +1065,7 @@ body {
 }
 
 .btn_favorite:hover {
-	opacity: .8;
+	opacity: 0.7;
 }
 
 .btn_favorite i {
@@ -1040,9 +1078,9 @@ body {
 	color: #fff;
 	padding: 15px;
 	margin-top: 15px;
-	font-size: .87em;
+	font-size: 0.87em;
 	border-radius: 5px;
-	background-color: rgba(0, 0, 0, .6);
+	background-color: rgba(0, 0, 0, 0.6);
 }
 
 .seasons_container {
@@ -1063,7 +1101,7 @@ body {
 
 .seasons_li .title {
 	color: #fff;
-	font-size: .9em;
+	font-size: 0.9em;
 	margin-bottom: 5px;
 }
 
@@ -1091,7 +1129,7 @@ body {
 	min-width: 150px;
 	max-height: 350px;
 	margin-right: 5px;
-	background-color: rgba(0, 0, 0, .7);
+	background-color: rgba(0, 0, 0, 0.7);
 }
 
 .episodes_ul a {
@@ -1122,7 +1160,7 @@ body {
 	position: absolute;
 	text-align: center;
 	transition: all 0.2s ease-out;
-	background-color: rgba(20, 20, 20, .85);
+	background-color: rgba(20, 20, 20, 0.85);
 }
 
 .title_media h2 {
@@ -1145,13 +1183,8 @@ body {
 	cursor: pointer;
 	padding: 8px 10px;
 	position: absolute;
-	border-radius: 50%;
 	background-color: transparent;
 	transition: all 0.2s ease-out;
-}
-
-.player_video_close:hover {
-	background-color: #7669fe;
 }
 
 .player_video_prev {
@@ -1164,13 +1197,8 @@ body {
 	cursor: pointer;
 	margin-left: 10px;
 	position: absolute;
-	border-radius: 50%;
 	background-color: transparent;
 	transition: all 0.2s ease-out;
-}
-
-.player_video_prev:hover {
-	background-color: #7669fe;
 }
 
 .player_video_next {
@@ -1183,13 +1211,8 @@ body {
 	cursor: pointer;
 	position: absolute;
 	margin-right: 10px;
-	border-radius: 50%;
 	background-color: transparent;
 	transition: all 0.2s ease-out;
-}
-
-.player_video_next:hover {
-	background-color: #7669fe;
 }
 
 .player_video_prev img {
@@ -1197,14 +1220,26 @@ body {
 	filter: invert(1);
 }
 
+.player_video_prev img:hover {
+	filter: invert(40%) sepia(85%) saturate(7450%) hue-rotate(245deg) brightness(100%) contrast(100%);
+}
+
 .player_video_next img {
 	width: 65%;
 	filter: invert(1);
 }
 
+.player_video_next img:hover {
+	filter: invert(40%) sepia(85%) saturate(7450%) hue-rotate(245deg) brightness(100%) contrast(100%);
+}
+
 .player_video_close img {
 	width: 100%;
 	filter: invert(1);
+}
+
+.player_video_close img:hover {
+	filter: invert(40%) sepia(85%) saturate(7450%) hue-rotate(245deg) brightness(100%) contrast(100%);
 }
 
 .active-border {

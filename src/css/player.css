@@ -23,7 +23,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-	min-height: 50px;
+	min-height: 40px;
 	border-radius: 10px;
 	background: #7669fe;
 	background-clip: content-box;
@@ -42,20 +42,10 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
 }
 
 * {
 	font-family: "Roboto", sans-serif;
-}
-
-a {
-	font-size: 1em;
-}
-
-img {
-	max-width: 100%;
 }
 
 html,
@@ -90,7 +80,7 @@ body {
 	top: 0;
 	right: 0;
 	width: 100%;
-	color: #fff;
+	color: white;
 	display: none;
 	padding: 20px;
 	z-index: 9999999;
@@ -163,7 +153,7 @@ body {
 .login_input_container input {
 	width: 100%;
 	border: none;
-	color: #fff;
+	color: white;
 	font-size: 1.2em;
 	padding: 20px 25px;
 	border-radius: 5px;
@@ -172,13 +162,13 @@ body {
 }
 
 .login_input_container input::placeholder {
-	color: #fff;
+	color: white;
 }
 
 .login_login_form button {
 	width: 100%;
 	border: none;
-	color: #fff;
+	color: white;
 	cursor: pointer;
 	font-size: 1.2em;
 	padding: 20px 25px;
@@ -206,7 +196,7 @@ body {
 }
 
 .users_title p {
-	color: #fff;
+	color: white;
 	font-size: 3em;
 	text-align: center;
 	margin-bottom: 30px;
@@ -216,7 +206,7 @@ body {
 	gap: 20px;
 	float: left;
 	display: flex;
-	color: #fff;
+	color: white;
 	list-style: none;
 }
 
@@ -296,8 +286,9 @@ body {
 }
 
 .btn_manage_users:hover {
-	color: grey;
+	color: black;
 	border: 1px solid grey;
+	background-color: white;
 }
 
 .btn_manage_users_concluded {
@@ -313,8 +304,9 @@ body {
 }
 
 .btn_manage_users_concluded:hover {
-	color: grey;
+	color: black;
 	border: 1px solid grey;
+	background-color: white;
 }
 
 .bg_edit {
@@ -337,7 +329,7 @@ body {
 }
 
 .manage_users_modal_content h1 {
-	color: #fff;
+	color: white;
 	font-weight: 400;
 	font-size: 2.9em;
 	margin-bottom: 30px;
@@ -346,21 +338,26 @@ body {
 .users_modal_content input {
 	width: 100%;
 	border: none;
-	color: #fff;
+	color: white;
 	font-size: 1.2em;
 	border-radius: 5px;
 	padding: 20px 25px;
+	transition: all 0.3s ease-out;
 	background-color: rgba(255, 255, 255, 0.3);
 }
 
+.users_modal_content input:hover:not(:focus) {
+	opacity: 0.6;
+}
+
 .users_modal_content input::placeholder {
-	color: #fff;
+	color: #9e9e9e;
 }
 
 .users_modal_content button {
 	width: 100%;
 	border: none;
-	color: #fff;
+	color: white;
 	cursor: pointer;
 	margin-top: 10px;
 	font-size: 1.5em;
@@ -388,7 +385,8 @@ body {
 }
 
 .account_exit a:hover {
-	color: #dc6d6d;
+	color: white;
+	background-color: red;
 	border: 1px solid #dc6d6d;
 }
 
@@ -408,7 +406,7 @@ body {
 .menu_container {
 	float: left;
 	display: flex;
-	padding: 40px;
+	padding: 35.5px;
 	position: relative;
 	justify-content: center;
 	background-color: #1c1c1c;
@@ -432,26 +430,31 @@ body {
 	display: inline-block;
 }
 
+.avatar_container img {
+	max-width: 100%;
+}
+
 .profile_container p {
-	color: #fff;
+	color: white;
 	margin-bottom: 15px;
 }
 
 .profile_container a {
-	color: #fff;
+	color: white;
 	padding: 10px;
 	font-size: 1em;
 	display: block;
 	cursor: pointer;
 	border-radius: 5px;
 	text-decoration: none;
-	border: 1px solid grey;
+	border: 1px solid white;
 	transition: all 0.3s ease-out;
 }
 
 .profile_container a:hover {
-	color: white;
-	border: 1px solid white;
+	color: black;
+	border: 1px solid grey;
+	background-color: white;
 }
 
 .menu_content {
@@ -468,7 +471,7 @@ body {
 }
 
 .menu_content a {
-	color: #fff;
+	color: white;
 	display: block;
 	cursor: pointer;
 	text-align: center;
@@ -478,6 +481,8 @@ body {
 .menu_content span {
 	display: block;
 	margin-top: 5px;
+	letter-spacing: 1px;
+	text-shadow: 3px 3px 5px #000000;
 }
 
 .menu_content a.active img {
@@ -496,7 +501,7 @@ body {
 .page_topnav {
 	width: 100%;
 	float: left;
-	color: #fff;
+	color: white;
 	display: flex;
 	padding: 30px;
 	align-items: center;
@@ -525,7 +530,7 @@ body {
 	float: left;
 	width: 100%;
 	border: none;
-	color: #fff;
+	color: white;
 	outline: none;
 	font-size: 1.1em;
 	border-radius: 5px;
@@ -550,7 +555,7 @@ body {
 	float: left;
 	width: 100%;
 	height: 100%;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .carousel_section_generic_container {
@@ -565,7 +570,7 @@ body {
 }
 
 .carousel_section_generic_title {
-	color: #fff;
+	color: white;
 	font-size: 1.2em;
 	font-weight: 500;
 	padding-left: 30px;
@@ -609,7 +614,7 @@ body {
 }
 
 .arrows i {
-	color: #fff;
+	color: white;
 	margin: 0 4px;
 	font-size: 3em;
 	cursor: pointer;
@@ -660,7 +665,7 @@ body {
 	width: 100%;
 	height: 100%;
 	border-radius: 10px;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .carousel_section_generic_content a:hover img {
@@ -670,7 +675,7 @@ body {
 .carousel_section_generic_content.small a {
 	width: 157px;
 	height: 235px;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .carousel_section_generic_content.small a:hover img {
@@ -683,7 +688,7 @@ body {
 	width: 48px;
 	height: 48px;
 	padding: 4px;
-	color: #fff;
+	color: white;
 	font-size: 2em;
 	position: absolute;
 	text-align: center;
@@ -696,7 +701,7 @@ body {
 	bottom: 0;
 	width: 100%;
 	padding: 8px;
-	color: #fff;
+	color: white;
 	display: block;
 	font-size: 0.8em;
 	margin-top: 5px;
@@ -704,12 +709,6 @@ body {
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
 	background-color: rgba(0, 0, 0, 0.7);
-}
-
-.scroll_horizon.active {
-	cursor: grabbing;
-	transform: scale(.99);
-	cursor: -webkit-grabbing;
 }
 
 .channels_categories {
@@ -732,12 +731,12 @@ body {
 }
 
 .channels_categories a {
-	color: #fff;
+	color: white;
 	padding: 15px;
 	display: block;
 	cursor: pointer;
 	text-decoration: none;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .channels_categories a:hover {
@@ -776,13 +775,13 @@ body {
 }
 
 .channels_list a {
-	color: #fff;
+	color: white;
 	padding: 13px;
 	display: flex;
 	cursor: pointer;
 	align-items: center;
 	text-decoration: none;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .channels_list a:hover {
@@ -804,7 +803,9 @@ body {
 
 .channels_view_container {
 	float: right;
-	padding: 30px;
+	padding-top: 30px;
+	padding-left: 30px;
+	padding-right: 30px;
 	text-align: center;
 	overflow-y: overlay;
 	width: calc(100% - 550px);
@@ -838,7 +839,7 @@ body {
 	overflow: auto;
 	text-align: left;
 	list-style: none;
-	max-height: 135px;
+	max-height: 140px;
 }
 
 .epg_ul li {
@@ -847,7 +848,7 @@ body {
 }
 
 .epg_ul .title {
-	color: #fff;
+	color: white;
 	font-size: 1.1em;
 }
 
@@ -890,7 +891,7 @@ body {
 	position: relative;
 	border-radius: 10px;
 	text-decoration: none;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .media_content a:hover {
@@ -901,7 +902,7 @@ body {
 	width: 100%;
 	height: 100%;
 	border-radius: 10px;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 }
 
 .media_content .name {
@@ -909,7 +910,7 @@ body {
 	bottom: 0;
 	width: 100%;
 	padding: 8px;
-	color: #fff;
+	color: white;
 	display: block;
 	margin-top: 5px;
 	font-size: 0.8em;
@@ -941,7 +942,7 @@ body {
 	position: absolute;
 	align-items: center;
 	justify-content: center;
-	transition: all 0.5s ease-out;
+	transition: all 0.3s ease-out;
 	background-color: rgba(0, 0, 0, 0.9);
 }
 
@@ -996,6 +997,7 @@ body {
 }
 
 .media_cover img {
+	max-width: 100%;
 	user-select: none;
 	border-radius: 10px;
 }
@@ -1004,7 +1006,7 @@ body {
 	top: 0;
 	right: 0;
 	padding: 5px;
-	color: #fff;
+	color: white;
 	position: absolute;
 	background-color: #7669fe;
 	border-bottom-left-radius: 10px;
@@ -1013,7 +1015,7 @@ body {
 .media_description {
 	width: 70%;
 	float: left;
-	color: #fff;
+	color: white;
 }
 
 .media_description .title {
@@ -1024,8 +1026,12 @@ body {
 }
 
 .media_description .genre {
-	font-size: 0.8;
-	margin: 10px 0 20px 0;
+	font-size: 0.8em;
+	margin-bottom: 15px;
+}
+
+.media_description .time {
+	margin-bottom: 15px;
 }
 
 .media_description .director {
@@ -1035,13 +1041,23 @@ body {
 
 .media_description .cast {
 	font-size: 0.87em;
-	margin-bottom: 10px;
+	margin-bottom: 15px;
+}
+
+.media_resume {
+	width: 100%;
+	float: left;
+	color: white;
+	padding: 15px;
+	font-size: 0.87em;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.6);
 }
 
 .btn_watch {
 	float: left;
 	border: none;
-	color: #fff;
+	color: white;
 	display: block;
 	cursor: pointer;
 	margin-top: 15px;
@@ -1081,17 +1097,6 @@ body {
 	font-size: 2.3em;
 }
 
-.media_resume {
-	width: 100%;
-	float: left;
-	color: #fff;
-	padding: 15px;
-	margin-top: 15px;
-	font-size: 0.87em;
-	border-radius: 5px;
-	background-color: rgba(0, 0, 0, 0.6);
-}
-
 .seasons_container {
 	float: left;
 	width: 100%;
@@ -1109,13 +1114,13 @@ body {
 }
 
 .seasons_li .title {
-	color: #fff;
+	color: white;
 	font-size: 0.9em;
 	margin-bottom: 5px;
 }
 
 .seasons_li a {
-	color: #fff;
+	color: white;
 	cursor: pointer;
 	padding: 10px 15px;
 	display: inline-block;
@@ -1143,7 +1148,7 @@ body {
 }
 
 .episodes_ul a {
-	color: #fff;
+	color: white;
 	display: block;
 	cursor: pointer;
 	text-decoration: none;
@@ -1174,7 +1179,8 @@ body {
 }
 
 .title_media h2 {
-	color: #fff;
+	color: white;
+	min-height: 28px;
 }
 
 .player_video_content {
@@ -1257,5 +1263,43 @@ body {
 }
 
 .time {
-	color: #fff;
+	color: white;
+}
+
+.video-js {
+	border: 0;
+	width: 100%;
+	height: 100%;
+	outline: none;
+	box-shadow: none;
+	outline-style: none;
+	border-color: transparent;
+}
+
+.vjs-time-divider,
+.video-js .vjs-duration,
+.vjs-no-flex .vjs-duration,
+.video-js .vjs-current-time,
+.vjs-no-flex .vjs-current-time {
+	display: block;
+}
+
+.vjs-progress-control:hover .vjs-play-progress .vjs-time-tooltip {
+	display: none;
+}
+
+.video-js .vjs-load-progress {
+	background: rgba(130, 190, 210, .35);
+}
+
+.video-js .vjs-load-progress div {
+	background: rgb(130, 190, 210);
+}
+
+.vjs-error .vjs-error-display:before {
+	display: none;
+}
+
+.vjs-button>.vjs-icon-placeholder {
+	font-family: "VideoJS";
 }

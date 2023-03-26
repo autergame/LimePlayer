@@ -50,6 +50,7 @@ function ajax(query, show_loading = true) {
 				loading(false);
 				try {
 					let parsed = JSON.parse(xhr.response);
+
 					if (typeof parsed.trigger !== "undefined") {
 						trigger(parsed.trigger.msg, parsed.trigger.type);
 					}
@@ -77,6 +78,7 @@ function ajax(query, show_loading = true) {
 							}
 						}
 					}
+
 					login();
 					btn();
 					scroll();
@@ -87,10 +89,12 @@ function ajax(query, show_loading = true) {
 			}
 			resolve();
 		};
+
 		xhr.onerror = function () {
 			console.error(xhr.statusText);
 			loading(false);
 		};
+
 		xhr.open("GET", corsProxy(API_BASE + query), true);
 		xhr.send();
 	});
@@ -106,10 +110,13 @@ function btn() {
 			switch (action) {
 				case "handleAvatar": {
 					let avatars = JSON.parse(localStorage.getItem("user_info")).avatars;
+
 					let finded_avatar = avatars.filter((item) => item.id == id)[0];
 					finded_avatar.color = j_btn_clone.getAttribute("_color");
+
 					localStorage.setItem("avatar", JSON.stringify(finded_avatar));
 					localStorage.removeItem("favorites");
+
 					login();
 					handlePage("home");
 					break;
@@ -117,24 +124,31 @@ function btn() {
 				case "deleteAvatar": {
 					let user_info = JSON.parse(localStorage.getItem("user_info"));
 					let finded_avatar2 = user_info.avatars.filter((item) => item.id == id)[0];
+
 					await ajax("action=delete_avatar&avatar_id=" + finded_avatar2.id);
+
 					let user_info2 = JSON.parse(localStorage.getItem("user_info"));
 					user_info2.avatars = Object.values(user_info2.avatars);
 					localStorage.setItem("user_info", JSON.stringify(user_info2));
+
 					login();
 					break;
 				}
 				case "changeAvatar": {
 					document.querySelector(".profile_container").style.display = "none";
+
 					localStorage.removeItem("favorites");
 					localStorage.removeItem("avatar");
 					localStorage.removeItem("home");
+
 					login();
 					break;
 				}
 				case "exit": {
 					document.querySelector(".profile_container").style.display = "none";
+
 					localStorage.clear();
+
 					login();
 					break;
 				}
@@ -249,32 +263,32 @@ function login() {
 }
 
 function btnScroll() {
-	document.querySelectorAll(".btn_right_scroll").forEach(function (item) {
-		item.onclick = function () {
+	document.querySelectorAll("img.btn_right_scroll").forEach(function (element) {
+		element.onclick = function () {
 			let scrollAmount = 0;
-			let ref = item.getAttribute("ref");
+			let ref = element.getAttribute("ref");
 			let scroll_horizon = document.querySelector(`.scroll_horizon[id="${ref}"]`);
 			let interval = setInterval(function () {
-				scrollAmount += 50;
-				scroll_horizon.scrollLeft += 50;
-				if (scrollAmount >= 500) {
+				scrollAmount += 40;
+				scroll_horizon.scrollLeft += 40;
+				if (scrollAmount >= 400) {
 					window.clearInterval(interval);
 				}
-			}, 35);
+			}, 25);
 		};
 	});
-	document.querySelectorAll(".btn_left_scroll").forEach(function (item) {
-		item.onclick = function () {
+	document.querySelectorAll("img.btn_left_scroll").forEach(function (element) {
+		element.onclick = function () {
 			let scrollAmount = 0;
-			let ref = item.getAttribute("ref");
+			let ref = element.getAttribute("ref");
 			let scroll_horizon = document.querySelector(`.scroll_horizon[id="${ref}"]`);
 			let interval = setInterval(function () {
-				scrollAmount += 50;
-				scroll_horizon.scrollLeft -= 50;
-				if (scrollAmount >= 500) {
+				scrollAmount += 40;
+				scroll_horizon.scrollLeft -= 40;
+				if (scrollAmount >= 400) {
 					window.clearInterval(interval);
 				}
-			}, 35);
+			}, 25);
 		};
 	});
 }
@@ -301,21 +315,21 @@ function handlePage(type) {
 			break;
 		case "movies":
 			pageVod();
-			handleModalVod();
 			handleVodCategories();
 			break;
 		case "series":
 			pageSeries();
-			handleModalSerie();
 			handleSeriesCategories();
 			break;
 		case "favorites":
 			pageFavorites();
 			handleFavorites();
 			break;
-		default:
+		case "home":
 			pageHome();
 			handleHome();
+			break;
+		default:
 			break;
 	}
 
@@ -323,6 +337,7 @@ function handlePage(type) {
 }
 
 function pageHome() {
+	localStorage.removeItem("home");
 	document.querySelector(".page_content").innerHTML = `
 		<div class="home_container">
 			<div class="carousel_section_generic_container keep_watching_container">
@@ -397,6 +412,21 @@ function poster(src) {
 	}
 }
 
+function urlPoster(src) {
+	if (src) {
+		src = `url(${changeHttp(src)}), `;
+	}
+	return src + "url(assets/images/not-available.png)";
+}
+
+function imgPoster(src) {
+	if (src) {
+		return changeHttp(src);
+	} else {
+		return "assets/images/not-available.png";
+	}
+}
+
 function handleHome() {
 	document.querySelector(".top_conainer").style.display = "none";
 	document.querySelector(".keep_watching_container").style.display = "none";
@@ -425,27 +455,17 @@ function handleHome() {
 			let image = "";
 			let title = "";
 			let action = "";
+
 			if (keepWatching.serie_id) {
-				action = `
-					(async function () { 
-						handleModalSerie(); 
-						await handleSerieInfo(null, ${keepWatching.serie_id}); 
-						handleVideo('${DNS}/series/${username}/${password}/${keepWatching.stream_id}.${keepWatching.target_container}', 'video/mp4');
-					})();
-				`;
+				action = `openSeries(${keepWatching.serie_id}, ${keepWatching.stream_id}, '${keepWatching.target_container}', ${keepWatching.time});`;
 				image = keepWatching.cover;
 				title = keepWatching.title;
 			} else {
-				action = `
-					(async function () {
-						handleModalVod(); 
-						await handleVodInfo(null, ${keepWatching.stream_id}); 
-						handleVideo('${DNS}/movie/${username}/${password}/${keepWatching.stream_id}.${keepWatching.target_container}', 'video/mp4');
-					})();
-				`;
+				action = `openVod(${keepWatching.stream_id}, '${keepWatching.target_container}', ${keepWatching.time});`;
 				image = keepWatching.movie_image;
 				title = keepWatching.stream_display_name;
 			}
+
 			element += `
 				<li>
 					<a onclick="${action}">
@@ -463,7 +483,7 @@ function handleHome() {
 			if (homeTop.stream_id) {
 				element += `
 					<li>
-						<a class="top_li" onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${homeTop.stream_id}); })();">
+						<a class="top_li" onclick="handleVodModalAndInfo(null, ${homeTop.stream_id});">
 							${poster(homeTop.movie_image)}
 							<span class="position_number">${(i + 1)}</span>
 							<span class="name">${homeTop.stream_display_name}</span>
@@ -473,7 +493,7 @@ function handleHome() {
 			} else {
 				element += `
 					<li>
-						<a class="top_li" onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${homeTop.serie_id}); })();">
+						<a class="top_li" onclick="handleSerieModalAndInfo(null, ${homeTop.serie_id});">
 							${poster(homeTop.cover)}
 							<span class="position_number">${(i + 1)}</span>
 							<span class="name">${homeTop.title}</span>
@@ -489,7 +509,7 @@ function handleHome() {
 		for (moviesAdded of home.moviesAdded) {
 			element += `
 				<li>
-					<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${moviesAdded.id}); })();">
+					<a onclick="handleVodModalAndInfo(null, ${moviesAdded.id});">
 						${poster(moviesAdded.movie_image)}
 						<span class="name">${moviesAdded.stream_display_name}</span>
 					</a>
@@ -503,7 +523,7 @@ function handleHome() {
 		for (seriesAdded of home.seriesAdded) {
 			element += `
 				<li>
-					<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${seriesAdded.id}); })();">
+					<a onclick="handleSerieModalAndInfo(null, ${seriesAdded.id});">
 						${poster(seriesAdded.cover)}
 						<span class="name">${seriesAdded.title}</span>
 					</a>
@@ -524,14 +544,14 @@ function pageLives() {
 	document.querySelector(".search_input_action").value = "get_live_streams";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll_vertical hide_scrollbar media_categories_ul">
+			<ul class="hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
 		<div class="channels_list">
-			<ul class="scroll_vertical hide_scrollbar channels_ul">
+			<ul class="hide_scrollbar channels_ul">
 			</ul>
 		</div>
-		<div class="scroll_horizon channels_view_container">
+		<div class="channels_view_container">
 			<div class="channels_view_content">
 			</div>
 			<button style="margin: 10px 0px; float: right;" type="button" name="button" class="btn_favorite">
@@ -546,6 +566,7 @@ function handleLivesCategories() {
 	let live_categories = localStorage.getItem("live_categories");
 	if (live_categories) {
 		live_categories = JSON.parse(live_categories);
+
 		let element = "";
 		for (live_category of live_categories) {
 			element += `
@@ -554,6 +575,7 @@ function handleLivesCategories() {
 				</li>
 			`;
 		}
+
 		document.querySelector(".media_categories_ul").innerHTML = element;
 		handleLives(null, live_categories[0].category_id);
 	} else {
@@ -564,17 +586,19 @@ function handleLivesCategories() {
 function handleLives(lives = null, category_id = null) {
 	if (lives) {
 		let element = "";
+
 		if (lives.length) {
 			for (live of lives) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleLiveInfo(null, ${live.stream_id}); watchLive('${DNS}/live/${username}/${password}/${live.stream_id}.m3u8'); })();" id="${live.stream_id}">
+						<a onclick="openLive(${live.stream_id});" id="${live.stream_id}">
 							${poster(live.stream_icon)}
 							<span>${live.name}</span>
 						</a>
 					</li>
 				`;
 			}
+
 			for (media_category_a of document.querySelectorAll(".media_category_a")) {
 				if (media_category_a.getAttribute("id") == lives[0].category_id) {
 					media_category_a.classList.add("active");
@@ -585,19 +609,32 @@ function handleLives(lives = null, category_id = null) {
 		} else {
 			element = `<li style="color: #fff;">Nenhum canal disponível nessa categoria</li>`;
 		}
+
 		document.querySelector(".channels_ul").innerHTML = element;
 	} else {
 		ajax("action=get_live_streams&category_id=" + category_id);
 	}
 }
 
+async function openLive(stream_id) {
+	await handleLiveInfo(null, stream_id);
+	watchLive(`${DNS}/live/${username}/${password}/${stream_id}.m3u8`);
+}
+
+async function handleAndOpenLive(live_id) {
+	handlePage("lives");
+	await openLive(live_id);
+}
+
 function handleLiveInfo(live_info = null, stream_id = null) {
 	if (live_info) {
 		let element = "";
+
 		if (live_info.epg_listings.length) {
 			for (epg_listing of live_info.epg_listings) {
 				let start = new Date(parseInt(epg_listing.start_timestamp) * 1000);
 				let end = new Date(parseInt(epg_listing.stop_timestamp) * 1000);
+
 				element += `
 					<li>
 						<p class="title">
@@ -611,6 +648,7 @@ function handleLiveInfo(live_info = null, stream_id = null) {
 					</li>
 				`;
 			}
+
 		}
 		document.querySelector(".epg_ul").innerHTML = element;
 	} else {
@@ -699,11 +737,11 @@ function pageVod() {
 	document.querySelector(".search_input_action").value = "get_vod_streams";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll_vertical hide_scrollbar media_categories_ul">
+			<ul class="hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
 		<div class="media_content">
-			<ul class="scroll_vertical media_ul">
+			<ul class="media_ul">
 			</ul>
 		</div>
 	`;
@@ -728,6 +766,7 @@ function handleModalVod() {
 						<div class="media_description">
 							<p class="title"></p>
 							<p class="genre"></p>
+							<p class="time"></p>
 							<p class="director"></p>
 							<p class="cast"></p>
 							<div class="media_resume">
@@ -752,6 +791,7 @@ function handleVodCategories() {
 	let vod_categories = localStorage.getItem("vod_categories");
 	if (vod_categories) {
 		vod_categories = JSON.parse(vod_categories);
+
 		let element = "";
 		for (vod_category of vod_categories) {
 			element += `
@@ -760,6 +800,7 @@ function handleVodCategories() {
 				</li>
 			`;
 		}
+
 		document.querySelector(".media_categories_ul").innerHTML = element;
 		handleVods(null, vod_categories[0].category_id);
 	} else {
@@ -770,11 +811,12 @@ function handleVodCategories() {
 function handleVods(vods = null, category_id = null) {
 	if (vods) {
 		let element = "";
+
 		if (vods.length) {
 			for (vod of vods) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${vod.stream_id}); })();">
+						<a onclick="handleVodModalAndInfo(null, ${vod.stream_id});">
 							${poster(vod.stream_icon)}	
 							<span class="name">${vod.name}</span>
 						</a>
@@ -791,10 +833,21 @@ function handleVods(vods = null, category_id = null) {
 		} else {
 			element = `<li style="color: #fff;">Nenhum filme disponível nessa categoria</li>`;
 		}
+
 		document.querySelector(".media_ul").innerHTML = element;
 	} else {
 		ajax("action=get_vod_streams&category_id=" + category_id);
 	}
+}
+
+async function openVod(stream_id, target_container, time) {
+	await handleVodModalAndInfo(null, stream_id);
+	watchVideo(`${DNS}/movie/${username}/${password}/${stream_id}.${target_container}`, stream_id, time);
+}
+
+async function handleVodModalAndInfo(movie = null, vod_id = null) {
+	handleModalVod();
+	await handleVodInfo(movie, vod_id);
 }
 
 async function handleVodInfo(movie = null, vod_id = null) {
@@ -802,11 +855,14 @@ async function handleVodInfo(movie = null, vod_id = null) {
 		document.querySelector(".modal_media_container").style.opacity = "1";
 		document.querySelector(".modal_media_container").style.display = "flex";
 		document.querySelector(".modal_media_container").style.pointerEvents = null;
-		document.querySelector(".modal_media_box").style.backgroundImage = (movie.info.movie_image ? `url(${changeHttp(movie.info.movie_image)}), ` : "") + "url(assets/images/not-available.png)";
-		document.querySelector(".media_cover img").src = (movie.info.movie_image ? changeHttp(movie.info.movie_image) : "assets/images/not-available.png");
+
+		document.querySelector(".media_cover img").src = imgPoster(movie.info.movie_image);
+		document.querySelector(".modal_media_box").style.backgroundImage = urlPoster(movie.info.movie_image);
 		document.querySelector(".media_cover .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
+
 		document.querySelector(".media_description .title").innerHTML = movie.movie_data.name ? movie.movie_data.name : movie.info.name;
-		document.querySelector(".media_description .genre").innerHTML = (movie.info.genre ? movie.info.genre : "") + " | " + (movie.info.duration ? movie.info.duration : "");
+		document.querySelector(".media_description .genre").innerHTML = movie.info.genre ? movie.info.genre : "";
+		document.querySelector(".media_description .time").innerHTML = "Duração: " + (movie.info.duration ? movie.info.duration : "");
 		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (movie.info.director ? movie.info.director : "");
 		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (movie.info.cast ? movie.info.cast : "");
 
@@ -818,7 +874,7 @@ async function handleVodInfo(movie = null, vod_id = null) {
 		}
 
 		document.querySelector(".btn_watch").onclick = function () {
-			handleVideo(`${DNS}/movie/${username}/${password}/${movie.movie_data.stream_id}.${movie.movie_data.container_extension}`, "video/mp4");
+			watchVideo(`${DNS}/movie/${username}/${password}/${movie.movie_data.stream_id}.${movie.movie_data.container_extension}`, movie.movie_data.stream_id);
 		};
 	} else {
 		await ajax("action=get_vod_info&vod_id=" + vod_id);
@@ -831,11 +887,11 @@ function pageSeries() {
 	document.querySelector(".search_input_action").value = "get_series";
 	document.querySelector(".page_content").innerHTML = `
 		<div class="channels_categories">
-			<ul class="scroll_vertical hide_scrollbar media_categories_ul">
+			<ul class="hide_scrollbar media_categories_ul">
 			</ul>
 		</div>
 		<div class="media_content">
-			<ul class="scroll_vertical media_ul">
+			<ul class="media_ul">
 			</ul>
 		</div>
 	`;
@@ -895,6 +951,7 @@ function handleSeriesCategories() {
 	let series_categories = localStorage.getItem("series_categories");
 	if (series_categories) {
 		series_categories = JSON.parse(series_categories);
+
 		let element = "";
 		for (series_category of series_categories) {
 			element += `
@@ -903,6 +960,7 @@ function handleSeriesCategories() {
 				</li>
 			`;
 		}
+
 		document.querySelector(".media_categories_ul").innerHTML = element;
 		handleSeries(null, series_categories[0].category_id);
 	} else {
@@ -913,11 +971,12 @@ function handleSeriesCategories() {
 function handleSeries(series = null, category_id = null) {
 	if (series) {
 		let element = "";
+
 		if (series.length) {
 			for (serie of series) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${serie.series_id}); })();">
+						<a onclick="handleSerieModalAndInfo(null, ${serie.series_id});">
 							${poster(serie.cover)}	
 							<span class="name">${serie.name}</span>
 						</a>
@@ -934,10 +993,21 @@ function handleSeries(series = null, category_id = null) {
 		} else {
 			element = `<li style="color: #fff;">Nenhuma série disponível nessa categoria</li>`;
 		}
+
 		document.querySelector(".media_ul").innerHTML = element;
 	} else {
 		ajax("action=get_series&category_id=" + category_id);
 	}
+}
+
+async function openSeries(series_id, stream_id, target_container, time) {
+	await handleSerieModalAndInfo(null, series_id);
+	watchVideo(`${DNS}/series/${username}/${password}/${stream_id}.${target_container}`, stream_id, time);
+}
+
+async function handleSerieModalAndInfo(serie = null, series_id = null) {
+	handleModalSerie();
+	await handleSerieInfo(serie, series_id);
 }
 
 async function handleSerieInfo(serie = null, series_id = null) {
@@ -945,11 +1015,13 @@ async function handleSerieInfo(serie = null, series_id = null) {
 		document.querySelector(".modal_media_container").style.opacity = "1";
 		document.querySelector(".modal_media_container").style.display = "flex";
 		document.querySelector(".modal_media_container").style.pointerEvents = null;
-		document.querySelector(".modal_media_box").style.backgroundImage = (serie.info.cover ? `url(${changeHttp(serie.info.cover)}), ` : "") + "url(assets/images/not-available.png)";
-		document.querySelector(".media_cover img").src = (serie.info.cover ? changeHttp(serie.info.cover) : "assets/images/not-available.png");
+
+		document.querySelector(".media_cover img").src = imgPoster(serie.info.cover);
+		document.querySelector(".modal_media_box").style.backgroundImage = urlPoster(serie.info.cover);
 		document.querySelector(".media_cover .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
+
 		document.querySelector(".media_description .title").innerHTML = serie.info.name ? serie.info.name : "";
-		document.querySelector(".media_description .genre").innerHTML = (serie.info.genre ? serie.info.genre : "") + " | " + (serie.info.duration ? serie.info.duration : "");
+		document.querySelector(".media_description .genre").innerHTML = serie.info.genre ? serie.info.genre : "";
 		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (serie.info.director ? serie.info.director : "");
 		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (serie.info.cast ? serie.info.cast : "");
 
@@ -973,21 +1045,18 @@ async function handleSerieInfo(serie = null, series_id = null) {
 						</p>
 					</li>
 				`;
-				box_episodes += `
-					<ul class="hide_scrollbar scroll_horizon episodes_ul" id="${id}" style="padding-left: 5px; display: ${first ? "flex" : "none"};">
-				`;
 
+				box_episodes += `<ul class="hide_scrollbar scroll_horizon episodes_ul" id="${id}" style="padding-left: 5px; display: ${first ? "flex" : "none"};">`;
 				for (episode of Object.values(seasons)) {
 					box_episodes += `
 						<li>
-							<a onclick="handleVideo('${DNS}/series/${username}/${password}/${episode.id}.${episode.container_extension}', 'video/mp4')">
+							<a onclick="watchVideo('${DNS}/series/${username}/${password}/${episode.id}.${episode.container_extension}', ${episode.id});">
 								${poster(episode.info.movie_image)}	
 								<span class="name">${episode.title}</span>
 							</a>
 						</li>
 					`;
 				}
-
 				box_episodes += "</ul>";
 				first = false;
 			}
@@ -1000,24 +1069,24 @@ async function handleSerieInfo(serie = null, series_id = null) {
 				let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
 				let scroll_amount = 0;
 				let interval = setInterval(function () {
-					episodes_ul.scrollLeft += 50;
-					scroll_amount += 50;
-					if (scroll_amount >= 500) {
+					episodes_ul.scrollLeft += 40;
+					scroll_amount += 40;
+					if (scroll_amount >= 400) {
 						window.clearInterval(interval);
 					}
-				}, 35);
+				}, 25);
 			};
 			document.querySelector(".left_scroll").onclick = function () {
 				let seasons_li = document.querySelector(`.seasons_li a[class="li_season active"]`).getAttribute("id");
 				let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
 				let scroll_amount = 0;
 				let interval = setInterval(function () {
-					episodes_ul.scrollLeft -= 50;
-					scroll_amount += 50;
-					if (scroll_amount >= 500) {
+					episodes_ul.scrollLeft -= 40;
+					scroll_amount += 40;
+					if (scroll_amount >= 400) {
 						window.clearInterval(interval);
 					}
-				}, 35);
+				}, 25);
 			};
 		}
 	} else {
@@ -1041,6 +1110,7 @@ function handleChangeSeason(id) {
 }
 
 function pageFavorites() {
+	localStorage.removeItem("favorites");
 	document.querySelector(".page_content").innerHTML = `
 		<div class="favorites_container">
 			<div class="carousel_section_generic_container lives" style="display: none;">
@@ -1100,7 +1170,7 @@ function handleFavorites() {
 			for (movie of favorites.movies) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalVod(); handleVodInfo(null, ${movie.id}); })();">
+						<a onclick="handleVodModalAndInfo(null, ${movie.id});">
 							${poster(movie.movie_image)}
 							<span class="name">${movie.stream_display_name}</span>
 						</a>
@@ -1117,7 +1187,7 @@ function handleFavorites() {
 			for (serie of favorites.series) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handleModalSerie(); handleSerieInfo(null, ${serie.id}); })();">
+						<a onclick="handleSerieModalAndInfo(null, ${serie.id});">
 							${poster(serie.cover)}
 							<span class="name">${serie.title}</span>
 						</a>
@@ -1134,7 +1204,7 @@ function handleFavorites() {
 			for (live of favorites.lives) {
 				element += `
 					<li>
-						<a onclick="(async function () { await handlePage('lives'); handleLiveInfo(null, ${live.id}); watchLive('${DNS}/live/${username}/${password}/${live.id}.m3u8'); })();" class="live">
+						<a onclick="handleAndOpenLive(${live.id});" class="live">
 							${poster(live.stream_icon)}	
 							<span class="name">${live.stream_display_name}</span>
 						</a>
@@ -1155,10 +1225,12 @@ function storeFavorite(id, type) {
 	ajax("action=store_favorite&" + type + "=" + id);
 }
 
-function deleteFavorite(id, type) {
-	ajax("action=delete_favorite&" + type + "=" + id);
+async function deleteFavorite(id, type) {
+	await ajax("action=delete_favorite&" + type + "=" + id);
+
 	if (document.querySelector(".favorites_container")) {
 		let favorites = JSON.parse(localStorage.getItem("favorites"));
+
 		switch (type) {
 			case "vod_id":
 				favorites.movies = favorites.movies.filter((item) => item.id != id);
@@ -1169,16 +1241,27 @@ function deleteFavorite(id, type) {
 			default:
 				break;
 		}
+
 		localStorage.setItem("favorites", JSON.stringify(favorites));
 		handleFavorites();
 	}
 }
 
 var player = null;
-function handleVideo(link, type) {
+function watchVideo(link, id, time = 0) {
 	if (player) {
 		player.dispose();
 		player = null;
+	}
+
+	if (time == 0) {
+		let home = JSON.parse(localStorage.getItem("home"));
+		for (keepWatching of home.keepWatching) {
+			if (keepWatching.stream_id == id) {
+				time = keepWatching.time;
+				break;
+			}
+		}
 	}
 
 	document.querySelector(".player_video_content").innerHTML = `<video id="my-player" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%; border: 0px; outline: none; aspect-ratio: 16/9;" controls loop src=""></video>`;
@@ -1219,32 +1302,22 @@ function handleVideo(link, type) {
 	});
 
 	player.src({
-		type: type,
+		type: "video/mp4",
 		src: link,
 	});
 
 	player.reloadSourceOnError({
 		getSource: function (reload) {
 			reload({
-				type: type,
+				type: "video/mp4",
 				src: link,
 			});
 		},
 		errorInterval: 5,
 	});
 
-	let video_code = btoa(link.substring(Math.max(link.length - 16, 0), link.length));
-
-	let timestamps = JSON.parse(localStorage.getItem("Timestamps"));
-	if (timestamps == null) {
-		timestamps = new Object();
-	}
-
 	player.ready(function () {
-		let initValue = timestamps[video_code];
-		if (initValue) {
-			player.currentTime(initValue);
-		}
+		player.currentTime(time);
 
 		let volume = localStorage.getItem("Volume");
 		if (volume) {
@@ -1254,20 +1327,12 @@ function handleVideo(link, type) {
 		player.autoplay(true);
 		player.play();
 
-		keep_watching(link, timestamps[video_code]);
-
 		let lastSeconds = null;
-		let lastSecondsTwo = null;
 		player.on("timeupdate", function () {
 			let seconds = Math.floor(player.currentTime());
-			if ((seconds % 5) == 0 && seconds != lastSeconds) {
+			if ((seconds % 10) == 0 && seconds != lastSeconds) {
 				lastSeconds = seconds;
-				timestamps[video_code] = seconds;
-				localStorage.setItem("Timestamps", JSON.stringify(timestamps));
-			}
-			if ((seconds % 30) == 0 && seconds != lastSecondsTwo) {
-				lastSecondsTwo = seconds;
-				keep_watching(link, seconds);
+				sendKeepWatching(id, seconds);
 			}
 		});
 
@@ -1291,7 +1356,7 @@ function handleVideo(link, type) {
 			for ([i, episode] of episodes.entries()) {
 				if (episode.getAttribute("onclick").includes(link)) {
 					episode.classList.add("active-border");
-					episode.scrollIntoView();
+					episode.scrollIntoView(true);
 
 					let title = episode.querySelector("span").textContent;
 					document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
@@ -1318,7 +1383,6 @@ function handleVideo(link, type) {
 								player.dispose();
 								player = null;
 							}
-							timestamps[video_code] = 0;
 							next_episode.click();
 						};
 					}
@@ -1330,14 +1394,9 @@ function handleVideo(link, type) {
 	});
 }
 
-function keep_watching(src, time) {
-	try {
-		if (time > 60) {
-			let id = src.replace(/^.*[\\\/]/, "").split(".")[0];
-			ajax("action=keep_watching&id=" + id + "&time=" + time, false);
-		}
-	} catch (error) {
-		console.log(error);
+function sendKeepWatching(id, time) {
+	if (time > 30) {
+		ajax(`action=keep_watching&id=${id}&time=${time}`, false);
 	}
 }
 
@@ -1376,6 +1435,7 @@ document.querySelector(".player_video_container").onclick = function () {
 document.querySelector(".player_video_close").onclick = function () {
 	document.querySelector(".player_video_container").style.display = "none";
 	document.querySelector(".player_video_content").innerHTML = "";
+
 	if (player) {
 		player.dispose();
 		player = null;
@@ -1390,8 +1450,10 @@ document.onclick = function (e) {
 
 function hideModalContainer() {
 	let element = document.querySelector(".modal_media_container");
+
 	element.style.opacity = "0";
 	element.style.pointerEvents = "none";
+
 	setTimeout(function () {
 		element.style.display = "none";
 		element.parentElement.remove();
@@ -1405,14 +1467,9 @@ function corsProxy(url) {
 	return "https://corsproxy.io/?url=" + encodeURIComponent(url);
 }
 
-localStorage.removeItem("home");
-localStorage.removeItem("avatar");
-localStorage.removeItem("favorites");
-
 var avatar = "";
 var username = "";
 var password = "";
-
 
 for (form of document.querySelectorAll("form")) {
 	form.onsubmit = function (e) {
@@ -1421,37 +1478,42 @@ for (form of document.querySelectorAll("form")) {
 	};
 }
 
-
 btn();
 login();
 
 let user_info = JSON.parse(localStorage.getItem("user_info"));
 if (user_info && user_info.username && user_info.password) {
 	loading(true);
+
 	let xhr = new XMLHttpRequest();
 	xhr.onload = function () {
 		if (xhr.readyState === 4) {
 			loading(false);
 			try {
 				let parsed = JSON.parse(xhr.response);
+
 				if (typeof parsed.setItem !== "undefined") {
 					for ([key, value] of Object.entries(parsed.setItem)) {
 						localStorage.setItem(key, value);
 					}
 				}
+
 				login();
 				btn();
 				scroll();
+				handlePage("home");
 			} catch (error) {
 				console.error(error);
 				loading(false);
 			}
 		}
 	};
+
 	xhr.onerror = function () {
 		console.error(xhr.statusText);
 		loading(false);
 	};
+
 	let query = `username=${user_info.username}&password=${user_info.password}`;
 	xhr.open("GET", corsProxy(API_BASE + query), true);
 	xhr.send();

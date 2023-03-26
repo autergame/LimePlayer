@@ -11,46 +11,6 @@
 	<link rel="stylesheet" href="dist/css/video-js.css">
 	<link rel="stylesheet" href="dist/css/boxicons.min.css">
 	<link rel="stylesheet" href="src/css/player.css">
-
-	<style>
-		.video-js {
-			border: 0;
-			width: 100%;
-			height: 100%;
-			outline: none;
-			box-shadow: none;
-			outline-style: none;
-			border-color: transparent;
-		}
-
-		.vjs-time-divider,
-		.video-js .vjs-duration,
-		.vjs-no-flex .vjs-duration,
-		.video-js .vjs-current-time,
-		.vjs-no-flex .vjs-current-time {
-			display: block;
-		}
-
-		.vjs-progress-control:hover .vjs-play-progress .vjs-time-tooltip {
-			display: none;
-		}
-
-		.video-js .vjs-load-progress {
-			background: rgba(130, 190, 210, .35);
-		}
-
-		.video-js .vjs-load-progress div {
-			background: rgb(130, 190, 210);
-		}
-
-		.vjs-error .vjs-error-display:before {
-			display: none;
-		}
-
-		.vjs-button>.vjs-icon-placeholder {
-			font-family: "VideoJS";
-		}
-	</style>
 </head>
 
 <body>
@@ -122,7 +82,7 @@
 			<div class="users_modal_content">
 				<form class="form_avatar" action="" method="post">
 					<input type="hidden" name="action" value="store_avatar">
-					<input class="avatar_name" type="text" name="avatar_name" value="" placeholder="Nome" required>
+					<input type="text" name="avatar_name" value="" placeholder="Nome" required>
 					<button type="submit" class="btn_create">Criar</button>
 					<button type="button"
 						onclick="document.querySelector('.users_modal_container').style.display = 'none';"

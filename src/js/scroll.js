@@ -1,39 +1,42 @@
-function scroll_work(elements) {
-	for (element of elements) {
+function scroll() {
+	for (element of document.querySelectorAll(".scroll_horizon")) {
 		if (element.getAttribute("scroll") != "true") {
 			let element_clone = element.cloneNode(true);
 			element_clone.setAttribute("scroll", "true");
 
-			let top = 0;
-			let offset = 0;
+			let oldPagex = 0;
+			let scrollLeft = 0;
 			let should_move = false;
 
 			element_clone.onmousedown = function (e) {
 				should_move = true;
-				top = element_clone.scrollLeft;
-				offset = e.pageX - element_clone.scrollTop;
-				element_clone.classList.add("active");
+				oldPagex = e.pageX;
+				scrollLeft = element_clone.scrollLeft;
 			};
 
 			element_clone.onmouseleave = function () {
+				if (should_move) {
+					toggleA(element_clone, true);
+				}
 				should_move = false;
-				element_clone.classList.remove("active");
 			};
 
 			element_clone.onmouseup = function () {
+				if (should_move) {
+					setTimeout(function () {
+						toggleA(element_clone, true);
+					}, 1000);
+				}
 				should_move = false;
-				element_clone.classList.remove("active");
 			};
 
 			element_clone.onmousemove = function (e) {
-				if (!should_move) {
-					return;
+				if (should_move) {
+					e.preventDefault();
+					toggleA(element_clone, false);
+					let diffOffset = (e.pageX - oldPagex) * 1.5;
+					element_clone.scrollLeft = scrollLeft - diffOffset;
 				}
-				e.preventDefault();
-
-				let diffTop = e.pageX - element_clone.offsetLeft;
-				let diffOffset = (diffTop - offset) * 3;
-				element_clone.scrollLeft = top - diffOffset;
 			};
 
 			element.parentNode.replaceChild(element_clone, element);
@@ -41,9 +44,17 @@ function scroll_work(elements) {
 	}
 }
 
-function scroll() {
-	scroll_work(document.querySelectorAll(".scroll_horizon"));
-	scroll_work(document.querySelectorAll(".scroll_vertical"));
-}
-
 scroll();
+
+let toggledA = false;
+function toggleA(element_clone, enable) {
+	if (enable) {
+		toggledA = false;
+	}
+	if (!toggledA) {
+		for (element of element_clone.querySelectorAll("a")) {
+			element.style.pointerEvents = enable ? "" : "none";
+		}
+		toggledA = true;
+	}
+}

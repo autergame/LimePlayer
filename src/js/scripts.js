@@ -1344,11 +1344,10 @@ function watchVideo(link, id, time = 0) {
 
 		let player_video_prev = document.querySelector(".player_video_prev");
 		let player_video_next = document.querySelector(".player_video_next");
+		player_video_prev.style.display = "none";
+		player_video_next.style.display = "none";
 
 		if (link.includes("/movie/")) {
-			player_video_prev.style.display = "none";
-			player_video_next.style.display = "none";
-
 			let title = document.querySelector(".media_description .title").textContent;
 			document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
 		} else {

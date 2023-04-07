@@ -60,11 +60,11 @@ body {
 .loading {
 	top: 0;
 	left: 0;
+	z-index: 8;
 	width: 100%;
 	opacity: 0.8;
 	height: 100vh;
 	display: none;
-	z-index: 99999;
 	user-select: none;
 	position: absolute;
 	align-items: center;
@@ -79,11 +79,11 @@ body {
 .trigger_container {
 	top: 0;
 	right: 0;
+	z-index: 9;
 	width: 100%;
 	color: white;
 	display: none;
 	padding: 20px;
-	z-index: 9999999;
 	user-select: none;
 	position: absolute;
 	background: #000;
@@ -100,9 +100,9 @@ body {
 #Login {
 	top: 0;
 	left: 0;
+	z-index: 7;
 	width: 100%;
 	height: 100vh;
-	z-index: 9999;
 	user-select: none;
 	position: absolute;
 	background-size: cover;
@@ -183,9 +183,9 @@ body {
 .users_container {
 	top: 0;
 	left: 0;
+	z-index: 4;
 	width: 100%;
 	height: 100%;
-	z-index: 8888;
 	display: flex;
 	user-select: none;
 	position: absolute;
@@ -245,9 +245,9 @@ body {
 .users_modal_container {
 	top: 0;
 	left: 0;
+	z-index: 5;
 	width: 100%;
 	height: 100vh;
-	z-index: 8889;
 	display: flex;
 	user-select: none;
 	position: absolute;
@@ -259,9 +259,9 @@ body {
 .manage_users_modal_container {
 	top: 0;
 	left: 0;
+	z-index: 5;
 	width: 100%;
 	height: 100vh;
-	z-index: 8889;
 	display: flex;
 	user-select: none;
 	position: absolute;
@@ -413,8 +413,8 @@ body {
 }
 
 .profile_container {
+	z-index: 1;
 	left: 146px;
-	z-index: 7777;
 	display: none;
 	padding: 40px 50px;
 	position: absolute;
@@ -434,12 +434,16 @@ body {
 	max-width: 100%;
 }
 
-.profile_container p {
+.profile_content p {
 	color: white;
-	margin-bottom: 15px;
+	margin-bottom: 20px;
 }
 
-.profile_container a {
+.profile_content .account_exit a {
+	margin-top: 15px;
+}
+
+.account_change a {
 	color: white;
 	padding: 10px;
 	font-size: 1em;
@@ -451,7 +455,7 @@ body {
 	transition: all 0.3s ease-out;
 }
 
-.profile_container a:hover {
+.account_change a:hover {
 	color: black;
 	border: 1px solid grey;
 	background-color: white;
@@ -935,6 +939,7 @@ body {
 .modal_media_container {
 	top: 0;
 	left: 0;
+	z-index: 2;
 	width: 100%;
 	height: 100%;
 	display: none;
@@ -957,7 +962,7 @@ body {
 }
 
 .modal_media_content {
-	z-index: 999;
+	z-index: 3;
 	padding: 30px;
 	display: flex;
 	position: relative;
@@ -1157,9 +1162,9 @@ body {
 .player_video_container {
 	top: 0;
 	left: 0;
+	z-index: 7;
 	width: 100%;
 	height: 100vh;
-	z-index: 9999;
 	display: none;
 	user-select: none;
 	position: absolute;
@@ -1169,8 +1174,8 @@ body {
 .title_media {
 	top: 0;
 	right: 0;
+	z-index: 6;
 	width: 100%;
-	z-index: 9998;
 	padding: 10px 80px;
 	position: absolute;
 	text-align: center;
@@ -1192,10 +1197,10 @@ body {
 .player_video_close {
 	top: 0;
 	left: 0;
+	z-index: 7;
 	width: 50px;
 	border: none;
 	height: 48px;
-	z-index: 9999;
 	cursor: pointer;
 	padding: 8px 10px;
 	position: absolute;
@@ -1206,9 +1211,9 @@ body {
 .player_video_prev {
 	left: 0;
 	top: 41%;
+	z-index: 7;
 	width: 80px;
 	border: none;
-	z-index: 9999;
 	padding: 15px;
 	cursor: pointer;
 	margin-left: 10px;
@@ -1220,9 +1225,9 @@ body {
 .player_video_next {
 	right: 0;
 	top: 41%;
+	z-index: 7;
 	width: 80px;
 	border: none;
-	z-index: 9999;
 	padding: 15px;
 	cursor: pointer;
 	position: absolute;

@@ -216,27 +216,30 @@ function login() {
 				let avatar_element = "";
 				let avatar_manager_element = "";
 
-				for ([i, avatar] of userInfo.avatars.entries()) {
-					let color = `hsl(${(i % 18) * 20}, 100%, 50%)`;
-					avatar_element += `
-						<li>
-							<a class="j_btn" _action="handleAvatar" _color="${color}" id="${avatar.id}" style="background-color: ${color};">
-								<img src="assets/images/face-user.png">
-							</a>
-							<span>${avatar.avatar_name}</span>
-						</li>
-					`;
-					avatar_manager_element += `
-						<li>
-							<a class="j_btn" _action="deleteAvatar" id="${avatar.id}" style="background-color: ${color};">
-								<div class="bg_edit">
-									<img src="assets/icons/icon-trash.svg">
-								</div>
-								<img src="assets/images/face-user.png">
-							</a>
-							<span>${avatar.avatar_name}</span>
-						</li>
-					`;
+				let i = 0;
+				for (avatar of userInfo.avatars) {
+					if (avatar.id) {
+						let color = `hsl(${(i++ % 18) * 20}, 100%, 50%)`;
+						avatar_element += `
+							<li>
+								<a class="j_btn" _action="handleAvatar" _color="${color}" id="${avatar.id}" style="background-color: ${color};">
+									<img src="assets/images/face-user.png">
+								</a>
+								<span>${avatar.avatar_name}</span>
+							</li>
+						`;
+						avatar_manager_element += `
+							<li>
+								<a class="j_btn" _action="deleteAvatar" id="${avatar.id}" style="background-color: ${color};">
+									<div class="bg_edit">
+										<img src="assets/icons/icon-trash.svg">
+									</div>
+									<img src="assets/images/face-user.png">
+								</a>
+								<span>${avatar.avatar_name}</span>
+							</li>
+						`;
+					}
 				}
 
 				avatar_element += `

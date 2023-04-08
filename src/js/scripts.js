@@ -700,13 +700,18 @@ function watchLive(link) {
 				inline: false
 			}
 		},
+		userActions: {
+			doubleClick: false
+		},
 		language: "pt-BR",
 		persistTextTrackSettings: true,
 		html5: {
-			nativeTextTracks: false,
-			hls: {
+			vhs: {
 				overrideNative: true
-			}
+			},
+			nativeTextTracks: false,
+			nativeAudioTracks: false,
+			nativeVideoTracks: false
 		},
 		plugins: {
 			hotkeys: {
@@ -1306,6 +1311,9 @@ function watchVideo(link, id, time = 0) {
 				inline: false
 			}
 		},
+		userActions: {
+			doubleClick: false
+		},
 		language: "pt-BR",
 		persistTextTrackSettings: true,
 		html5: {
@@ -1324,17 +1332,15 @@ function watchVideo(link, id, time = 0) {
 		},
 	});
 
-	player.src({
-		type: "video/mp4",
-		src: link,
-	});
+	player.controlBar.fullscreenToggle.handleClick = function (e) {
+		document.fullscreenElement != null ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+	};
+
+	player.src(link);
 
 	player.reloadSourceOnError({
 		getSource: function (reload) {
-			reload({
-				type: "video/mp4",
-				src: link,
-			});
+			reload(link);
 		},
 		errorInterval: 5,
 	});
@@ -1490,6 +1496,13 @@ const API_BASE = "http://player.limetv.me/player_api.php?";
 function corsProxy(url) {
 	return `https://host.autergame.me:2083/proxy/${url}`;
 }
+
+videojs.Vhs.xhr.beforeRequest = function (options) {
+	if (!options.uri.includes("https")) {
+		options.uri = corsProxy(options.uri);
+	}
+	return options;
+};
 
 var avatar = "";
 var username = "";

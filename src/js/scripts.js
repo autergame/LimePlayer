@@ -570,7 +570,12 @@ function handleLivesCategories() {
 	if (live_categories) {
 		live_categories = JSON.parse(live_categories);
 
-		let element = "";
+		let element = `
+			<li>
+				<a class="media_category_a" onclick="handleLives(null, 0)" id="0">TODOS OS CANAIS</a>
+			</li>
+		`;
+
 		for (live_category of live_categories) {
 			element += `
 				<li>
@@ -603,7 +608,7 @@ function handleLives(lives = null, category_id = null) {
 			}
 
 			for (media_category_a of document.querySelectorAll(".media_category_a")) {
-				if (media_category_a.getAttribute("id") == lives[0].category_id) {
+				if (media_category_a.getAttribute("id") == category_id_selected) {
 					media_category_a.classList.add("active");
 				} else {
 					media_category_a.classList.remove("active");
@@ -615,6 +620,7 @@ function handleLives(lives = null, category_id = null) {
 
 		document.querySelector(".channels_ul").innerHTML = element;
 	} else {
+		category_id_selected = category_id;
 		ajax("action=get_live_streams&category_id=" + category_id);
 	}
 }
@@ -795,7 +801,12 @@ function handleVodCategories() {
 	if (vod_categories) {
 		vod_categories = JSON.parse(vod_categories);
 
-		let element = "";
+		let element = `
+			<li>
+				<a class="media_category_a" onclick="handleVods(null, 0)" id="0">TODOS OS FILMES</a>
+			</li>
+		`;
+
 		for (vod_category of vod_categories) {
 			element += `
 				<li>
@@ -826,8 +837,9 @@ function handleVods(vods = null, category_id = null) {
 					</li>
 				`;
 			}
+
 			for (media_category_a of document.querySelectorAll(".media_category_a")) {
-				if (media_category_a.getAttribute("id") == vods[0].category_id) {
+				if (media_category_a.getAttribute("id") == category_id_selected) {
 					media_category_a.classList.add("active");
 				} else {
 					media_category_a.classList.remove("active");
@@ -839,6 +851,7 @@ function handleVods(vods = null, category_id = null) {
 
 		document.querySelector(".media_ul").innerHTML = element;
 	} else {
+		category_id_selected = category_id;
 		ajax("action=get_vod_streams&category_id=" + category_id);
 	}
 }
@@ -955,7 +968,12 @@ function handleSeriesCategories() {
 	if (series_categories) {
 		series_categories = JSON.parse(series_categories);
 
-		let element = "";
+		let element = `
+			<li>
+				<a class="media_category_a" onclick="handleSeries(null, 0)" id="0">TODAS AS SÉRIES</a>
+			</li>
+		`;
+
 		for (series_category of series_categories) {
 			element += `
 				<li>
@@ -986,8 +1004,9 @@ function handleSeries(series = null, category_id = null) {
 					</li>
 				`;
 			}
+
 			for (media_category_a of document.querySelectorAll(".media_category_a")) {
-				if (media_category_a.getAttribute("id") == series[0].category_id) {
+				if (media_category_a.getAttribute("id") == category_id_selected) {
 					media_category_a.classList.add("active");
 				} else {
 					media_category_a.classList.remove("active");
@@ -999,6 +1018,7 @@ function handleSeries(series = null, category_id = null) {
 
 		document.querySelector(".media_ul").innerHTML = element;
 	} else {
+		category_id_selected = category_id;
 		ajax("action=get_series&category_id=" + category_id);
 	}
 }
@@ -1462,11 +1482,13 @@ function hideModalContainer() {
 	}, 500);
 }
 
+let category_id_selected = 0;
+
 const DNS = "https://lmtv.me";
 const API_BASE = "http://player.limetv.me/player_api.php?";
 
 function corsProxy(url) {
-	return "https://corsproxy.io/?url=" + encodeURIComponent(url);
+	return `https://host.autergame.me:2083/proxy/${url}`;
 }
 
 var avatar = "";

@@ -1,168 +1,226 @@
-function serialize(target) {
-	let serialized = [];
+async function login(container, event) {
+	event.preventDefault();
 
-	for (element of target.elements) {
-		if (element.name === "") {
-			continue;
-		}
-
-		switch (element.nodeName) {
-			case "INPUT":
-				switch (element.type) {
-					case "text":
-					case "hidden":
-					case "password":
-					case "button":
-						serialized.push(element.name + "=" + encodeURIComponent(element.value));
-						break;
-				}
-				break;
-			case "BUTTON":
-				switch (element.type) {
-					case "submit":
-					case "button":
-						serialized.push(element.name + "=" + encodeURIComponent(element.value));
-						break;
-				}
-				break;
-		}
+	let form = document.querySelector(container + " form");
+	if (!form.checkValidity()) {
+		return;
 	}
 
-	return serialized.join("&");
+	loading(true);
+
+	let server = form.querySelector(".server").value;
+	let username = form.querySelector(".username").value;
+	let password = form.querySelector(".password").value;
+
+	let data = {
+		//type: "XtreamCodes",
+		server: server,
+		username: username,
+		password: password
+	};
+
+	let init = {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+		mode: "cors",
+	};
+
+	try {
+		let request = await fetch(API + "login", init);
+		if (!request.ok) {
+			loading(false);
+			trigger("login - " + request.status + ": " + request.statusText, "error");
+			return;
+		}
+
+		let response = await request.text();
+
+		loading(false);
+
+		await createServer(form, response);
+	} catch (error) {
+		loading(false);
+		trigger("Unable to connect to the server.", "error");
+	}
 }
 
-function ajax(query, show_loading = true) {
+async function request(query, valid, show_loading) {
+	let servers = JSON.parse(localStorage.getItem("servers"));
+	if (!servers) {
+		return;
+	}
+
+	let server = localStorage.getItem("server");
+	if (!server) {
+		return;
+	}
+
+	server = servers[server];
+	if (!server) {
+		return;
+	}
+
 	if (show_loading) {
 		loading(true);
 	}
 
-	if (!query.includes("username=") || !query.includes("password=")) {
-		query = `username=${username}&password=${password}&${query}`;
-	}
-	if (avatar) {
-		query += `&avatar_id=${avatar.id}`;
-	}
+	let init = {
+		method: "GET",
+		headers: {
+			Authorization: "Bearer " + server.auth_key,
+		},
+		mode: "cors",
+	};
 
-	return new Promise(function (resolve) {
-		let xhr = new XMLHttpRequest();
-		xhr.onload = function () {
-			if (xhr.readyState === 4) {
-				loading(false);
-				try {
-					let parsed = JSON.parse(xhr.response);
-
-					if (typeof parsed.trigger !== "undefined") {
-						trigger(parsed.trigger.msg, parsed.trigger.type);
-					}
-					if (typeof parsed.display !== "undefined") {
-						for ([key, value] of Object.entries(parsed.display)) {
-							document.querySelector(key).style.display = value;
-						}
-					}
-					if (typeof parsed.setItem !== "undefined") {
-						for ([key, value] of Object.entries(parsed.setItem)) {
-							localStorage.setItem(key, value);
-						}
-					}
-					if (typeof parsed.innerHTML !== "undefined") {
-						for ([key, value] of Object.entries(parsed.innerHTML)) {
-							document.querySelector(key).innerHTML = value;
-						}
-					}
-					if (typeof parsed.callFunction !== "undefined") {
-						for ([key, value] of Object.entries(parsed.callFunction)) {
-							if (value && value.length) {
-								eval(key + `(${value})`);
-							} else {
-								eval(key + "()");
-							}
-						}
-					}
-
-					login();
-					btn();
-					scroll();
-				} catch (error) {
-					console.log(error);
-					loading(false);
-				}
-			}
-			resolve();
-		};
-
-		xhr.onerror = function () {
-			console.error(xhr.statusText);
+	try {
+		let request = await fetch(API + query, init);
+		if (!request.ok) {
 			loading(false);
-		};
-
-		xhr.open("GET", corsProxy(API_BASE + query), true);
-		xhr.send();
-	});
-}
-
-function btn() {
-	for (j_btn of document.querySelectorAll(".j_btn")) {
-		let j_btn_clone = j_btn.cloneNode(true);
-		j_btn_clone.onclick = async function () {
-			let action = j_btn_clone.getAttribute("_action");
-			let id = j_btn_clone.getAttribute("id");
-
-			switch (action) {
-				case "handleAvatar": {
-					let avatars = JSON.parse(localStorage.getItem("user_info")).avatars;
-
-					let finded_avatar = avatars.filter((item) => item.id == id)[0];
-					finded_avatar.color = j_btn_clone.getAttribute("_color");
-
-					localStorage.setItem("avatar", JSON.stringify(finded_avatar));
-					localStorage.removeItem("favorites");
-
-					login();
-					handlePage("home");
-					break;
-				}
-				case "deleteAvatar": {
-					let user_info = JSON.parse(localStorage.getItem("user_info"));
-					let finded_avatar2 = user_info.avatars.filter((item) => item.id == id)[0];
-
-					await ajax("action=delete_avatar&avatar_id=" + finded_avatar2.id);
-
-					let user_info2 = JSON.parse(localStorage.getItem("user_info"));
-					user_info2.avatars = Object.values(user_info2.avatars);
-					localStorage.setItem("user_info", JSON.stringify(user_info2));
-
-					login();
-					break;
-				}
-				case "changeAvatar": {
-					document.querySelector(".profile_container").style.display = "none";
-
-					localStorage.removeItem("favorites");
-					localStorage.removeItem("avatar");
-					localStorage.removeItem("home");
-
-					login();
-					break;
-				}
-				case "exit": {
-					document.querySelector(".profile_container").style.display = "none";
-
-					localStorage.clear();
-
-					login();
-					break;
-				}
-				default:
-					break;
+			trigger(query + " - " + request.status + ": " + request.statusText, "error");
+			if (valid) {
+				await valid_login();
 			}
-		};
-		j_btn.parentNode.replaceChild(j_btn_clone, j_btn);
+			return;
+		}
+
+		let response = await request.json();
+
+		loading(false);
+		return response;
+	} catch (error) {
+		loading(false);
+		trigger("Unable to connect to the server.", "error");
 	}
 }
 
-function trigger(message, type = "success") {
+async function handleAvatar(id) {
+	localStorage.setItem("avatar", id);
+
+	await enterAvatar(id);
+}
+
+async function enterAvatar(id) {
+	let avatars = JSON.parse(localStorage.getItem("avatars"));
+	let avatar = avatars.findIndex((item) => item.id == id);
+
+	document.querySelector("#Login").style.display = "none";
+	document.querySelector("#Server").style.display = "none";
+	document.querySelector("#Avatar").style.display = "none";
+	document.querySelector("#Player").style.display = "flex";
+
+	document.querySelector(".avatar_name").innerHTML = "Boas vindas, " + avatars[avatar].name;
+	document.querySelector(".avatar_container").style.backgroundColor = `hsl(${(avatar % 18) * 20}, 100%, 50%)`;
+
+	await handlePage("home");
+}
+
+async function createAvatar() {
+	let name = document.querySelector("#Avatar form .name").value;
+
+	await request("avatar/store/" + name, true, true);
+	await valid_login();
+
+	selectModalContainer("Avatar", false);
+}
+
+async function removeAvatar(id) {
+	await request("avatar/remove/" + id, true, true);
+	await valid_login();
+}
+
+async function changeAvatar() {
+	localStorage.removeItem("avatar");
+
+	await valid_login();
+}
+
+async function handleServer(id) {
+	localStorage.setItem("server", id);
+
+	await valid_login();
+}
+
+async function enterServer() {
+	document.querySelector("#Login").style.display = "none";
+	document.querySelector("#Server").style.display = "none";
+	document.querySelector("#Avatar").style.display = "flex";
+	document.querySelector("#Player").style.display = "none";
+}
+
+async function createServer(form, auth_key) {
+	let server = form.querySelector(".server").value;
+	let username = form.querySelector(".username").value;
+
+	let data = {
+		url: server,
+		username: username,
+		auth_key: auth_key,
+	};
+
+	let servers = localStorage.getItem("servers");
+	if (!servers) {
+		servers = [];
+	} else {
+		servers = JSON.parse(servers);
+	}
+	servers.push(data);
+
+	localStorage.setItem("servers", JSON.stringify(servers));
+	selectModalContainer('Server', false);
+
+	await valid_login();
+}
+
+async function removeServer(id) {
+	let servers = JSON.parse(localStorage.getItem("servers"));
+	servers.splice(id, 1);
+
+	if (servers.length == 0) {
+		localStorage.removeItem("servers");
+	} else {
+		localStorage.setItem("servers", JSON.stringify(servers));
+	}
+
+	manageSelectModalContainer('Server', false);
+
+	await valid_login();
+}
+
+async function changeServer() {
+	localStorage.removeItem("server");
+
+	await valid_login();
+}
+
+async function accountExit() {
+	localStorage.removeItem("server");
+	localStorage.removeItem("user_info");
+	localStorage.removeItem("avatars");
+	localStorage.removeItem("avatar");
+
+	await valid_login();
+}
+
+function selectModalContainer(select, show) {
+	let select_element = document.querySelector("#" + select);
+	select_element.querySelector(".select_modal_container").style.display = show ? "flex" : "none";
+}
+
+function manageSelectModalContainer(select, show) {
+	let select_element = document.querySelector("#" + select);
+	select_element.querySelector(".manage_select_modal_container").style.display = show ? "flex" : "none";
+}
+
+function loading(display) {
+	document.querySelector(".loading").style.display = display ? "flex" : "none";
+}
+
+function trigger(message, type) {
 	let trigger_container = document.querySelector(".trigger_container");
-	trigger_container.style.display = "block";
+	trigger_container.style.display = "flex";
 	trigger_container.classList.add(type);
 
 	document.querySelector(".trigger_message").innerHTML = message;
@@ -172,135 +230,152 @@ function trigger(message, type = "success") {
 	}, 5000);
 }
 
-
-function loading(display = true) {
-	let loading = document.querySelector(".loading");
-	if (display) {
-		loading.style.display = "flex";
-	} else {
-		loading.style.display = "none";
+async function valid_login() {
+	let servers = JSON.parse(localStorage.getItem("servers"));
+	if (!servers) {
+		document.querySelector("#Login").style.display = "flex";
+		document.querySelector("#Server").style.display = "none";
+		document.querySelector("#Avatar").style.display = "none";
+		document.querySelector("#Player").style.display = "none";
+		localStorage.clear();
+		return;
 	}
-}
 
-function login() {
-	let userInfo = localStorage.getItem("user_info");
-	if (userInfo) {
-		let userInfo = JSON.parse(localStorage.getItem("user_info"));
-		if (userInfo.auth == 0) {
-			document.querySelector("#Login").style.display = "flex";
-			document.querySelector("#Avatar").style.display = "none";
-			document.querySelector("#Player").style.display = "none";
-			document.querySelector(".page_content").innerHTML = "";
-			localStorage.clear();
-		} else {
-			username = userInfo.username;
-			password = userInfo.password;
+	let server = localStorage.getItem("server");
+	if (server) {
+		await enterServer();
+	} else {
+		document.querySelector("#Login").style.display = "none";
+		document.querySelector("#Server").style.display = "flex";
+		document.querySelector("#Avatar").style.display = "none";
+		document.querySelector("#Player").style.display = "none";
 
-			if (localStorage.getItem("avatar")) {
-				avatar = JSON.parse(localStorage.getItem("avatar"));
+		let server_element = "";
+		let server_manager_element = "";
 
-				document.querySelector("#Login").style.display = "none";
-				document.querySelector("#Avatar").style.display = "none";
-				document.querySelector("#Player").style.display = "flex";
+		if (servers) {
+			for (let i = 0; i < servers.length; i++) {
+				let server = servers[i];
+				let color = `hsl(${(i % 18) * 20}, 100%, 50%)`;
 
-				for (avatar_name of document.querySelectorAll(".avatar_name")) {
-					avatar_name.innerHTML = avatar.avatar_name;
-				}
-
-				document.querySelector(".avatar_container").style.backgroundColor = avatar.color;
-			} else {
-				document.querySelector("#Login").style.display = "none";
-				document.querySelector("#Avatar").style.display = "flex";
-				document.querySelector("#Player").style.display = "none";
-
-				let avatar_element = "";
-				let avatar_manager_element = "";
-
-				let i = 0;
-				for (avatar of userInfo.avatars) {
-					if (avatar.id) {
-						let color = `hsl(${(i++ % 18) * 20}, 100%, 50%)`;
-						avatar_element += `
-							<li>
-								<a class="j_btn" _action="handleAvatar" _color="${color}" id="${avatar.id}" style="background-color: ${color};">
-									<img src="assets/images/face-user.png">
-								</a>
-								<span>${avatar.avatar_name}</span>
-							</li>
-						`;
-						avatar_manager_element += `
-							<li>
-								<a class="j_btn" _action="deleteAvatar" id="${avatar.id}" style="background-color: ${color};">
-									<div class="bg_edit">
-										<img src="assets/icons/icon-trash.svg">
-									</div>
-									<img src="assets/images/face-user.png">
-								</a>
-								<span>${avatar.avatar_name}</span>
-							</li>
-						`;
-					}
-				}
-
-				avatar_element += `
+				server_element += `
 					<li>
-						<a onclick="document.querySelector('.users_modal_container').style.display = 'flex';">
-							<img style="filter: invert(.8); width: 80px;" src="assets/icons/icon-plus-circle.svg">
+						<a onclick="handleServer(${i})" style="background-color: ${color};">
+							<img src="assets/images/face-host.png">
 						</a>
-						<span>Adicionar perfil</span>
+						<span>${server.url}</span>
+						<span>${server.username}</span>
 					</li>
 				`;
 
-				document.querySelector(".avatar_list").innerHTML = avatar_element;
-				document.querySelector(".avatar_list_manager").innerHTML = avatar_manager_element;
-
-				btn();
+				server_manager_element += `
+					<li>
+						<a onclick="removeServer(${i})" style="background-color: ${color};">
+							<div class="bg_edit">
+								<img src="assets/icons/icon-trash.svg">
+							</div>
+							<img src="assets/images/face-host.png">
+						</a>
+						<span>${server.url}</span>
+						<span>${server.username}</span>
+					</li>
+				`;
 			}
 		}
+
+		server_element += `
+			<li>
+				<a onclick="selectModalContainer('Server', true);">
+					<img style="filter: invert(.8); width: 80px;" src="assets/icons/icon-plus-circle.svg">
+				</a>
+				<span>Adicionar perfil</span>
+			</li>
+		`;
+
+		document.querySelector(".server_list").innerHTML = server_element;
+		document.querySelector(".server_list_manager").innerHTML = server_manager_element;
+		return;
+	}
+
+	let userInfo = await request("info", false, true);
+	if (userInfo && userInfo.auth > 0) {
+		localStorage.setItem("user_info", JSON.stringify(userInfo));
 	} else {
-		document.querySelector("#Login").style.display = "flex";
+		document.querySelector("#Login").style.display = "none";
+		document.querySelector("#Server").style.display = "flex";
 		document.querySelector("#Avatar").style.display = "none";
 		document.querySelector("#Player").style.display = "none";
-		document.querySelector(".page_content").innerHTML = "";
+		localStorage.clear();
+		return;
+	}
+
+	let avatars = await request("avatar/get", false, true);
+	if (avatars) {
+		localStorage.setItem("avatars", JSON.stringify(avatars));
+	} else {
+		document.querySelector("#Login").style.display = "none";
+		document.querySelector("#Server").style.display = "flex";
+		document.querySelector("#Avatar").style.display = "none";
+		document.querySelector("#Player").style.display = "none";
+		localStorage.clear();
+		return;
+	}
+
+	let avatar = localStorage.getItem("avatar");
+	if (avatar) {
+		await enterAvatar(avatar);
+	} else {
+		document.querySelector("#Login").style.display = "none";
+		document.querySelector("#Server").style.display = "none";
+		document.querySelector("#Avatar").style.display = "flex";
+		document.querySelector("#Player").style.display = "none";
+
+		let avatar_element = "";
+		let avatar_manager_element = "";
+
+		let i = 0;
+		for (avatar of Object.values(avatars)) {
+			if (avatar.id) {
+				let color = `hsl(${(i++ % 18) * 20}, 100%, 50%)`;
+
+				avatar_element += `
+					<li>
+						<a onclick="handleAvatar(${avatar.id}, '${color}')" style="background-color: ${color};">
+							<img src="assets/images/face-user.png">
+						</a>
+						<span>${avatar.name}</span>
+					</li>
+				`;
+
+				avatar_manager_element += `
+					<li>
+						<a onclick="removeAvatar(${avatar.id})" style="background-color: ${color};">
+							<div class="bg_edit">
+								<img src="assets/icons/icon-trash.svg">
+							</div>
+							<img src="assets/images/face-user.png">
+						</a>
+						<span>${avatar.name}</span>
+					</li>
+				`;
+			}
+		}
+
+		avatar_element += `
+			<li>
+				<a onclick="selectModalContainer('Avatar', true);">
+					<img style="filter: invert(.8); width: 80px;" src="assets/icons/icon-plus-circle.svg">
+				</a>
+				<span>Adicionar perfil</span>
+			</li>
+		`;
+
+		document.querySelector(".avatar_list").innerHTML = avatar_element;
+		document.querySelector(".avatar_list_manager").innerHTML = avatar_manager_element;
 	}
 }
 
-function btnScroll() {
-	document.querySelectorAll("img.btn_right_scroll").forEach(function (element) {
-		element.onclick = function () {
-			let scrollAmount = 0;
-			let ref = element.getAttribute("ref");
-			let scroll_horizon = document.querySelector(`.scroll_horizon[id="${ref}"]`);
-			let interval = setInterval(function () {
-				scrollAmount += 40;
-				scroll_horizon.scrollLeft += 40;
-				if (scrollAmount >= 400) {
-					window.clearInterval(interval);
-				}
-			}, 25);
-		};
-	});
-	document.querySelectorAll("img.btn_left_scroll").forEach(function (element) {
-		element.onclick = function () {
-			let scrollAmount = 0;
-			let ref = element.getAttribute("ref");
-			let scroll_horizon = document.querySelector(`.scroll_horizon[id="${ref}"]`);
-			let interval = setInterval(function () {
-				scrollAmount += 40;
-				scroll_horizon.scrollLeft -= 40;
-				if (scrollAmount >= 400) {
-					window.clearInterval(interval);
-				}
-			}, 25);
-		};
-	});
-}
-
-function handlePage(type) {
-	document.querySelector(".search_container").style.visibility = "hidden";
-	document.querySelector(".search_input_action").value = "";
-	document.querySelector(".search_input_search").value = "";
-
+async function handlePage(type) {
 	for (menu_content_a of document.querySelectorAll(".menu_content a")) {
 		menu_content_a.classList.remove("active");
 	}
@@ -311,92 +386,37 @@ function handlePage(type) {
 		player_live = null;
 	}
 
+	document.querySelector(".home_container").style.display = "none";
+	document.querySelector(".live_container").style.display = "none";
+	document.querySelector(".favorites_container").style.display = "none";
+
+	let movie_container = document.querySelector(".movie_container");
+	movie_container.querySelector(".channels_categories").style.display = "none";
+	movie_container.querySelector(".media_content").style.display = "none";
+
+	let series_container = document.querySelector(".series_container");
+	series_container.querySelector(".channels_categories").style.display = "none";
+	series_container.querySelector(".media_content").style.display = "none";
+
 	switch (type) {
+		case "home":
+			await handleHome();
+			break;
 		case "lives":
-			pageLives();
-			handleLivesCategories();
+			await handleLivesCategories();
 			break;
 		case "movies":
-			pageVod();
-			handleVodCategories();
+			await handleMovieCategories();
 			break;
 		case "series":
-			pageSeries();
-			handleSeriesCategories();
+			await handleSerieCategories();
 			break;
 		case "favorites":
-			pageFavorites();
-			handleFavorites();
-			break;
-		case "home":
-			pageHome();
-			handleHome();
+			await handleFavorites();
 			break;
 		default:
 			break;
 	}
-
-	scroll();
-}
-
-function pageHome() {
-	localStorage.removeItem("home");
-	document.querySelector(".page_content").innerHTML = `
-		<div class="home_container">
-			<div class="carousel_section_generic_container keep_watching_container">
-				<div class="carousel_section_generic_content small">
-					<div class="section_new_title carousel_section_generic_title">
-						<p>Continue assistindo</p>
-						<div class="container_arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="1"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="1"></img>
-						</div>
-					</div>
-					<ul class="hide_scrollbar scroll_horizon keep_watching_ul" id="1">
-					</ul>
-				</div>
-			</div>
-			<div class="carousel_section_generic_container top_conainer">
-				<div class="carousel_section_generic_content">
-					<div class="section_top_title carousel_section_generic_title">
-						<p>Top 10</p>
-						<div class="container_arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="2"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="2"></img>
-						</div>
-					</div>
-					<ul class="hide_scrollbar scroll_horizon top_ul" id="2">
-					</ul>
-				</div>
-			</div>
-			<div class="carousel_section_generic_container movies_added_container">
-				<div class="carousel_section_generic_content small">
-					<div class="section_new_title carousel_section_generic_title">
-						<p>Filmes recém adicionados</p>
-						<div class="container_arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="3"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="3"></img>
-						</div>
-					</div>
-					<ul class="hide_scrollbar scroll_horizon movies_added_ul" id="3">
-					</ul>
-				</div>
-			</div>
-			<div class="carousel_section_generic_container series_added_container" style="margin-bottom: 10px;">
-				<div class="carousel_section_generic_content small">
-					<div class="section_new_title carousel_section_generic_title">
-						<p>Séries recém adicionadas</p>
-						<div class="container_arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="4"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="4"></img>
-						</div>
-					</div>
-					<ul class="hide_scrollbar scroll_horizon series_added_ul" id="4">
-					</ul>
-				</div>
-			</div>
-		</div>
-	`;
 }
 
 function changeHttp(link) {
@@ -430,266 +450,317 @@ function imgPoster(src) {
 	}
 }
 
-function handleHome() {
-	document.querySelector(".top_conainer").style.display = "none";
-	document.querySelector(".keep_watching_container").style.display = "none";
-	document.querySelector(".movies_added_container").style.display = "none";
-	document.querySelector(".series_added_container").style.display = "none";
-
-	let home_json = localStorage.getItem("home");
-	if (home_json) {
-		let home = JSON.parse(home_json);
-
-		if (home.keepWatching.length) {
-			document.querySelector(".keep_watching_container").style.display = "flex";
+function splideMount(id, perPage, arrows) {
+	let splider = new Splide(id, {
+		snap: true,
+		drag: 'free',
+		rewind: true,
+		arrows: arrows,
+		pagination: false,
+		breakpoints: {
+			854: {
+				perPage: perPage[0],
+			},
+			1280: {
+				perPage: perPage[1],
+			},
+			1440: {
+				perPage: perPage[2],
+			},
+			1920: {
+				perPage: perPage[3],
+			},
+			2560: {
+				perPage: perPage[4],
+			},
 		}
-		if (home.top.length) {
-			document.querySelector(".top_conainer").style.display = "flex";
+	});
+	splider.mount();
+	return splider;
+}
+
+function mediaCateroryUpdate(category_id_selected) {
+	for (media_category_a of document.querySelectorAll(".media_category_a")) {
+		if (media_category_a.getAttribute("id") == category_id_selected) {
+			media_category_a.classList.add("active");
+		} else {
+			media_category_a.classList.remove("active");
 		}
-		if (home.moviesAdded.length) {
-			document.querySelector(".movies_added_container").style.display = "flex";
-		}
-		if (home.seriesAdded.length) {
-			document.querySelector(".series_added_container").style.display = "flex";
-		}
-
-		let element = "";
-		for (keepWatching of home.keepWatching) {
-			let image = "";
-			let title = "";
-			let action = "";
-
-			if (keepWatching.serie_id) {
-				action = `openSeries(${keepWatching.serie_id}, ${keepWatching.stream_id}, '${keepWatching.target_container}', ${keepWatching.time});`;
-				image = keepWatching.cover;
-				title = keepWatching.title;
-			} else {
-				action = `openVod(${keepWatching.stream_id}, '${keepWatching.target_container}', ${keepWatching.time});`;
-				image = keepWatching.movie_image;
-				title = keepWatching.stream_display_name;
-			}
-
-			element += `
-				<li>
-					<a onclick="${action}">
-						${poster(image)}
-						<span class="name">${title}</span>
-					</a>
-				</li>
-			`;
-		}
-
-		document.querySelector(".keep_watching_ul").innerHTML = element;
-		element = "";
-
-		for ([i, homeTop] of home.top.entries()) {
-			if (homeTop.stream_id) {
-				element += `
-					<li>
-						<a class="top_li" onclick="handleVodModalAndInfo(null, ${homeTop.stream_id});">
-							${poster(homeTop.movie_image)}
-							<span class="position_number">${(i + 1)}</span>
-							<span class="name">${homeTop.stream_display_name}</span>
-						</a>
-					</li>
-				`;
-			} else {
-				element += `
-					<li>
-						<a class="top_li" onclick="handleSerieModalAndInfo(null, ${homeTop.serie_id});">
-							${poster(homeTop.cover)}
-							<span class="position_number">${(i + 1)}</span>
-							<span class="name">${homeTop.title}</span>
-						</a>
-					</li>
-				`;
-			}
-		}
-
-		document.querySelector(".top_ul").innerHTML = element;
-		element = "";
-
-		for (moviesAdded of home.moviesAdded) {
-			element += `
-				<li>
-					<a onclick="handleVodModalAndInfo(null, ${moviesAdded.id});">
-						${poster(moviesAdded.movie_image)}
-						<span class="name">${moviesAdded.stream_display_name}</span>
-					</a>
-				</li>
-			`;
-		}
-
-		document.querySelector(".movies_added_ul").innerHTML = element;
-		element = "";
-
-		for (seriesAdded of home.seriesAdded) {
-			element += `
-				<li>
-					<a onclick="handleSerieModalAndInfo(null, ${seriesAdded.id});">
-						${poster(seriesAdded.cover)}
-						<span class="name">${seriesAdded.title}</span>
-					</a>
-				</li>
-			`;
-		}
-
-		document.querySelector(".series_added_ul").innerHTML = element;
-		btnScroll();
-	} else {
-		ajax("action=home");
 	}
 }
 
-function pageLives() {
-	localStorage.removeItem("live_categories");
-	document.querySelector(".search_container").style.visibility = "visible";
-	document.querySelector(".search_input_action").value = "get_live_streams";
-	document.querySelector(".page_content").innerHTML = `
-		<div class="channels_categories">
-			<ul class="hide_scrollbar media_categories_ul">
-			</ul>
-		</div>
-		<div class="channels_list">
-			<ul class="hide_scrollbar channels_ul">
-			</ul>
-		</div>
-		<div class="channels_view_container">
-			<div class="channels_view_content">
-			</div>
-			<button style="margin: 10px 0px; float: right;" type="button" name="button" class="btn_favorite">
-			</button>
-			<ul class="epg_ul">
-			</ul>
-		</div>
-	`;
-}
+async function handleHome() {
+	document.querySelector(".search_container").style.display = "none";
 
-function handleLivesCategories() {
-	let live_categories = localStorage.getItem("live_categories");
-	if (live_categories) {
-		live_categories = JSON.parse(live_categories);
+	let home_container = document.querySelector(".home_container");
+	home_container.style.display = "flex";
 
-		let element = `
-			<li>
-				<a class="media_category_a" onclick="handleLives(null, 0)" id="0">TODOS OS CANAIS</a>
+	let home = await request("home", true, true);
+
+	if (home.top.length) {
+		home_container.querySelector(".top_conainer").style.display = "flex";
+	} else {
+		home_container.querySelector(".top_conainer").style.display = "none";
+	}
+
+	if (home.movies.length) {
+		home_container.querySelector(".movies_added_container").style.display = "flex";
+	} else {
+		home_container.querySelector(".movies_added_container").style.display = "none";
+	}
+
+	if (home.series.length) {
+		home_container.querySelector(".series_added_container").style.display = "flex";
+	} else {
+		home_container.querySelector(".series_added_container").style.display = "none";
+	}
+
+	let avatar = localStorage.getItem("avatar");
+
+	let watchings = await request("watching/get/" + avatar, true, true);
+
+	if (watchings.length) {
+		home_container.querySelector(".keep_watching_container").style.display = "flex";
+	} else {
+		home_container.querySelector(".keep_watching_container").style.display = "none";
+	}
+
+	let element = "";
+
+	for (watching of watchings) {
+		let action = "";
+
+		if (watching.kind == "movie") {
+			action = `openMovie(${watching.value_id}, '${watching.container_extension}');`;
+		} else {
+			action = `openSerie(${watching.value_id}, ${watching.episode_id}, '${watching.container_extension}');`;
+		}
+
+		element += `
+			<li class="splide__slide">
+				<a onclick="${action}">
+					${poster(watching.icon)}
+					<span class="name">${watching.name}</span>
+				</a>
 			</li>
 		`;
+	}
 
-		for (live_category of live_categories) {
+	home_container.querySelector("#keep_watching_carousel .splide__list").innerHTML = element;
+	element = "";
+
+	splideMount("#keep_watching_carousel", [4, 6, 7, 10, 13], false);
+
+	for ([i, home_top] of home.top.entries()) {
+		if (home_top.kind == "movie") {
 			element += `
-				<li>
-					<a class="media_category_a" onclick="handleLives(null, ${live_category.category_id})" id="${live_category.category_id}">${live_category.category_name}</a>
+				<li class="splide__slide">
+					<a class="top_li" onclick="handleMovieInfo(${home_top.value_id});">
+						${poster(home_top.icon)}
+						<span class="position_number">${(i + 1)}</span>
+						<span class="name">${home_top.name}</span>
+					</a>
+				</li>
+			`;
+		} else {
+			element += `
+				<li class="splide__slide">
+					<a class="top_li" onclick="handleSerieInfo(${home_top.value_id});">
+						${poster(home_top.icon)}
+						<span class="position_number">${(i + 1)}</span>
+						<span class="name">${home_top.name}</span>
+					</a>
 				</li>
 			`;
 		}
-
-		document.querySelector(".media_categories_ul").innerHTML = element;
-		handleLives(null, live_categories[0].category_id);
-	} else {
-		ajax("action=get_live_categories");
 	}
+
+	home_container.querySelector("#top10_carousel .splide__list").innerHTML = element;
+	element = "";
+
+	splideMount("#top10_carousel", [3, 5, 6, 8, 10], false);
+
+	for (movie of home.movies) {
+		element += `
+			<li class="splide__slide">
+				<a onclick="handleMovieInfo(${movie.value_id});">
+					${poster(movie.icon)}
+					<span class="name">${movie.name}</span>
+				</a>
+			</li>
+		`;
+	}
+
+	home_container.querySelector("#movies_carousel .splide__list").innerHTML = element;
+	element = "";
+
+	splideMount("#movies_carousel", [4, 6, 7, 10, 13], false);
+
+	for (serie of home.series) {
+		element += `
+			<li class="splide__slide">
+				<a onclick="handleSerieInfo(${serie.value_id});">
+					${poster(serie.icon)}
+					<span class="name">${serie.name}</span>
+				</a>
+			</li>
+		`;
+	}
+
+	home_container.querySelector("#series_carousel .splide__list").innerHTML = element;
+
+	splideMount("#series_carousel", [4, 6, 7, 10, 13], false);
 }
 
-function handleLives(lives = null, category_id = null) {
-	if (lives) {
-		let element = "";
+async function handleLivesCategories() {
+	document.querySelector(".search_input_search").value = "";
+	document.querySelector(".search_container").style.display = "flex";
 
-		if (lives.length) {
-			for (live of lives) {
-				element += `
-					<li>
-						<a onclick="openLive(${live.stream_id});" id="${live.stream_id}">
-							${poster(live.stream_icon)}
-							<span>${live.name}</span>
-						</a>
-					</li>
-				`;
-			}
+	let live_container = document.querySelector(".live_container");
+	live_container.style.display = "flex";
 
-			for (media_category_a of document.querySelectorAll(".media_category_a")) {
-				if (media_category_a.getAttribute("id") == category_id_selected) {
-					media_category_a.classList.add("active");
-				} else {
-					media_category_a.classList.remove("active");
-				}
-			}
+	let categories = await request("get/categories/live", true, true);
+
+	let element = `
+		<li>
+			<a class="media_category_a" onclick="handleLives()">TODOS OS CANAIS</a>
+		</li>
+	`;
+
+	for (category of categories) {
+		let category_name = category.name.replace("CANAIS | ", "").replace("Canais | ", "");
+		element += `
+			<li>
+				<a class="media_category_a" onclick="handleLives(null, ${category.id})" id="${category.id}">${category_name}</a>
+			</li>
+		`;
+	}
+
+	live_container.querySelector(".channels_categories").innerHTML = element;
+	live_container.querySelector(".channels_view_container").style.display = "none";
+
+	await handleLives(null, categories[0].id);
+}
+
+async function handleLives(lives, category_id) {
+	if (!lives) {
+		if (category_id) {
+			lives = await request("get/category/live/" + category_id, true, true);
 		} else {
-			element = `<li style="color: #fff;">Nenhum canal disponível nessa categoria</li>`;
+			lives = await request("get/all/live", true, true);
 		}
-
-		document.querySelector(".channels_ul").innerHTML = element;
-	} else {
-		category_id_selected = category_id;
-		ajax("action=get_live_streams&category_id=" + category_id);
 	}
+
+	let element = "";
+	if (lives.length) {
+		for (live of lives) {
+			element += `
+				<li>
+					<a onclick="openLive(${live.id});" id="${live.id}">
+						${poster(live.icon)}
+						<span>${live.name}</span>
+					</a>
+				</li>
+			`;
+		}
+	} else {
+		element = `<li class="not_found">Nenhum canal disponível nessa categoria.</li>`;
+	}
+
+	document.querySelector(".live_container .channels_list").innerHTML = element;
+
+	mediaCateroryUpdate(category_id);
+
+	handleSearch("live", handleLives);
 }
 
-async function openLive(stream_id) {
-	await handleLiveInfo(null, stream_id);
-	watchLive(`${DNS}/live/${username}/${password}/${stream_id}.m3u8`);
+async function openLive(value_id) {
+	await handleLiveInfo(value_id);
+	await watchLive(value_id);
 }
 
 async function handleAndOpenLive(live_id) {
-	handlePage("lives");
+	await handlePage("lives");
 	await openLive(live_id);
 }
 
-function handleLiveInfo(live_info = null, stream_id = null) {
-	if (live_info) {
-		let element = "";
+async function handleLiveInfo(value_id) {
+	let infos = await request("get/info/live/" + value_id, true, true);
 
-		if (live_info.epg_listings.length) {
-			for (epg_listing of live_info.epg_listings) {
-				let start = new Date(parseInt(epg_listing.start_timestamp) * 1000);
-				let end = new Date(parseInt(epg_listing.stop_timestamp) * 1000);
-
-				element += `
-					<li>
-						<p class="title">
-							<span class="time">
-								${start.getHours()}:${start.getMinutes()} - ${end.getHours()}:${end.getMinutes()}
-							</span> |  ${decodeURIComponent(escape(window.atob(epg_listing.title)))}
-						</p>
-						<p class="description">
-							${decodeURIComponent(escape(window.atob(epg_listing.description)))}
-						</p>
-					</li>
-				`;
-			}
-
+	for (channels_list_a of document.querySelectorAll(".live_container .channels_list a")) {
+		if (channels_list_a.getAttribute("id") == value_id) {
+			channels_list_a.classList.add("active");
+		} else {
+			channels_list_a.classList.remove("active");
 		}
-		document.querySelector(".epg_ul").innerHTML = element;
-	} else {
-		for (channels_list_a of document.querySelectorAll(".channels_list a")) {
-			if (channels_list_a.getAttribute("id") == stream_id) {
-				channels_list_a.classList.add("active");
-			} else {
-				channels_list_a.classList.remove("active");
-			}
-		}
-		ajax("action=get_short_epg&stream_id=" + stream_id + "&limit=10");
 	}
+
+	let element = "";
+
+	for (info of infos) {
+		let start = new Date(parseInt(info.start_timestamp) * 1000);
+		let end = new Date(parseInt(info.stop_timestamp) * 1000);
+
+		let start_hours = start.getHours();
+		let start_minutes = start.getMinutes();
+		start_hours = start_hours < 10 ? "0" + start_hours : start_hours;
+		start_minutes = start_minutes < 10 ? "0" + start_minutes : start_minutes;
+
+		let end_hours = end.getHours();
+		let end_minutes = end.getMinutes();
+		end_hours = end_hours < 10 ? "0" + end_hours : end_hours;
+		end_minutes = end_minutes < 10 ? "0" + end_minutes : end_minutes;
+
+		element += `
+			<li>
+				<p class="title">
+					<span class="time">
+						${start_hours}:${start_minutes} - ${end_hours}:${end_minutes}
+					</span> |  ${decodeURIComponent(escape(atob(info.title)))}
+				</p>
+				<p class="description">
+					${decodeURIComponent(escape(atob(info.description)))}
+				</p>
+			</li>
+		`;
+	}
+
+	let live_container = document.querySelector(".live_container");
+	live_container.querySelector(".channels_view_container").style.display = "flex";
+	live_container.querySelector(".epg_ul").innerHTML = element;
 }
 
 var player_live = null;
-function watchLive(link) {
+async function watchLive(value_id) {
 	if (player_live) {
 		player_live.dispose();
 		player_live = null;
 	}
 
-	document.querySelector(".channels_view_content").innerHTML = `<video id="my-player-live" class="video-js vjs-default-skin vjs-big-play-centered" style="width:100%; height:100%; border:0px; outline:none; aspect-ratio:16/9;" controls loop src=""></video>`;
+	let avatar = localStorage.getItem("avatar");
+
+	let link = await request("link/live/" + value_id + "/m3u8", true, true);
+	let favorites = await request("favorite/get/" + avatar, true, true);
+
+	let live_container = document.querySelector(".live_container");
+
+	let favorite = live_container.querySelector(".btn_favorite .bx");
+	let favorited = favorites.lives.filter((item) => item.value_id == value_id).length;
+	handleFavorite(favorite, favorited, avatar, value_id, "live");
+
+	live_container.querySelector(".channels_view_content").innerHTML = `<video id="my-player-live" class="video-js vjs-default-skin vjs-big-play-centered vjs-custom" controls loop src=""></video>`;
 
 	player_live = videojs("my-player-live", {
 		liveui: true,
 		liveTracker: {
-			liveTolerance: 5,
-			trackingThreshold: 5
+			liveTolerance: 10,
+			trackingThreshold: 0
 		},
 		controlBar: {
 			children: [
 				"playToggle",
+				"skipBackward",
+				"skipForward",
 				"volumePanel",
 				"progressControl",
 				"seekToLive",
@@ -698,6 +769,10 @@ function watchLive(link) {
 			],
 			volumePanel: {
 				inline: false
+			},
+			skipButtons: {
+				forward: 10,
+				backward: 10
 			}
 		},
 		userActions: {
@@ -715,421 +790,386 @@ function watchLive(link) {
 		},
 		plugins: {
 			hotkeys: {
+				seekStep: 10,
 				volumeStep: 0.05,
 				enableModifiersForNumbers: false
 			}
 		},
 	});
 
-	player_live.src(link);
+	var errorDisplay = player_live.getChild('errorDisplay');
+	errorDisplay.off(player_live, 'error', errorDisplay.open);
+	errorDisplay.on(player_live, 'error', function (e) {
+		var error = player_live.error();
+		if (error && error.code !== 4) {
+			errorDisplay.open();
+		}
+	});
+
+	let url = await getRedirectXHR(PROXY + link);
+	let urlBase = new URL(url.replace(PROXY, "")).origin;
+
+	proxyBeforeRequest(player_live, urlBase);
+
+	player_live.src(PROXY + link);
 
 	player_live.reloadSourceOnError({
-		getSource: function (reload) {
-			reload(link);
+		getSource: async function (reload) {
+			url = await getRedirectXHR(PROXY + link);
+			urlBase = new URL(url.replace(PROXY, "")).origin;
+
+			proxyBeforeRequest(player_live, urlBase);
+
+			reload(PROXY + link);
+
+			player_live.ready(function () {
+				playerVolumeChange(player_live);
+			});
 		},
 		errorInterval: 5,
 	});
 
 	player_live.ready(function () {
-		let volume = localStorage.getItem("Volume");
+		let volume = localStorage.getItem("volume");
 		if (volume) {
 			player_live.volume(volume * 0.01);
 		}
 
+		playerVolumeChange(player_live);
+
 		player_live.autoplay(true);
 		player_live.play();
-
-		player_live.on("volumechange", function () {
-			localStorage.setItem("Volume", Math.floor(player_live.volume() * 100));
-		});
 	});
 }
 
-function pageVod() {
-	localStorage.removeItem("vod_categories");
-	document.querySelector(".search_container").style.visibility = "visible";
-	document.querySelector(".search_input_action").value = "get_vod_streams";
-	document.querySelector(".page_content").innerHTML = `
-		<div class="channels_categories">
-			<ul class="hide_scrollbar media_categories_ul">
-			</ul>
-		</div>
-		<div class="media_content">
-			<ul class="media_ul">
-			</ul>
-		</div>
-	`;
-}
-
-function handleModalVod() {
-	let element = document.createElement("div");
-	element.innerHTML = `
-		<div class="modal_media_container">
-			<div class="modal_media_box hide_scrollbar">
-				<div class="modal_media_content">
-					<div style="position: absolute; right: 50px; top: 10px;">
-						<button type="button" name="button" class="modal_media_close" onclick="hideModalContainer();">
-							<i class="bx bx-x"></i>
-						</button>
-					</div>
-					<div class="media_info">
-						<div class="media_cover">
-							<img src="" loading="eager" onerror="this.src='assets/images/not-available.png'">
-							<span class="rate"></span>
-						</div>
-						<div class="media_description">
-							<p class="title"></p>
-							<p class="genre"></p>
-							<p class="time"></p>
-							<p class="director"></p>
-							<p class="cast"></p>
-							<div class="media_resume">
-								<p></p>
-							</div>
-							<button type="button" name="button" class="btn_watch">
-								<span><img src="assets/icons/icon-google-play.svg">Assistir</span>
-							</button>
-							<button type="button" name="button" class="btn_favorite" style="margin-left: 15px;">
-								<i class="bx bx-heart"></i>
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	`;
-	document.querySelector(".page_content").append(element);
-}
-
-function handleVodCategories() {
-	let vod_categories = localStorage.getItem("vod_categories");
-	if (vod_categories) {
-		vod_categories = JSON.parse(vod_categories);
-
-		let element = `
-			<li>
-				<a class="media_category_a" onclick="handleVods(null, 0)" id="0">TODOS OS FILMES</a>
-			</li>
-		`;
-
-		for (vod_category of vod_categories) {
-			element += `
-				<li>
-					<a class="media_category_a" onclick="handleVods(null, ${vod_category.category_id})" id="${vod_category.category_id}">${vod_category.category_name}</a>
-				</li>
-			`;
-		}
-
-		document.querySelector(".media_categories_ul").innerHTML = element;
-		handleVods(null, vod_categories[0].category_id);
-	} else {
-		ajax("action=get_vod_categories");
-	}
-}
-
-function handleVods(vods = null, category_id = null) {
-	if (vods) {
-		let element = "";
-
-		if (vods.length) {
-			for (vod of vods) {
-				element += `
-					<li>
-						<a onclick="handleVodModalAndInfo(null, ${vod.stream_id});">
-							${poster(vod.stream_icon)}	
-							<span class="name">${vod.name}</span>
-						</a>
-					</li>
-				`;
+function proxyBeforeRequest(player, urlBase) {
+	player.on('xhr-hooks-ready', function () {
+		function playerXhrRequestHook(options) {
+			if (!options.uri.includes(PROXY)) {
+				let noProxy = options.uri.replace(PROXY.replace("/proxy/", ""), "");
+				options.uri = PROXY + urlBase + noProxy;
 			}
-
-			for (media_category_a of document.querySelectorAll(".media_category_a")) {
-				if (media_category_a.getAttribute("id") == category_id_selected) {
-					media_category_a.classList.add("active");
-				} else {
-					media_category_a.classList.remove("active");
-				}
-			}
-		} else {
-			element = `<li style="color: #fff;">Nenhum filme disponível nessa categoria</li>`;
-		}
-
-		document.querySelector(".media_ul").innerHTML = element;
-	} else {
-		category_id_selected = category_id;
-		ajax("action=get_vod_streams&category_id=" + category_id);
-	}
-}
-
-async function openVod(stream_id, target_container, time) {
-	await handleVodModalAndInfo(null, stream_id);
-	watchVideo(`${DNS}/movie/${username}/${password}/${stream_id}.${target_container}`, stream_id, time);
-}
-
-async function handleVodModalAndInfo(movie = null, vod_id = null) {
-	handleModalVod();
-	await handleVodInfo(movie, vod_id);
-}
-
-async function handleVodInfo(movie = null, vod_id = null) {
-	if (movie) {
-		document.querySelector(".modal_media_container").style.opacity = "1";
-		document.querySelector(".modal_media_container").style.display = "flex";
-		document.querySelector(".modal_media_container").style.pointerEvents = null;
-
-		document.querySelector(".media_cover img").src = imgPoster(movie.info.movie_image);
-		document.querySelector(".modal_media_box").style.backgroundImage = urlPoster(movie.info.movie_image);
-		document.querySelector(".media_cover .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
-
-		document.querySelector(".media_description .title").innerHTML = movie.movie_data.name ? movie.movie_data.name : movie.info.name;
-		document.querySelector(".media_description .genre").innerHTML = movie.info.genre ? movie.info.genre : "";
-		document.querySelector(".media_description .time").innerHTML = "Duração: " + (movie.info.duration ? movie.info.duration : "");
-		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (movie.info.director ? movie.info.director : "");
-		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (movie.info.cast ? movie.info.cast : "");
-
-		if (movie.info.plot) {
-			document.querySelector(".media_resume").style.display = "block";
-			document.querySelector(".media_resume p").innerHTML = movie.info.plot;
-		} else {
-			document.querySelector(".media_resume").style.display = "none";
-		}
-
-		document.querySelector(".btn_watch").onclick = function () {
-			watchVideo(`${DNS}/movie/${username}/${password}/${movie.movie_data.stream_id}.${movie.movie_data.container_extension}`, movie.movie_data.stream_id);
+			return options;
 		};
-	} else {
-		await ajax("action=get_vod_info&vod_id=" + vod_id);
-	}
+		player.tech().vhs.xhr.onRequest(playerXhrRequestHook);
+	});
 }
 
-function pageSeries() {
-	localStorage.removeItem("series_categories");
-	document.querySelector(".search_container").style.visibility = "visible";
-	document.querySelector(".search_input_action").value = "get_series";
-	document.querySelector(".page_content").innerHTML = `
-		<div class="channels_categories">
-			<ul class="hide_scrollbar media_categories_ul">
-			</ul>
-		</div>
-		<div class="media_content">
-			<ul class="media_ul">
-			</ul>
-		</div>
+async function getRedirectXHR(link) {
+	return new Promise(function (resolve) {
+		let xhr = new XMLHttpRequest();
+		xhr.onload = function () {
+			if (xhr.readyState === 4) {
+				resolve(xhr.responseURL);
+			}
+			resolve();
+		};
+		xhr.onerror = function () {
+			console.error(xhr.statusText);
+		};
+		xhr.open("GET", link, true);
+		xhr.send();
+	});
+}
+
+function playerVolumeChange(player) {
+	player.on("volumechange", function () {
+		localStorage.setItem("volume", Math.floor(player.volume() * 100));
+	});
+}
+
+async function handleMovieCategories() {
+	document.querySelector(".search_input_search").value = "";
+	document.querySelector(".search_container").style.display = "flex";
+
+	let movie_container = document.querySelector(".movie_container");
+	movie_container.querySelector(".channels_categories").style.display = "flex";
+	movie_container.querySelector(".media_content").style.display = "flex";
+	movie_container.style.display = "flex";
+
+	let categories = await request("get/categories/movie", true, true);
+
+	let element = `
+		<li>
+			<a class="media_category_a" onclick="handleMovies()">TODOS OS FILMES</a>
+		</li>
 	`;
-}
 
-function handleModalSerie() {
-	let element = document.createElement("div");
-	element.innerHTML = `
-		<div class="modal_media_container">
-			<div class="modal_media_box hide_scrollbar">
-				<div class="modal_media_content">
-					<div style="position: absolute; right: 50px; top: 10px;">
-						<button type="button" name="button" class="modal_media_close close_modal_serie" onclick="hideModalContainer();">
-							<i class="bx bx-x"></i>
-						</button>
-					</div>
-					<div class="media_info">
-						<div class="media_cover">
-							<img src="" loading="eager" onerror="this.src='assets/images/not-available.png'">
-							<span class="rate"></span>
-						</div>
-						<div class="media_description">
-							<p class="title"></p>
-							<p class="genre"></p>
-							<p class="director"></p>
-							<p class="cast"></p>
-							<div class="media_resume">
-								<p></p>
-							</div>
-							<button type="button" name="button" class="btn_favorite">
-								<i class="bx bx-heart" ></i>
-							</button>
-						</div>
-					</div>
-					<div class="seasons_container">
-						<div class="seasons_content">
-							<ul class="seasons_ul hide_scrollbar scroll_horizon">
-							</ul>
-							<div class="carousel_section_generic_container">
-								<div class="carousel_section_generic_content small box_episodes">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="arrows">
-						<i class="bx bx-chevron-left left_scroll" ref=""></i>
-						<i class="bx bx-chevron-right right_scroll" ref=""></i>
-					</div>
-				</div>
-			</div>
-		</div>
-	`;
-	document.querySelector(".page_content").append(element);
-}
-
-function handleSeriesCategories() {
-	let series_categories = localStorage.getItem("series_categories");
-	if (series_categories) {
-		series_categories = JSON.parse(series_categories);
-
-		let element = `
+	for (category of categories) {
+		let category_name = category.name.replace("FILMES | ", "").replace("Filmes | ", "");
+		element += `
 			<li>
-				<a class="media_category_a" onclick="handleSeries(null, 0)" id="0">TODAS AS SÉRIES</a>
+				<a class="media_category_a" onclick="handleMovies(null, ${category.id})" id="${category.id}">${category_name}</a>
 			</li>
 		`;
+	}
 
-		for (series_category of series_categories) {
+	movie_container.querySelector(".channels_categories").innerHTML = element;
+
+	await handleMovies(null, categories[0].id);
+}
+
+async function handleMovies(movies, category_id) {
+	if (!movies) {
+		if (category_id) {
+			movies = await request("get/category/movie/" + category_id, true, true);
+		} else {
+			movies = await request("get/all/movie", true, true);
+		}
+	}
+
+	let element = "";
+	if (movies.length) {
+		for (movie of movies) {
+			element += `
+					<li>
+						<a onclick="handleMovieInfo(${movie.id});">
+							${poster(movie.icon)}	
+							<span class="name">${movie.name}</span>
+						</a>
+					</li>
+				`;
+		}
+	} else {
+		element = `<li class="not_found">Nenhum filme disponível nessa categoria.</li>`;
+	}
+
+	document.querySelector(".movie_container .media_content").innerHTML = element;
+
+	mediaCateroryUpdate(category_id);
+
+	handleSearch("movie", handleMovies);
+}
+
+async function openMovie(value_id, container_extension) {
+	await handleMovieInfo(value_id);
+	await watchVideo(value_id, null, container_extension);
+}
+
+async function handleMovieInfo(value_id) {
+	let avatar = localStorage.getItem("avatar");
+
+	let movie = await request("get/info/movie/" + value_id, true, true);
+	let favorites = await request("favorite/get/" + avatar, true, true);
+
+	let movie_container = document.querySelector(".movie_container");
+
+	let favorite = movie_container.querySelector(".btn_favorite .bx");
+	let favorited = favorites.movies.filter((item) => item.value_id == value_id).length;
+	handleFavorite(favorite, favorited, avatar, value_id, "movie");
+
+	movie_container.querySelector(".modal_media_container").style.opacity = "1";
+	movie_container.querySelector(".modal_media_container").style.display = "flex";
+	movie_container.querySelector(".modal_media_container").style.pointerEvents = null;
+
+	movie_container.querySelector(".media_cover img").src = imgPoster(movie.info.cover);
+	movie_container.querySelector(".modal_media_box").style.backgroundImage = urlPoster(movie.info.cover);
+	movie_container.querySelector(".media_cover .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
+
+	movie_container.querySelector(".media_description .title").innerHTML = movie.data.name ? movie.data.name : movie.info.name;
+	movie_container.querySelector(".media_description .genre").innerHTML = movie.info.genre ? movie.info.genre : "";
+	movie_container.querySelector(".media_description .time").innerHTML = "Duração: " + (movie.info.duration ? movie.info.duration : "");
+	movie_container.querySelector(".media_description .director").innerHTML = "Diretor: " + (movie.info.director ? movie.info.director : "");
+	movie_container.querySelector(".media_description .cast").innerHTML = "Elenco: " + (movie.info.cast ? movie.info.cast : "");
+
+	if (movie.info.plot) {
+		movie_container.querySelector(".media_resume").style.display = "flex";
+		movie_container.querySelector(".media_resume p").innerHTML = movie.info.plot;
+	} else {
+		movie_container.querySelector(".media_resume").style.display = "none";
+	}
+
+	if (movie.info.youtube_trailer) {
+		movie_container.querySelector(".media_trailer").style.display = "flex";
+		movie_container.querySelector(".media_trailer").href = "https://www.youtube.com/watch?v=" + movie.info.youtube_trailer;
+	} else {
+		movie_container.querySelector(".media_trailer").style.display = "none";
+	}
+
+	movie_container.querySelector(".btn_watch").onclick = function () {
+		watchVideo(movie.data.id, null, movie.data.container_extension);
+	};
+}
+
+async function handleSerieCategories() {
+	document.querySelector(".search_input_search").value = "";
+	document.querySelector(".search_container").style.display = "flex";
+
+	let series_container = document.querySelector(".series_container");
+	series_container.querySelector(".channels_categories").style.display = "flex";
+	series_container.querySelector(".media_content").style.display = "flex";
+	series_container.style.display = "flex";
+
+	let categories = await request("get/categories/serie", true, true);
+
+	let element = `
+		<li>
+			<a class="media_category_a" onclick="handleSeries()">TODAS AS SÉRIES</a>
+		</li>
+	`;
+
+	for (category of categories) {
+		let category_name = category.name.replace("SÉRIES | ", "").replace("SERIES | ", "").replace("Séries | ", "").replace("Series | ", "");
+		element += `
+			<li>
+				<a class="media_category_a" onclick="handleSeries(null, ${category.id})" id="${category.id}">${category_name}</a>
+			</li>
+		`;
+	}
+
+	series_container.querySelector(".channels_categories").innerHTML = element;
+
+	await handleSeries(null, categories[0].id);
+}
+
+async function handleSeries(series, category_id) {
+	if (!series) {
+		if (category_id) {
+			series = await request("get/category/serie/" + category_id, true, true);
+		} else {
+			series = await request("get/all/serie", true, true);
+		}
+	}
+
+	let element = "";
+	if (series.length) {
+		for (serie of series) {
 			element += `
 				<li>
-					<a class="media_category_a" onclick="handleSeries(null, ${series_category.category_id})" id="${series_category.category_id}">${series_category.category_name}</a>
+					<a onclick="handleSerieInfo(${serie.id});">
+						${poster(serie.icon)}	
+						<span class="name">${serie.name}</span>
+					</a>
 				</li>
 			`;
 		}
-
-		document.querySelector(".media_categories_ul").innerHTML = element;
-		handleSeries(null, series_categories[0].category_id);
 	} else {
-		ajax("action=get_series_categories");
+		element = `<li class="not_found">Nenhuma série disponível nessa categoria.</li>`;
 	}
+
+	document.querySelector(".series_container .media_content").innerHTML = element;
+
+	mediaCateroryUpdate(category_id);
+
+	handleSearch("serie", handleSeries);
 }
 
-function handleSeries(series = null, category_id = null) {
-	if (series) {
-		let element = "";
+async function openSerie(value_id, episode_id, container_extension) {
+	await handleSerieInfo(value_id);
+	await watchVideo(value_id, episode_id, container_extension);
+}
 
-		if (series.length) {
-			for (serie of series) {
-				element += `
-					<li>
-						<a onclick="handleSerieModalAndInfo(null, ${serie.series_id});">
-							${poster(serie.cover)}	
-							<span class="name">${serie.name}</span>
+async function handleSerieInfo(value_id) {
+	let avatar = localStorage.getItem("avatar");
+
+	let serie = await request("get/info/serie/" + value_id, true, true);
+	let favorites = await request("favorite/get/" + avatar, true, true);
+
+	let series_container = document.querySelector(".series_container");
+
+	let favorite = series_container.querySelector(".btn_favorite .bx");
+	let favorited = favorites.series.filter((item) => item.value_id == value_id).length;
+	handleFavorite(favorite, favorited, avatar, value_id, "serie");
+
+	series_container.querySelector(".modal_media_container").style.opacity = "1";
+	series_container.querySelector(".modal_media_container").style.display = "flex";
+	series_container.querySelector(".modal_media_container").style.pointerEvents = null;
+
+	series_container.querySelector(".media_cover img").src = imgPoster(serie.info.cover);
+	series_container.querySelector(".modal_media_box").style.backgroundImage = urlPoster(serie.info.cover);
+	series_container.querySelector(".media_cover .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
+
+	series_container.querySelector(".media_description .title").innerHTML = serie.info.name ? serie.info.name : "";
+	series_container.querySelector(".media_description .genre").innerHTML = serie.info.genre ? serie.info.genre : "";
+	series_container.querySelector(".media_description .director").innerHTML = "Diretor: " + (serie.info.director ? serie.info.director : "");
+	series_container.querySelector(".media_description .cast").innerHTML = "Elenco: " + (serie.info.cast ? serie.info.cast : "");
+
+	if (serie.info.plot) {
+		series_container.querySelector(".media_resume").style.display = "flex";
+		series_container.querySelector(".media_resume p").innerHTML = serie.info.plot;
+	} else {
+		series_container.querySelector(".media_resume").style.display = "none";
+	}
+
+	if (serie.info.youtube_trailer) {
+		series_container.querySelector(".media_trailer").style.display = "flex";
+		series_container.querySelector(".media_trailer").href = "https://www.youtube.com/watch?v=" + serie.info.youtube_trailer;
+	} else {
+		series_container.querySelector(".media_trailer").style.display = "none";
+	}
+
+	if (serie.episodes) {
+		let first = true;
+		let box_episodes = "";
+		let seasons_content_ul = "";
+
+		for ([id, seasons] of Object.entries(serie.episodes)) {
+			seasons_content_ul += `
+				<li class="splide__slide seasons_li">
+					<p class="title">
+						<a onclick="handleChangeSeason(${id})" id="${id}" class="li_season ${first ? "active" : ""}">Temporada ${id}</a>
+					</p>
+				</li>
+			`;
+
+			box_episodes += `
+				<div class="splide" id="episodes_${id}_carousel" season="${id}" style="display: ${first ? "flex" : "none"};">
+					<div class="splide__track">
+						<ul class="splide__list">
+			`;
+			for (episode of Object.values(seasons)) {
+				box_episodes += `
+					<li class="splide__slide">
+						<a onclick="watchVideo(${value_id}, ${episode.id}, '${episode.container_extension}')" id="${episode.id}">
+							${poster(episode.info.image)}	
+							<span class="name">${episode.title}</span>
 						</a>
 					</li>
 				`;
 			}
+			box_episodes += `
+						</ul>
+					</div>
+				</div>
+			`;
 
-			for (media_category_a of document.querySelectorAll(".media_category_a")) {
-				if (media_category_a.getAttribute("id") == category_id_selected) {
-					media_category_a.classList.add("active");
-				} else {
-					media_category_a.classList.remove("active");
-				}
+			first = false;
+		}
+
+		series_container.querySelector(".box_episodes").innerHTML = box_episodes;
+		series_container.querySelector(".seasons_content ul").innerHTML = seasons_content_ul;
+
+		splideMount("#seasons_carousel", [4, 6, 7, 10, 13], false);
+
+		let spliders = [];
+		for ([id, _] of Object.entries(serie.episodes)) {
+			spliders.push(splideMount(`#episodes_${id}_carousel`, [3, 5, 5, 7, 10], false));
+		}
+
+		series_container.querySelector(`.arrows .prev_arrow`).onclick = function () {
+			for (splider of spliders) {
+				splider.go('-1');
 			}
-		} else {
-			element = `<li style="color: #fff;">Nenhuma série disponível nessa categoria</li>`;
-		}
-
-		document.querySelector(".media_ul").innerHTML = element;
-	} else {
-		category_id_selected = category_id;
-		ajax("action=get_series&category_id=" + category_id);
-	}
-}
-
-async function openSeries(series_id, stream_id, target_container, time) {
-	await handleSerieModalAndInfo(null, series_id);
-	watchVideo(`${DNS}/series/${username}/${password}/${stream_id}.${target_container}`, stream_id, time);
-}
-
-async function handleSerieModalAndInfo(serie = null, series_id = null) {
-	handleModalSerie();
-	await handleSerieInfo(serie, series_id);
-}
-
-async function handleSerieInfo(serie = null, series_id = null) {
-	if (serie) {
-		document.querySelector(".modal_media_container").style.opacity = "1";
-		document.querySelector(".modal_media_container").style.display = "flex";
-		document.querySelector(".modal_media_container").style.pointerEvents = null;
-
-		document.querySelector(".media_cover img").src = imgPoster(serie.info.cover);
-		document.querySelector(".modal_media_box").style.backgroundImage = urlPoster(serie.info.cover);
-		document.querySelector(".media_cover .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
-
-		document.querySelector(".media_description .title").innerHTML = serie.info.name ? serie.info.name : "";
-		document.querySelector(".media_description .genre").innerHTML = serie.info.genre ? serie.info.genre : "";
-		document.querySelector(".media_description .director").innerHTML = "Diretor: " + (serie.info.director ? serie.info.director : "");
-		document.querySelector(".media_description .cast").innerHTML = "Elenco: " + (serie.info.cast ? serie.info.cast : "");
-
-		if (serie.info.plot) {
-			document.querySelector(".media_resume").style.display = "block";
-			document.querySelector(".media_resume p").innerHTML = serie.info.plot;
-		} else {
-			document.querySelector(".media_resume").style.display = "none";
-		}
-
-		if (serie.episodes) {
-			let first = true;
-			let seasons_ul = "";
-			let box_episodes = "";
-
-			for ([id, seasons] of Object.entries(serie.episodes)) {
-				seasons_ul += `
-					<li class="seasons_li">
-						<p class="title">
-							<a onclick="handleChangeSeason(${id})" id="${id}" class="li_season ${first ? "active" : ""}">Temporada ${id}</a>
-						</p>
-					</li>
-				`;
-
-				box_episodes += `<ul class="hide_scrollbar scroll_horizon episodes_ul" id="${id}" style="padding-left: 5px; display: ${first ? "flex" : "none"};">`;
-				for (episode of Object.values(seasons)) {
-					box_episodes += `
-						<li>
-							<a onclick="watchVideo('${DNS}/series/${username}/${password}/${episode.id}.${episode.container_extension}', ${episode.id});">
-								${poster(episode.info.movie_image)}	
-								<span class="name">${episode.title}</span>
-							</a>
-						</li>
-					`;
-				}
-				box_episodes += "</ul>";
-				first = false;
+		};
+		series_container.querySelector(`.arrows .next_arrow`).onclick = function () {
+			for (splider of spliders) {
+				splider.go('+1');
 			}
-
-			document.querySelector(".seasons_ul").innerHTML = seasons_ul;
-			document.querySelector(".box_episodes").innerHTML = box_episodes;
-
-			document.querySelector(".right_scroll").onclick = function () {
-				let seasons_li = document.querySelector(`.seasons_li a[class="li_season active"]`).getAttribute("id");
-				let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
-				let scroll_amount = 0;
-				let interval = setInterval(function () {
-					episodes_ul.scrollLeft += 40;
-					scroll_amount += 40;
-					if (scroll_amount >= 400) {
-						window.clearInterval(interval);
-					}
-				}, 25);
-			};
-			document.querySelector(".left_scroll").onclick = function () {
-				let seasons_li = document.querySelector(`.seasons_li a[class="li_season active"]`).getAttribute("id");
-				let episodes_ul = document.querySelector(`.episodes_ul[id="${seasons_li}"]`);
-				let scroll_amount = 0;
-				let interval = setInterval(function () {
-					episodes_ul.scrollLeft -= 40;
-					scroll_amount += 40;
-					if (scroll_amount >= 400) {
-						window.clearInterval(interval);
-					}
-				}, 25);
-			};
-		}
-	} else {
-		await ajax("action=get_series_info&series_id=" + series_id);
+		};
 	}
 }
 
 function handleChangeSeason(id) {
-	for (seasons_li_a of document.querySelectorAll(".seasons_li a")) {
+	let series_container = document.querySelector(".series_container");
+
+	for (seasons_li_a of series_container.querySelectorAll(".seasons_li a")) {
 		seasons_li_a.classList.remove("active");
 	}
-	document.querySelector(`.seasons_li a[id="${id}"]`).classList.add("active");
 
-	for (episodes_ul of document.querySelectorAll(".episodes_ul")) {
-		if (episodes_ul.getAttribute("id") == id) {
+	series_container.querySelector(`.seasons_li a[id="${id}"]`).classList.add("active");
+
+	for (episodes_ul of series_container.querySelectorAll(".box_episodes > div")) {
+		if (episodes_ul.getAttribute("id") == `episodes_${id}_carousel`) {
 			episodes_ul.style.display = "flex";
 		} else {
 			episodes_ul.style.display = "none";
@@ -1137,178 +1177,153 @@ function handleChangeSeason(id) {
 	}
 }
 
-function pageFavorites() {
-	localStorage.removeItem("favorites");
-	document.querySelector(".page_content").innerHTML = `
-		<div class="favorites_container">
-			<div class="carousel_section_generic_container lives" style="display: none;">
-				<div class="carousel_section_generic_content small">
-					<div class="section_new_title carousel_section_generic_title">
-						<p>Canais Favoritos</p>
-						<div class="container_arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="1"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="1"></img>
-						</div>
-					</div>
-					<ul class="hide_scrollbar scroll_horizon lives_ul" id="1">
-					</ul>
-				</div>
-			</div>
-			<div class="carousel_section_generic_container movies" style="display: none;">
-				<div class="carousel_section_generic_content small">
-					<div class="section_new_title carousel_section_generic_title">
-						<p>Filmes Favoritos</p>
-						<div class="container_arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="2"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="2"></img>
-						</div>
-					</div>
-					<ul class="hide_scrollbar scroll_horizon movies_ul" id="2">
-					</ul>
-				</div>
-			</div>
-			<div class="carousel_section_generic_container series" style="display: none; margin-bottom: 10px;">
-				<div class="carousel_section_generic_content small">
-					<div class="section_new_title carousel_section_generic_title">
-						<p>Séries Favoritas</p>
-						<div class="container_arrows">
-							<img src="assets/icons/icon-left.svg"  class="btn_left_scroll" ref="3"></img>
-							<img src="assets/icons/icon-right.svg"  class="btn_right_scroll" ref="3"></img>
-						</div>
-					</div>
-					<ul class="hide_scrollbar scroll_horizon series_ul" id="3">
-					</ul>
-				</div>
-			</div>
-		</div>
-	`;
+async function handleFavorites() {
+	let avatar = localStorage.getItem("avatar");
+
+	document.querySelector(".search_container").style.display = "none";
+
+	let favorites_container = document.querySelector(".favorites_container");
+	favorites_container.style.display = "flex";
+
+	let favorites = await request("favorite/get/" + avatar, true, true);
+
+	let element = "";
+	if (favorites.lives.length) {
+		for (live of favorites.lives) {
+			element += `
+				<li class="splide__slide">
+					<a onclick="handleAndOpenLive(${live.value_id});" class="live">
+						${poster(live.icon)}	
+						<span class="name">${live.name}</span>
+					</a>
+				</li>
+			`;
+		}
+	} else {
+		element = `<li style="color: #fff;">Nenhum canal favorito.</li>`;
+	}
+
+	favorites_container.querySelector("#favorites_lives_carousel .splide__list").innerHTML = element;
+	element = "";
+
+	splideMount("#favorites_lives_carousel", [4, 6, 7, 10, 13], false);
+
+	if (favorites.movies.length) {
+		for (movie of favorites.movies) {
+			element += `
+				<li class="splide__slide">
+					<a onclick="handleMovieInfo(${movie.value_id});">
+						${poster(movie.icon)}
+						<span class="name">${movie.name}</span>
+					</a>
+				</li>
+			`;
+		}
+	} else {
+		element = `<li style="color: #fff;">Nenhum filme favorito.</li>`;
+	}
+
+	favorites_container.querySelector("#favorites_movies_carousel .splide__list").innerHTML = element;
+	element = "";
+
+	splideMount("#favorites_movies_carousel", [4, 6, 7, 10, 13], false);
+
+	if (favorites.series.length) {
+		for (serie of favorites.series) {
+			element += `
+				<li class="splide__slide">
+					<a onclick="handleSerieInfo(${serie.value_id});">
+						${poster(serie.icon)}
+						<span class="name">${serie.name}</span>
+					</a>
+				</li>
+			`;
+		}
+	} else {
+		element = `<li style="color: #fff;">Nenhuma série favorita.</li>`;
+	}
+
+	favorites_container.querySelector("#favorites_series_carousel .splide__list").innerHTML = element;
+
+	splideMount("#favorites_series_carousel", [4, 6, 7, 10, 13], false);
 }
 
-function handleFavorites() {
-	document.querySelector(".carousel_section_generic_container.lives").style.display = "none";
-	document.querySelector(".carousel_section_generic_container.movies").style.display = "none";
-	document.querySelector(".carousel_section_generic_container.series").style.display = "none";
-
-	let favorites = localStorage.getItem("favorites");
-	if (favorites) {
-		favorites = JSON.parse(favorites);
-
-		let element = "";
-		if (favorites.movies.length) {
-			for (movie of favorites.movies) {
-				element += `
-					<li>
-						<a onclick="handleVodModalAndInfo(null, ${movie.id});">
-							${poster(movie.movie_image)}
-							<span class="name">${movie.stream_display_name}</span>
-						</a>
-					</li>
-				`;
-			}
-			document.querySelector(".carousel_section_generic_container.movies").style.display = "block";
-		}
-
-		document.querySelector(".movies_ul").innerHTML = element;
-		element = "";
-
-		if (favorites.series.length) {
-			for (serie of favorites.series) {
-				element += `
-					<li>
-						<a onclick="handleSerieModalAndInfo(null, ${serie.id});">
-							${poster(serie.cover)}
-							<span class="name">${serie.title}</span>
-						</a>
-					</li>
-				`;
-			}
-			document.querySelector(".carousel_section_generic_container.series").style.display = "block";
-		}
-
-		document.querySelector(".series_ul").innerHTML = element;
-		element = "";
-
-		if (favorites.lives.length) {
-			for (live of favorites.lives) {
-				element += `
-					<li>
-						<a onclick="handleAndOpenLive(${live.id});" class="live">
-							${poster(live.stream_icon)}	
-							<span class="name">${live.stream_display_name}</span>
-						</a>
-					</li>
-				`;
-			}
-			document.querySelector(".carousel_section_generic_container.lives").style.display = "block";
-		}
-
-		document.querySelector(".lives_ul").innerHTML = element;
-		btnScroll();
+async function handleFavorite(favorite, favorited, avatar, value_id, type) {
+	if (favorited) {
+		favorite.classList.replace("bx-heart", "bxs-heart");
+		favorite.onclick = async function () {
+			await removeFavorite(avatar, type, value_id);
+			handleFavorite(favorite, false, avatar, value_id, type);
+		};
 	} else {
-		ajax("action=get_favorites");
+		favorite.classList.replace("bxs-heart", "bx-heart");
+		favorite.onclick = async function () {
+			await storeFavorite(avatar, type, value_id);
+			handleFavorite(favorite, true, avatar, value_id, type);
+		};
 	}
 }
 
-function storeFavorite(id, type) {
-	ajax("action=store_favorite&" + type + "=" + id);
+async function storeFavorite(avatar, type, value_id) {
+	await request("favorite/store/" + avatar + "/" + type + "/" + value_id, true, true);
 }
 
-async function deleteFavorite(id, type) {
-	await ajax("action=delete_favorite&" + type + "=" + id);
+async function removeFavorite(avatar, type, value_id) {
+	await request("favorite/remove/" + avatar + "/" + type + "/" + value_id, true, true);
 
-	if (document.querySelector(".favorites_container")) {
-		let favorites = JSON.parse(localStorage.getItem("favorites"));
-
-		switch (type) {
-			case "vod_id":
-				favorites.movies = favorites.movies.filter((item) => item.id != id);
-				break;
-			case "serie_id":
-				favorites.series = favorites.series.filter((item) => item.id != id);
-				break;
-			default:
-				break;
-		}
-
-		localStorage.setItem("favorites", JSON.stringify(favorites));
+	if (document.querySelector(".favorites_container").style.display == "flex") {
 		handleFavorites();
 	}
 }
 
 var player = null;
-function watchVideo(link, id, time = 0) {
+async function watchVideo(value_id, episode_id, container_extension) {
 	if (player) {
 		player.dispose();
 		player = null;
 	}
 
-	if (time == 0) {
-		let home = JSON.parse(localStorage.getItem("home"));
-		for (keepWatching of home.keepWatching) {
-			if (keepWatching.stream_id == id) {
-				time = keepWatching.time;
-				break;
-			}
-		}
+	let avatar = localStorage.getItem("avatar");
+
+	let link;
+	if (episode_id) {
+		link = await request("link/serie/" + episode_id + "/" + container_extension, true, true);
+	} else {
+		link = await request("link/movie/" + value_id + "/" + container_extension, true, true);
 	}
 
-	document.querySelector(".player_video_content").innerHTML = `<video id="my-player" class="video-js vjs-default-skin vjs-big-play-centered" style="width: 100%; height: 100%; border: 0px; outline: none; aspect-ratio: 16/9;" controls loop src=""></video>`;
+	let watchings = await request("watching/get/" + avatar, true, true);
+
+	let time = 0;
+	let watching = watchings.filter(watching => watching.value_id == value_id);
+	if (watching.length) {
+		time = watching[0].time;
+	}
+
+	document.querySelector(".player_video_content").innerHTML = `<video id="my-player" class="video-js vjs-default-skin vjs-big-play-centered vjs-custom" controls loop src=""></video>`;
 	document.querySelector(".player_video_container").style.display = "flex";
 
 	player = videojs("my-player", {
 		controlBar: {
 			children: [
 				"playToggle",
+				"skipBackward",
+				"skipForward",
 				"volumePanel",
 				"currentTimeDisplay",
 				"progressControl",
 				"durationDisplay",
+				"playbackRateMenuButton",
 				"subsCapsButton",
 				"PictureInPictureToggle",
 				"fullscreenToggle"
 			],
 			volumePanel: {
 				inline: false
+			},
+			skipButtons: {
+				forward: 10,
+				backward: 10
 			}
 		},
 		userActions: {
@@ -1317,19 +1332,30 @@ function watchVideo(link, id, time = 0) {
 		language: "pt-BR",
 		persistTextTrackSettings: true,
 		html5: {
-			nativeTextTracks: false
+			vhs: {
+				overrideNative: true
+			},
+			nativeTextTracks: false,
+			nativeAudioTracks: false,
+			nativeVideoTracks: false
 		},
 		plugins: {
 			hotkeys: {
 				seekStep: 10,
 				volumeStep: 0.05,
 				enableModifiersForNumbers: false
-			},
-			seekButtons: {
-				forward: 10,
-				back: 10
 			}
 		},
+		playbackRates: [2, 1.75, 1.5, 1.25, 1, 0.75, 0.5, 0.25],
+	});
+
+	var errorDisplay = player.getChild('errorDisplay');
+	errorDisplay.off(player, 'error', errorDisplay.open);
+	errorDisplay.on(player, 'error', function (e) {
+		var error = player.error();
+		if (error && error.code !== 4) {
+			errorDisplay.open();
+		}
 	});
 
 	player.controlBar.fullscreenToggle.handleClick = function (e) {
@@ -1348,7 +1374,7 @@ function watchVideo(link, id, time = 0) {
 	player.ready(function () {
 		player.currentTime(time);
 
-		let volume = localStorage.getItem("Volume");
+		let volume = localStorage.getItem("volume");
 		if (volume) {
 			player.volume(volume * 0.01);
 		}
@@ -1356,17 +1382,17 @@ function watchVideo(link, id, time = 0) {
 		player.autoplay(true);
 		player.play();
 
+		playerVolumeChange(player);
+
 		let lastSeconds = null;
 		player.on("timeupdate", function () {
 			let seconds = Math.floor(player.currentTime());
-			if ((seconds % 10) == 0 && seconds != lastSeconds) {
+			if ((seconds % 30) == 0 && seconds != lastSeconds) {
 				lastSeconds = seconds;
-				sendKeepWatching(id, seconds);
+				if (seconds > 30) {
+					sendWatching(seconds, value_id, episode_id);
+				}
 			}
-		});
-
-		player.on("volumechange", function () {
-			localStorage.setItem("Volume", Math.floor(player.volume() * 100));
 		});
 
 		timeHidePlayerButtons = 3;
@@ -1376,41 +1402,44 @@ function watchVideo(link, id, time = 0) {
 		player_video_prev.style.display = "none";
 		player_video_next.style.display = "none";
 
-		if (link.includes("/movie/")) {
-			let title = document.querySelector(".media_description .title").textContent;
+		if (!episode_id) {
+			let title = document.querySelector(".movie_container .media_description .title").textContent;
 			document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
 		} else {
-			let episodes = document.querySelectorAll(".episodes_ul li a");
+			let episodes = document.querySelectorAll(".series_container .splide__list li a");
+
 			for ([i, episode] of episodes.entries()) {
-				if (episode.getAttribute("onclick").includes(link)) {
+				if (episode.getAttribute("onclick").includes(episode_id)) {
 					episode.classList.add("active-border");
 					episode.scrollIntoView(true);
 
 					let title = episode.querySelector("span").textContent;
 					document.querySelector(".title_media").innerHTML = "<h2>" + title + "</h2>";
 
-					handleChangeSeason(episode.parentNode.parentNode.getAttribute("id"));
+					handleChangeSeason(episode.parentNode.parentNode.parentElement.parentElement.getAttribute("season"));
 
 					let prev_episode = episodes[i - 1];
 					let next_episode = episodes[i + 1];
 
 					if (prev_episode) {
-						player_video_prev.style.display = "block";
+						player_video_prev.style.display = "flex";
 						player_video_prev.onclick = function () {
 							if (player) {
 								player.dispose();
 								player = null;
 							}
+							sendWatching(0, value_id, prev_episode.getAttribute("id"), 0);
 							prev_episode.click();
 						};
 					}
 					if (next_episode) {
-						player_video_next.style.display = "block";
+						player_video_next.style.display = "flex";
 						player_video_next.onclick = function () {
 							if (player) {
 								player.dispose();
 								player = null;
 							}
+							sendWatching(0, value_id, next_episode.getAttribute("id"));
 							next_episode.click();
 						};
 					}
@@ -1422,10 +1451,28 @@ function watchVideo(link, id, time = 0) {
 	});
 }
 
-function sendKeepWatching(id, time) {
-	if (time > 30) {
-		ajax(`action=keep_watching&id=${id}&time=${time}`, false);
+async function sendWatching(time, value_id, episode_id) {
+	let avatar = localStorage.getItem("avatar");
+
+	if (episode_id) {
+		await request("watching/store/" + avatar + "/serie/" + time + "/" + value_id + "/" + episode_id, true, false);
+	} else {
+		await request("watching/store/" + avatar + "/movie/" + time + "/" + value_id, true, false);
 	}
+}
+
+async function handleSearch(type, handleFunction) {
+	let search_container = document.querySelector(".search_container");
+	search_container.onsubmit = async function (event) {
+		event.preventDefault();
+
+		let search_input_search = search_container.querySelector(".search_input_search");
+		let text = encodeURIComponent(search_input_search.value);
+
+		let search = await request("search/" + type + "/" + text, true, true);
+
+		handleFunction(search);
+	};
 }
 
 function playerButtons(opacity) {
@@ -1477,81 +1524,19 @@ document.onclick = function (e) {
 };
 
 function hideModalContainer() {
-	let element = document.querySelector(".modal_media_container");
+	let elements = document.querySelectorAll(".modal_media_container");
 
-	element.style.opacity = "0";
-	element.style.pointerEvents = "none";
+	for (element of elements) {
+		element.style.opacity = "0";
+		element.style.pointerEvents = "none";
 
-	setTimeout(function () {
-		element.style.display = "none";
-		element.parentElement.remove();
-	}, 500);
-}
-
-let category_id_selected = 0;
-
-const DNS = "https://lmtv.me";
-const API_BASE = "http://player.limetv.me/player_api.php?";
-
-function corsProxy(url) {
-	return `https://host.autergame.me:2083/proxy/${url}`;
-}
-
-videojs.Vhs.xhr.beforeRequest = function (options) {
-	if (!options.uri.includes("https")) {
-		options.uri = corsProxy(options.uri);
+		setTimeout(function () {
+			element.style.display = "none";
+		}, 500);
 	}
-	return options;
-};
-
-var avatar = "";
-var username = "";
-var password = "";
-
-for (form of document.querySelectorAll("form")) {
-	form.onsubmit = function (e) {
-		e.preventDefault();
-		ajax(serialize(e.target));
-	};
 }
 
-btn();
-login();
+valid_login();
 
-let user_info = JSON.parse(localStorage.getItem("user_info"));
-if (user_info && user_info.username && user_info.password) {
-	loading(true);
-
-	let xhr = new XMLHttpRequest();
-	xhr.onload = function () {
-		if (xhr.readyState === 4) {
-			loading(false);
-			try {
-				let parsed = JSON.parse(xhr.response);
-
-				if (typeof parsed.setItem !== "undefined") {
-					for ([key, value] of Object.entries(parsed.setItem)) {
-						localStorage.setItem(key, value);
-					}
-				}
-
-				login();
-				btn();
-				scroll();
-				handlePage("home");
-			} catch (error) {
-				console.error(error);
-				loading(false);
-			}
-		}
-	};
-
-	xhr.onerror = function () {
-		console.error(xhr.statusText);
-		loading(false);
-	};
-
-	let query = `username=${user_info.username}&password=${user_info.password}`;
-	xhr.open("GET", corsProxy(API_BASE + query), true);
-	xhr.send();
-}
+const API = "https://playerapi.autergame.me/";
+const PROXY = "https://host.autergame.me:2083/proxy/";

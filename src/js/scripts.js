@@ -549,7 +549,7 @@ async function handleHome() {
 	home_container.querySelector("#keep_watching_carousel .splide__list").innerHTML = element;
 	element = "";
 
-	splideMount("#keep_watching_carousel", [4, 6, 7, 10, 13], false);
+	splideMount("#keep_watching_carousel", [4, 6, 7, 10, 13], true);
 
 	for ([i, home_top] of home.top.entries()) {
 		if (home_top.kind == "movie") {
@@ -578,7 +578,7 @@ async function handleHome() {
 	home_container.querySelector("#top10_carousel .splide__list").innerHTML = element;
 	element = "";
 
-	splideMount("#top10_carousel", [3, 5, 6, 8, 10], false);
+	splideMount("#top10_carousel", [3, 5, 6, 8, 10], true);
 
 	for (movie of home.movies) {
 		element += `
@@ -594,7 +594,7 @@ async function handleHome() {
 	home_container.querySelector("#movies_carousel .splide__list").innerHTML = element;
 	element = "";
 
-	splideMount("#movies_carousel", [4, 6, 7, 10, 13], false);
+	splideMount("#movies_carousel", [4, 6, 7, 10, 13], true);
 
 	for (serie of home.series) {
 		element += `
@@ -609,7 +609,7 @@ async function handleHome() {
 
 	home_container.querySelector("#series_carousel .splide__list").innerHTML = element;
 
-	splideMount("#series_carousel", [4, 6, 7, 10, 13], false);
+	splideMount("#series_carousel", [4, 6, 7, 10, 13], true);
 }
 
 async function handleLivesCategories() {
@@ -1206,7 +1206,7 @@ async function handleFavorites() {
 	favorites_container.querySelector("#favorites_lives_carousel .splide__list").innerHTML = element;
 	element = "";
 
-	splideMount("#favorites_lives_carousel", [4, 6, 7, 10, 13], false);
+	splideMount("#favorites_lives_carousel", [4, 6, 7, 10, 13], true);
 
 	if (favorites.movies.length) {
 		for (movie of favorites.movies) {
@@ -1226,7 +1226,7 @@ async function handleFavorites() {
 	favorites_container.querySelector("#favorites_movies_carousel .splide__list").innerHTML = element;
 	element = "";
 
-	splideMount("#favorites_movies_carousel", [4, 6, 7, 10, 13], false);
+	splideMount("#favorites_movies_carousel", [4, 6, 7, 10, 13], true);
 
 	if (favorites.series.length) {
 		for (serie of favorites.series) {
@@ -1245,7 +1245,7 @@ async function handleFavorites() {
 
 	favorites_container.querySelector("#favorites_series_carousel .splide__list").innerHTML = element;
 
-	splideMount("#favorites_series_carousel", [4, 6, 7, 10, 13], false);
+	splideMount("#favorites_series_carousel", [4, 6, 7, 10, 13], true);
 }
 
 async function handleFavorite(favorite, favorited, avatar, value_id, type) {

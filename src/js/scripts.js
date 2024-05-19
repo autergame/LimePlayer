@@ -1387,11 +1387,9 @@ async function watchVideo(value_id, episode_id, container_extension) {
 		let lastSeconds = null;
 		player.on("timeupdate", function () {
 			let seconds = Math.floor(player.currentTime());
-			if ((seconds % 30) == 0 && seconds != lastSeconds) {
+			if ((seconds > 30) && ((seconds % 30) == 0) && (seconds != lastSeconds)) {
 				lastSeconds = seconds;
-				if (seconds > 30) {
-					sendWatching(seconds, value_id, episode_id);
-				}
+				sendWatching(avatar, value_id, episode_id, seconds);
 			}
 		});
 
@@ -1428,7 +1426,7 @@ async function watchVideo(value_id, episode_id, container_extension) {
 								player.dispose();
 								player = null;
 							}
-							sendWatching(0, value_id, prev_episode.getAttribute("id"), 0);
+							sendWatching(avatar, value_id, prev_episode.getAttribute("id"), 0);
 							prev_episode.click();
 						};
 					}
@@ -1439,7 +1437,7 @@ async function watchVideo(value_id, episode_id, container_extension) {
 								player.dispose();
 								player = null;
 							}
-							sendWatching(0, value_id, next_episode.getAttribute("id"));
+							sendWatching(avatar, value_id, next_episode.getAttribute("id"), 0);
 							next_episode.click();
 						};
 					}
@@ -1451,13 +1449,11 @@ async function watchVideo(value_id, episode_id, container_extension) {
 	});
 }
 
-async function sendWatching(time, value_id, episode_id) {
-	let avatar = localStorage.getItem("avatar");
-
+async function sendWatching(avatar, value_id, episode_id, time) {
 	if (episode_id) {
-		await request("watching/store/" + avatar + "/serie/" + time + "/" + value_id + "/" + episode_id, true, false);
+		await request("watching/store/" + avatar + "/serie/" + value_id + "/" + episode_id + "/" + time, true, false);
 	} else {
-		await request("watching/store/" + avatar + "/movie/" + time + "/" + value_id, true, false);
+		await request("watching/store/" + avatar + "/movie/" + value_id + "/" + time, true, false);
 	}
 }
 
@@ -1540,3 +1536,5 @@ valid_login();
 
 const API = "https://playerapi.autergame.me/";
 const PROXY = "https://host.autergame.me:2083/proxy/";
+
+//const API = "http://127.0.0.1:8080/";

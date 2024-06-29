@@ -1,3 +1,9 @@
+//const API = "http://127.0.0.1:8080/";
+const API = "https://playerapi.autergame.me/";
+const PROXY = "https://host.autergame.me:2083/proxy/";
+
+valid_login();
+
 async function login(container, event) {
 	event.preventDefault();
 
@@ -30,17 +36,17 @@ async function login(container, event) {
 
 	try {
 		let request = await fetch(API + "login", init);
+		let response = await request.json();
+
 		if (!request.ok) {
 			loading(false);
-			trigger("login - " + request.status + ": " + request.statusText, "error");
+			trigger("login - " + request.status + ": " + request.statusText + " / " + response.error + " - " + response.hint, "error");
 			return;
 		}
 
-		let response = await request.text();
-
 		loading(false);
 
-		await createServer(form, response);
+		await createServer(form, response.auth_key);
 	} catch (error) {
 		loading(false);
 		trigger("Unable to connect to the server.", "error");
@@ -77,18 +83,19 @@ async function request(query, valid, show_loading) {
 
 	try {
 		let request = await fetch(API + query, init);
+		let response = await request.json();
+
 		if (!request.ok) {
 			loading(false);
-			trigger(query + " - " + request.status + ": " + request.statusText, "error");
+			trigger(query + " - " + request.status + ": " + request.statusText + " / " + response.error + " - " + response.hint, "error");
 			if (valid) {
 				await valid_login();
 			}
 			return;
 		}
 
-		let response = await request.json();
-
 		loading(false);
+
 		return response;
 	} catch (error) {
 		loading(false);
@@ -141,13 +148,6 @@ async function handleServer(id) {
 	localStorage.setItem("server", id);
 
 	await valid_login();
-}
-
-async function enterServer() {
-	document.querySelector("#Login").style.display = "none";
-	document.querySelector("#Server").style.display = "none";
-	document.querySelector("#Avatar").style.display = "flex";
-	document.querySelector("#Player").style.display = "none";
 }
 
 async function createServer(form, auth_key) {
@@ -242,9 +242,7 @@ async function valid_login() {
 	}
 
 	let server = localStorage.getItem("server");
-	if (server) {
-		await enterServer();
-	} else {
+	if (!server) {
 		document.querySelector("#Login").style.display = "none";
 		document.querySelector("#Server").style.display = "flex";
 		document.querySelector("#Avatar").style.display = "none";
@@ -253,34 +251,32 @@ async function valid_login() {
 		let server_element = "";
 		let server_manager_element = "";
 
-		if (servers) {
-			for (let i = 0; i < servers.length; i++) {
-				let server = servers[i];
-				let color = `hsl(${(i % 18) * 20}, 100%, 50%)`;
+		for (let i = 0; i < servers.length; i++) {
+			let server = servers[i];
+			let color = `hsl(${(i % 18) * 20}, 100%, 50%)`;
 
-				server_element += `
-					<li>
-						<a onclick="handleServer(${i})" style="background-color: ${color};">
-							<img src="assets/images/face-host.png">
-						</a>
-						<span>${server.url}</span>
-						<span>${server.username}</span>
-					</li>
-				`;
+			server_element += `
+				<li>
+					<a onclick="handleServer(${i})" style="background-color: ${color};">
+						<img src="assets/images/face-host.png">
+					</a>
+					<span>${server.url}</span>
+					<span>${server.username}</span>
+				</li>
+			`;
 
-				server_manager_element += `
-					<li>
-						<a onclick="removeServer(${i})" style="background-color: ${color};">
-							<div class="bg_edit">
-								<img src="assets/icons/icon-trash.svg">
-							</div>
-							<img src="assets/images/face-host.png">
-						</a>
-						<span>${server.url}</span>
-						<span>${server.username}</span>
-					</li>
-				`;
-			}
+			server_manager_element += `
+				<li>
+					<a onclick="removeServer(${i})" style="background-color: ${color};">
+						<div class="bg_edit">
+							<img src="assets/icons/icon-trash.svg">
+						</div>
+						<img src="assets/images/face-host.png">
+					</a>
+					<span>${server.url}</span>
+					<span>${server.username}</span>
+				</li>
+			`;
 		}
 
 		server_element += `
@@ -294,6 +290,7 @@ async function valid_login() {
 
 		document.querySelector(".server_list").innerHTML = server_element;
 		document.querySelector(".server_list_manager").innerHTML = server_manager_element;
+
 		return;
 	}
 
@@ -962,9 +959,9 @@ async function handleMovieInfo(value_id) {
 	movie_container.querySelector(".modal_media_container").style.display = "flex";
 	movie_container.querySelector(".modal_media_container").style.pointerEvents = null;
 
-	movie_container.querySelector(".media_cover img").src = imgPoster(movie.info.cover);
-	movie_container.querySelector(".modal_media_box").style.backgroundImage = urlPoster(movie.info.cover);
-	movie_container.querySelector(".media_cover .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
+	movie_container.querySelector(".media_icon img").src = imgPoster(movie.info.icon);
+	movie_container.querySelector(".modal_media_box").style.backgroundImage = urlPoster(movie.info.icon);
+	movie_container.querySelector(".media_icon .rate").innerHTML = "★ " + (movie.info.rating ? movie.info.rating : "N/A");
 
 	movie_container.querySelector(".media_description .title").innerHTML = movie.data.name ? movie.data.name : movie.info.name;
 	movie_container.querySelector(".media_description .genre").innerHTML = movie.info.genre ? movie.info.genre : "";
@@ -1075,9 +1072,9 @@ async function handleSerieInfo(value_id) {
 	series_container.querySelector(".modal_media_container").style.display = "flex";
 	series_container.querySelector(".modal_media_container").style.pointerEvents = null;
 
-	series_container.querySelector(".media_cover img").src = imgPoster(serie.info.cover);
-	series_container.querySelector(".modal_media_box").style.backgroundImage = urlPoster(serie.info.cover);
-	series_container.querySelector(".media_cover .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
+	series_container.querySelector(".media_icon img").src = imgPoster(serie.info.icon);
+	series_container.querySelector(".modal_media_box").style.backgroundImage = urlPoster(serie.info.icon);
+	series_container.querySelector(".media_icon .rate").innerHTML = "★ " + (serie.info.rating ? serie.info.rating : "N/A");
 
 	series_container.querySelector(".media_description .title").innerHTML = serie.info.name ? serie.info.name : "";
 	series_container.querySelector(".media_description .genre").innerHTML = serie.info.genre ? serie.info.genre : "";
@@ -1515,26 +1512,15 @@ document.querySelector(".player_video_close").onclick = function () {
 
 document.onclick = function (e) {
 	if (e.target.classList.value == "modal_media_container") {
-		hideModalContainer();
+		let elements = document.querySelectorAll(".modal_media_container");
+
+		for (element of elements) {
+			element.style.opacity = "0";
+			element.style.pointerEvents = "none";
+
+			setTimeout(function () {
+				element.style.display = "none";
+			}, 500);
+		}
 	}
 };
-
-function hideModalContainer() {
-	let elements = document.querySelectorAll(".modal_media_container");
-
-	for (element of elements) {
-		element.style.opacity = "0";
-		element.style.pointerEvents = "none";
-
-		setTimeout(function () {
-			element.style.display = "none";
-		}, 500);
-	}
-}
-
-valid_login();
-
-const API = "https://playerapi.autergame.me/";
-const PROXY = "https://host.autergame.me:2083/proxy/";
-
-//const API = "http://127.0.0.1:8080/";

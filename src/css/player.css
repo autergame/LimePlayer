@@ -970,7 +970,7 @@ form button:hover {
 	display: flex;
 }
 
-.media_cover {
+.media_icon {
 	width: 25%;
 	float: left;
 	max-width: 15%;
@@ -980,13 +980,13 @@ form button:hover {
 	border-radius: 10px;
 }
 
-.media_cover img {
+.media_icon img {
 	max-width: 100%;
 	user-select: none;
 	border-radius: 10px;
 }
 
-.media_cover .rate {
+.media_icon .rate {
 	top: 0;
 	right: 0;
 	padding: 5px;

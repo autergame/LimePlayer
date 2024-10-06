@@ -1,6 +1,6 @@
 //const API = "http://127.0.0.1:8080/";
 const API = "https://playerapi.autergame.me/";
-const PROXY = "https://host.autergame.me:2083/proxy/";
+const PROXY = "https://nginx.autergame.me/proxy/";
 
 valid_login();
 
